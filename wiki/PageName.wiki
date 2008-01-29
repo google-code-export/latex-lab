@@ -1,10 +1,10 @@
 = Live Development Version =
 
 The latest live dev version of LaTexLab is accessible via the link below.
-Please not that this _the_ development version will vary from buggy to unavailable.
+Please note that this is _the_ development version and application state will vary from buggy to unavailable.
 http://pi.latexlab.org:803/
 
-The following contains the previous development version:
+The following link contains the previous development version:
 http://www.latexlab.org
 
 
