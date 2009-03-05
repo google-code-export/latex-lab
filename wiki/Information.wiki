@@ -1,4 +1,6 @@
 = POC Versions =
 A few different implementation approaches have been tested. These are available here only for completion:
+
 http://gdocs.latexlab.org
+
 http://www.latexlab.org
