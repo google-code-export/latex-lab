@@ -1,14 +1,4 @@
-= Live Development Version =
-
-The latest live dev version of LaTexLab is accessible via the link below.
-Please note that this is _the_ development version and application state will vary from buggy to unavailable.
-http://pi.latexlab.org:803/
-
-The following link contains the previous development version:
+= POC Versions =
+A few different implementation approaches have been tested. These are available here only for completion:
+http://gdocs.latexlab.org
 http://www.latexlab.org
-
-
-= Remarks =
-
-. App is currently in C#/ASP.NET, MSSQL and Javascript/Ajax (moving to PHP/MySQL at some point)
-. Source code will be made available when current development version reaches a stable point.
