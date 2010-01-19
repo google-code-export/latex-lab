@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+	<module rename-to="org.latexlab.pine.Pine">
+	<!-- Inherit the core Web Toolkit stuff.                        -->
+	<inherits name="com.google.gwt.user.User"/>
+	
+	<!-- Other module inherits                                      -->
+  	<inherits name="com.google.gwt.json.JSON" />
+    <inherits name="com.google.gwt.widgetideas.GlassPanel"/>
+	<!-- Specify the app entry point class.                         -->
+	<entry-point class="org.latexlab.pine.client.Pine"/>
+</module>
