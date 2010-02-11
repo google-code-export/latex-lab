@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<module rename-to="editor">
+	<!-- Inherit the core Web Toolkit stuff.                        -->
+	<inherits name="com.google.gwt.user.User"/>
+	
+	<!-- Other module inherits                                      -->
+  	<inherits name="com.google.gwt.json.JSON" />
+    <inherits name="com.google.gwt.widgetideas.GlassPanel"/>
+    <inherits name="com.allen_sauer.gwt.dnd.gwt-dnd" />
+	<inherits name='com.google.gwt.gdata.GData' />
+	<inherits name='com.google.gwt.gdata.ext.GDataExt' />
+	<!-- Specify the app entry point class.                         -->
+	<entry-point class="org.latexlab.docs.client.DocsEditor"/>
+</module>

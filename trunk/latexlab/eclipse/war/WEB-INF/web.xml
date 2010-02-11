@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  
+  <!-- Servlets -->
+  
+  <servlet>
+    <servlet-name>LatexLabEditorServlet</servlet-name>
+    <servlet-class>org.latexlab.docs.server.LatexLabEditorServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>LatexLabServiceServlet</servlet-name>
+    <servlet-class>org.latexlab.docs.server.LatexLabServiceImpl</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>DocumentsServiceProxy</servlet-name>
+    <servlet-class>com.google.gwt.gdata.ext.server.documents.DocumentsServiceProxyImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>DocumentsServiceProxy</servlet-name>
+    <url-pattern>/editor/gwt-gdata-ext-rpc</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>LatexLabEditorServlet</servlet-name>
+    <url-pattern>/docs</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>LatexLabServiceServlet</servlet-name>
+    <url-pattern>/editor/rpc</url-pattern>
+  </servlet-mapping>
+  
+  <security-constraint>
+    <web-resource-collection>
+      <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <user-data-constraint>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+</web-app>
