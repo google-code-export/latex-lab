@@ -60,7 +60,7 @@ public abstract class Window extends Composite {
   }
 
   protected HandlerManager manager;
-  protected PickupDragController registeredDragController;
+  public PickupDragController registeredDragController;
   protected int contentHeight, contentWidth,
       minContentHeight = 0, minContentWidth = 0;
   protected Widget eastWidget,
@@ -134,7 +134,7 @@ public abstract class Window extends Composite {
 
     grid.setCellSpacing(0);
     grid.setCellPadding(0);
-    grid.setStylePrimaryName("cloudie-Window");
+    grid.setStylePrimaryName("lab-Window");
     initWidget(grid);
 	this.getElement().getStyle().setZIndex(3);
   }

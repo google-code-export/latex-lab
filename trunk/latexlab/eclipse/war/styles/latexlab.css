@@ -7,7 +7,7 @@
 .gwt-HorizontalSplitPanel .hsplitter {
 	cursor: move;
 	border: 0px;
-	border-left: solid 2px #E0DFE0;
+	border-left: solid 4px #E0DFE0;
 	cursor: e-resize;
 	cursor: col-resize;
 }
@@ -20,10 +20,55 @@
 	background-color: #D6E3F7;
  	cursor: move;
 	border: 0px;
-	border-top: solid 1px #63A6E7;
+	border-top: solid 4px #E0DFE0;
 	cursor: s-resize;
 	cursor: row-resize;
 }
 .gwt-VerticalSplitPanel .vsplitter img{
 	display: none;
+}
+/* Windows */
+.lab-Window {
+	border: solid 1px #3A5774;
+}
+.lab-Window .Base {
+	background-color: #FFFFFF;
+}
+.lab-Window .Header {
+	background-color: #E0EDFE;
+}
+.lab-Window .Header .Buttons {
+}
+.lab-Window .Header .Buttons .CloseButton {
+	cursor: pointer;
+}
+.lab-Window .Header .Buttons .MinimizeButton {
+	cursor: pointer;
+}
+.lab-Window .Header .Title {
+	font-size: 16px;
+	font-family: Arial;
+	font-weight: bold;
+	padding: 4px;
+	overflow-x: hidden;
+}
+.lab-Window .Content {
+	font-family: Arial;
+	font-size: 12px;
+}
+.lab-Window .dialogMiddleCenter {
+	padding: 0px;
+}
+.lab-Window .windowMiddleRight,
+.lab-Window .windowMiddleLeft,
+.lab-Window .windowTopLeft,
+.lab-Window .windowTopCenter,
+.lab-Window .windowTopRight,
+.lab-Window .windowBottomLeft,
+.lab-Window .windowBottomCenter,
+.lab-Window .windowBottomRight
+{
+	background-color: #C1D9FF;
+	line-height: 1px;
+	font-size: 1px;
 }

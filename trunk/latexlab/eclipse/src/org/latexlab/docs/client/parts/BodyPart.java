@@ -55,5 +55,13 @@ public class BodyPart extends Composite {
   public void setBottomWidget(Widget w){
     vContent.setBottomWidget(w);
   }
+  
+  public void setHorizontalSplitPosition(String pos) {
+    hContent.setSplitPosition(pos);
+  }
+  
+  public void setVerticalSplitPosition(String pos) {
+    vContent.setSplitPosition(pos);
+  }
 
 }

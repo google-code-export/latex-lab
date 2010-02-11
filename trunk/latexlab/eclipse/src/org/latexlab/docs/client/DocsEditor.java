@@ -1,16 +1,19 @@
 package org.latexlab.docs.client;
 
+import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.gdata.client.GData;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.commands.CurrentDocumentCloseCommand;
+import org.latexlab.docs.client.commands.CurrentDocumentCompileCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentCopyCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentDeleteCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentLoadContentsCommand;
@@ -30,6 +33,8 @@ import org.latexlab.docs.client.commands.NewDocumentStartCommand;
 import org.latexlab.docs.client.commands.SystemAboutCommand;
 import org.latexlab.docs.client.commands.SystemFullScreenCommand;
 import org.latexlab.docs.client.commands.SystemSignOutCommand;
+import org.latexlab.docs.client.commands.SystemToggleToolbarCommand;
+import org.latexlab.docs.client.data.CompilerOutput;
 import org.latexlab.docs.client.data.FileSystem;
 import org.latexlab.docs.client.data.FileSystemEntry;
 import org.latexlab.docs.client.data.LatexLabService;
@@ -49,6 +54,10 @@ import org.latexlab.docs.client.parts.OutputPart;
 import org.latexlab.docs.client.parts.PreviewerPart;
 import org.latexlab.docs.client.parts.ToolbarPart;
 import org.latexlab.docs.client.resources.icons.EditorIcons;
+import org.latexlab.docs.client.windows.AboveAndBelowToolbarWindow;
+import org.latexlab.docs.client.windows.ArrowsToolbarWindow;
+import org.latexlab.docs.client.windows.ToolbarWindow;
+import org.latexlab.docs.client.windows.WindowManager;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,9 +67,11 @@ import java.util.Date;
  */
 public class DocsEditor implements EntryPoint, CommandHandler {
 
-  private final LatexLabServiceAsync compiler = GWT.create(LatexLabService.class);
+  private final LatexLabServiceAsync latexLabService = GWT.create(LatexLabService.class);
   
+  private AbsolutePanel root;
   private DialogManager dialogManager;
+  private WindowManager windowManager;
   private BodyPart body;
   private EditorPart editor;
   private PreviewerPart previewer;
@@ -71,6 +82,7 @@ public class DocsEditor implements EntryPoint, CommandHandler {
   private ToolbarPart toolbar;
   private String currentUser;
   private FileSystemEntry currentDocument;
+  private ToolbarWindow[] toolbars;
 
   /**
    * Builds and initializes the editor module.
@@ -80,7 +92,7 @@ public class DocsEditor implements EntryPoint, CommandHandler {
       public void run() {
         boolean ok = FileSystem.login();
         if (ok) {
-	      compiler.getCurrentUser(new AsyncCallback<String>() {
+	      latexLabService.getCurrentUser(new AsyncCallback<String>() {
 	  	    @Override
 	  	    public void onFailure(Throwable caught) {
 	  	    }
@@ -140,9 +152,25 @@ public class DocsEditor implements EntryPoint, CommandHandler {
     body.setBottomWidget(this.output);
     contentPane.setWidget(0, 0, headerPanel);
     contentPane.setWidget(1, 0, body);
-    RootPanel.get().add(contentPane);
+    root = new AbsolutePanel();
+    root.setSize("100%", "100%");
+    root.add(contentPane);
+    RootPanel.get().add(root);
     loadDocument();
-    this.editor.init();
+    editor.init();
+    
+    windowManager = new WindowManager(root);
+    PickupDragController dragController = new PickupDragController(root, true);
+    dragController.setBehaviorConstrainedToBoundaryPanel(true);
+    dragController.setBehaviorMultipleSelection(false);
+    dragController.setBehaviorDragStartSensitivity(1);
+    toolbars = new ToolbarWindow[] { new AboveAndBelowToolbarWindow(), new ArrowsToolbarWindow() };
+    for (ToolbarWindow toolbar : toolbars) {
+	  toolbar.registeredDragController = dragController;
+	  windowManager.getWindowController().makeResizable(toolbar);
+	  root.add(toolbar, 500, 120);
+      toolbar.hide();
+    }
   }
   
   /**
@@ -305,6 +333,26 @@ public class DocsEditor implements EntryPoint, CommandHandler {
       case ExistingDocumentOpenCommand.serialUid:
     	dialogManager.showDialog(FileListDialog.getInstance(this));
         break;
+      case CurrentDocumentCompileCommand.serialUid:
+    	latexLabService.compile(currentDocument.getName(), editor.getText(), "latex", "pdf",
+    	    new AsyncCallback<CompilerOutput>() {
+    		@Override
+    		public void onFailure(Throwable caught) {
+              handleError(caught, cmd, null, 0);
+    		}
+    		@Override
+    		public void onSuccess(CompilerOutput result) {
+    		  if (result.getFiles().length > 0) {
+    		    previewer.setUrl(result.getFiles()[0]);
+    		    body.setHorizontalSplitPosition("50%");
+    		  }
+    		  if (result.getLogs().length > 0) {
+      		    output.setUrl(result.getLogs()[0]);
+    		    body.setVerticalSplitPosition("80%");
+    		  }
+    		}
+    	});
+        break;
       case CurrentDocumentCopyCommand.serialUid:
         showStatus("Copying document...", true);
         FileSystem.createDocument("Copy of " + currentDocument.getName(), editor.getText(),
@@ -441,6 +489,12 @@ public class DocsEditor implements EntryPoint, CommandHandler {
           contentPane.getFlexCellFormatter().setHeight(0, 0, "40px");
         }
         break;
+      case SystemToggleToolbarCommand.serialUid:
+    	SystemToggleToolbarCommand sttCmd = (SystemToggleToolbarCommand) cmd;
+    	if (sttCmd.getIndex() < toolbars.length) {
+    	  toolbars[sttCmd.getIndex()].toggle();
+    	}
+    	break;
       case SystemSignOutCommand.serialUid:
         showStatus("Signing out...", true);
         FileSystem.logout(new Runnable() {

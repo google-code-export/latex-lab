@@ -28,6 +28,11 @@
   </servlet-mapping>
   
   <servlet-mapping>
+    <servlet-name>DocumentsServiceProxy</servlet-name>
+    <url-pattern>/gwt-gdata-ext-rpc</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
     <servlet-name>LatexLabEditorServlet</servlet-name>
     <url-pattern>/docs</url-pattern>
   </servlet-mapping>
@@ -35,6 +40,11 @@
   <servlet-mapping>
     <servlet-name>LatexLabServiceServlet</servlet-name>
     <url-pattern>/editor/rpc</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>LatexLabServiceServlet</servlet-name>
+    <url-pattern>/rpc</url-pattern>
   </servlet-mapping>
   
   <security-constraint>

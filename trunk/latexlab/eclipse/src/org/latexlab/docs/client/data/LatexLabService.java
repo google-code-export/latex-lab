@@ -6,7 +6,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("rpc")
 public interface LatexLabService extends RemoteService {
 
-	String compile(String name, String contents, String compiler, String format);
+	CompilerOutput compile(String name, String contents, String compiler, String format);
 	
 	String getCurrentUser();
 }

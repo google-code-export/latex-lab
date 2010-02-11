@@ -17,6 +17,7 @@ import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.commands.CurrentDocumentCompileCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentSaveCommand;
 import org.latexlab.docs.client.commands.SystemNotImplementedCommand;
+import org.latexlab.docs.client.commands.SystemToggleToolbarCommand;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.events.HasCommandHandlers;
@@ -67,7 +68,7 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
     toolbarPanel.add(buildButton(LatexIcons.icons.Icon89(), "White Spaces & Dots", true, new SystemNotImplementedCommand()));
     toolbarPanel.add(buildButton(LatexIcons.icons.Icon106(), "Accents", true, new SystemNotImplementedCommand()));
     toolbarPanel.add(buildButton(LatexIcons.icons.Icon123(), "Binary Operators", true, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon140(), "Arrows", true, new SystemNotImplementedCommand()));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon140(), "Arrows", true, new SystemToggleToolbarCommand(1)));
     toolbarPanel.add(buildButton(LatexIcons.icons.Icon157(), "Logical", true, new SystemNotImplementedCommand()));
     toolbarPanel.add(buildButton(LatexIcons.icons.Icon174(), "Sets", true, new SystemNotImplementedCommand()));
     toolbarPanel.add(buildButton(LatexIcons.icons.Icon191(), "Diverse Symbols", true, new SystemNotImplementedCommand()));
@@ -77,7 +78,7 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
     toolbarPanel.add(buildButton(LatexIcons.icons.Icon259(), "Mathematical", true, new SystemNotImplementedCommand()));
     toolbarPanel.add(buildButton(LatexIcons.icons.Icon276(), "Subscript & Superscript", true, new SystemNotImplementedCommand()));
     toolbarPanel.add(buildButton(LatexIcons.icons.Icon293(), "Operators", true, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon310(), "Above & Below", true, new SystemNotImplementedCommand()));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon310(), "Above & Below", true, new SystemToggleToolbarCommand(0)));
     //toolbarPanel.add(buildButton(latexIcons.Icon327(), "Arrows With Captions", true, new SystemNotImplementedCommand()));
     return toolbarPanel;
   }
