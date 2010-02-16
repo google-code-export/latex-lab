@@ -56,11 +56,12 @@
 	background-position: 0px -84px;
 }
 .gdbe-Toolbar .separator {
-	margin-left: 3px;
-	margin-right: 3px;
+	margin-left: 2px;
+	margin-right: 2px;
 }
-.gdbe-Toolbar .gwt-PushButton{
+.gdbe-Toolbar .gwt-PushButton {
 	background-image: none;
+	margin-left: 1px;
 }
 .gdbe-Toolbar .gwt-PushButton-up{
 	border: 0px;
@@ -77,6 +78,7 @@
 }
 .gdbe-Toolbar .gwt-ToggleButton{
 	background-image: none;
+	margin-left: 1px;
 }
 .gdbe-Toolbar .gwt-ToggleButton-up{
 	border: 0px;
@@ -98,7 +100,7 @@
 }
 /** Main Menu Panel */
 .gdbe-Menu-Panel{
-	border-top: solid 4px #63A6E7;
+	border-top: solid 2px #BDCFFF;
 }
 .gdbe-Menu-Panel .gwt-MenuBar{
 }
@@ -107,7 +109,7 @@
 }
 .gdbe-Menu-Panel .gwt-MenuBar-horizontal{
 	border: 0px;
-	background-color: #D6E3F7;
+	background-color: #E7EBFF;
 	background-image: none;
 }
 .gdbe-Menu-Panel .gwt-MenuBar-horizontal .gwt-MenuItem{
@@ -115,56 +117,56 @@
 	font-weight: normal;
 	font-size: 12px;
 	color: #333333;
-	padding: 8px;
-	padding-top: 4px;
-	padding-bottom: 4px;
-	border-left: solid 5px #D6E3F7;
-	white-space: nowrap
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-top: 5px;
+	padding-bottom: 6px;
+	border-left: solid 6px #E7EBFF;
+	white-space: nowrap;
 }
 .gdbe-Menu-Panel .gwt-MenuBar-horizontal .gwt-MenuItem-selected{
-	background-color: #63A6E7;
+	background-color: #638AEF;
 	color: #FFFFFF;
 }
 /*******************************************************************/
 /***** Popup & Vertical Menu Item Styles (common to all menus) *****/
 /*******************************************************************/
 .gwt-MenuBar-vertical{
-	padding-top: 4px;
-	padding-bottom: 4px;
 	border-top: solid 1px #CECFCE;
 	border-left: solid 1px #CECFCE;
 	border-right: solid 1px #636563;
 	border-bottom: solid 1px #636563;
 }
 .gwt-MenuBar-vertical .gwt-MenuItemSeparator{
-	padding-bottom: 4px;
 }
 .gwt-MenuBar-vertical .gwt-MenuItemSeparator .menuSeparatorInner{
-  height: 1px;
-  padding: 0px;
-  border: 0px;
-  background: #CECFCE;
-  overflow: hidden;
+	height: 1px;
+	padding: 0px;
+	border: 0px;
+	background: #CECFCE;
+	overflow: hidden;
 }
 .gwt-MenuBar-vertical .gwt-MenuItem{
 	font-family: Arial;
 	font-weight: normal;
 	font-size: 12px;
 	color: #333333;
-	padding: 2px;
+	padding-top: 4px;
+	padding-bottom: 2px;
 	padding-left: 6px;
+	border-top: solid 4px #FFFFFF;
+	border-bottom: solid 4px #FFFFFF;
 	width: 210px;
-	white-space: nowrap
+	white-space: nowrap;
 }
-.gwt-MenuBar-vertical .gwt-MenuItem *{
-	margin-left: 2px;
-	margin-right: 4px;
+.gwt-MenuBar-vertical .gwt-MenuItem IMG {
+	margin-right: 2px;
+	vertical-align: text-bottom;
 }
 .gwt-MenuBar-vertical .gwt-MenuItem-selected{
 	background-color: #D6EBFF;
 }
-.gwt-MenuBar-vertical .subMenuIcon-selected {
-  background: #CCCCCC;
+.gwt-MenuBarPopup {
 }
 .gwt-MenuBarPopup .menuPopupTopCenter {
 	display: none;
@@ -226,6 +228,14 @@
 	font-family: Arial;
 	font-weight: bold;
 	padding: 8px;
+}
+.gwt-DialogBox .SubHeader {
+	padding: 2px;
+	padding-left: 4px;
+	padding-right: 4px;
+	background-color: #F7FBFF;
+	border-bottom: solid 1px #C6DBFF;
+	font-size: 11px;
 }
 .gwt-DialogBox .Content {
 	padding: 8px;

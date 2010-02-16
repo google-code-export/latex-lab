@@ -59,6 +59,7 @@ public abstract class Dialog extends DialogBox implements HasCommandHandlers {
     mainPanel.getCellFormatter().setStylePrimaryName(1, 0, "Tabs");
     mainPanel.getCellFormatter().setStylePrimaryName(2, 0, "Content");
     mainPanel.getFlexCellFormatter().setColSpan(1, 0, 2);
+    mainPanel.getFlexCellFormatter().setStylePrimaryName(1, 0, "SubHeader");
     mainPanel.getFlexCellFormatter().setColSpan(2, 0, 2);
     mainPanel.setWidget(0, 0, titleLabel);
     mainPanel.setWidget(0, 1, closeButton);

@@ -20,6 +20,7 @@ public interface EditorIconsImageBundle extends ImageBundle {
 	public AbstractImagePrototype CloseSmall();
 	public AbstractImagePrototype CloseYellow();
 	public AbstractImagePrototype Comment();
+	public AbstractImagePrototype Compile();
 	public AbstractImagePrototype Copy();
 	public AbstractImagePrototype Cut();
 	public AbstractImagePrototype DecreaseIndent();
@@ -32,8 +33,10 @@ public interface EditorIconsImageBundle extends ImageBundle {
 	public AbstractImagePrototype Hyperlink();
 	public AbstractImagePrototype IncreaseIndent();
 	public AbstractImagePrototype Italic();
+	public AbstractImagePrototype ItemList();
 	public AbstractImagePrototype Logo();
 	public AbstractImagePrototype LogoLarge();
+	public AbstractImagePrototype LatexLabLogoLarge();
 	public AbstractImagePrototype OrederedList();
 	public AbstractImagePrototype PageBreak();
 	public AbstractImagePrototype Paste();
@@ -47,6 +50,7 @@ public interface EditorIconsImageBundle extends ImageBundle {
 	public AbstractImagePrototype Redo();
 	public AbstractImagePrototype Save();
 	public AbstractImagePrototype Separator();
+	public AbstractImagePrototype Service();
 	public AbstractImagePrototype Share();
 	public AbstractImagePrototype StarEmpty();
  	public AbstractImagePrototype StarFull();
@@ -58,6 +62,7 @@ public interface EditorIconsImageBundle extends ImageBundle {
 	public AbstractImagePrototype Subscript();
 	public AbstractImagePrototype Superscript();
 	public AbstractImagePrototype Table();
+	public AbstractImagePrototype Tools();
 	public AbstractImagePrototype Underline();
 	public AbstractImagePrototype Undo();
 	public AbstractImagePrototype UnorderedList();

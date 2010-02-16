@@ -50,7 +50,11 @@ public class EditorPart extends Composite {
    * @param text the text contents to load
    */
   public void setText(String text) {
-    mirror.setCode(text);
+	if (mirror == null) {
+      editor.setText(text);
+	} else {
+	  mirror.setCode(text);
+	}
   }
   
   /**

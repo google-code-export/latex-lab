@@ -13,14 +13,10 @@ import com.google.appengine.api.users.UserServiceFactory;
 /**
  * The servlet corresponding to the document editor.
  */
-@SuppressWarnings("serial")
 public class LatexLabEditorServlet extends HttpServlet {
   
-  /**
-   * Handles a GET request. Before writing out the html page, check for authentication
-   * in non-passive mode. Non-passive mode means that, when unauthenticated, the user
-   * will be automatically redirected to the login or access control page.
-   */
+  private static final long serialVersionUID = -4184093752854675998L;
+
   public void doGet(HttpServletRequest req, HttpServletResponse resp)
           throws IOException {
 	UserService userService = UserServiceFactory.getUserService();

@@ -29,6 +29,7 @@ import org.latexlab.docs.client.commands.SystemSignOutCommand;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.events.HasCommandHandlers;
+import org.latexlab.docs.client.resources.icons.EditorIcons;
 import org.latexlab.docs.client.resources.icons.EditorIconsImageBundle;
 
 import java.util.Date;
@@ -40,7 +41,7 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
 
   private HandlerManager manager;
   private VerticalPanel content;
-  private FlexTable lower, upper;
+  private FlexTable main;
   private Label author;
   private HorizontalPanel links, status;
   private Anchor title, docsLink, helpLink, signoutLink;
@@ -57,21 +58,22 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
     status.setWidth("100%");
     status.setStylePrimaryName("gdbe-Header-Status");
     status.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-    upper = new FlexTable();
-    upper.setWidth("100%");
-    upper.insertRow(0);
-    upper.insertCell(0, 0);
-    upper.insertCell(0, 1);
-    upper.getFlexCellFormatter().setHorizontalAlignment(0, 1, HorizontalPanel.ALIGN_RIGHT);
-    lower = new FlexTable();
-    lower.setWidth("100%");
-    lower.insertRow(0);
-    lower.insertCell(0, 0);
-    lower.insertCell(0, 1);
-    lower.getFlexCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT);
+    main = new FlexTable();
+    main.setWidth("100%");
+    main.insertRow(0);
+    main.insertCell(0, 0);
+    main.insertCell(0, 1);
+    main.getFlexCellFormatter().setVerticalAlignment(0, 0, HorizontalPanel.ALIGN_BOTTOM);
+    main.getFlexCellFormatter().setHorizontalAlignment(0, 1, HorizontalPanel.ALIGN_RIGHT);
+    main.setWidth("100%");
+    main.insertRow(1);
+    main.insertCell(1, 0);
+    main.getFlexCellFormatter().setHorizontalAlignment(1, 0, HasHorizontalAlignment.ALIGN_RIGHT);
+    main.getFlexCellFormatter().setRowSpan(0, 0, 2);
     content.add(status);
-    content.add(buildUpper());
-    content.add(buildLower());
+    content.add(main);
+    buildUpper();
+    buildLower();
     initWidget(content);
   }
   
@@ -81,41 +83,15 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
    * 
    * @return a table containing the upper controls
    */
-  private FlexTable buildUpper() {
+  private void buildUpper() {
     EditorIconsImageBundle EditorIcons = (EditorIconsImageBundle)GWT.create(EditorIconsImageBundle.class);
     /* Upper Header Panel */
+    VerticalPanel brandPanel = new VerticalPanel();
+    brandPanel.setHeight("100%");
+    brandPanel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
+    brandPanel.setSpacing(2);
     Image logo = EditorIcons.Logo().createImage();
-    logo.setWidth("112px");
-    logo.setHeight("22px");
     logo.setStylePrimaryName("gdbe-Logo");
-    links = new HorizontalPanel();
-    links.setStylePrimaryName("gdbe-Header-Links");
-    author = new Label();
-    docsLink = new Anchor("Docs Home", "http://docs.google.com/", "_blank");
-    helpLink = new Anchor("Help", "", "_blank");
-    signoutLink = new Anchor("Sign Out");
-    signoutLink.addClickHandler(new ClickHandler(){
-      public void onClick(ClickEvent event) {
-        CommandEvent.fire(HeaderPart.this, new SystemSignOutCommand("/"));
-      }
-    });
-    links.add(author);
-    links.add(docsLink);
-    links.add(helpLink);
-    links.add(signoutLink);
-    upper.setWidget(0, 0, logo);
-    upper.setWidget(0, 1, links);
-    return upper;
-  }
-  
-  /**
-   * Builds the lower part of the editor.
-   * The lower region contains the title, info and button menu controls.
-   * 
-   * @return a table containing the lower controls
-   */
-  private FlexTable buildLower() {    
-    EditorIconsImageBundle EditorIcons = (EditorIconsImageBundle)GWT.create(EditorIconsImageBundle.class);
     HorizontalPanel titlePanel = new HorizontalPanel();
     titlePanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
     title = new Anchor("", "");
@@ -126,24 +102,50 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
     info.setStylePrimaryName("gdbe-Header-Info");
     titlePanel.add(title);
     titlePanel.add(info);
-
+    links = new HorizontalPanel();
+    links.setStylePrimaryName("gdbe-Header-Links");
+    author = new Label();
+    docsLink = new Anchor("Docs Home", "http://docs.google.com/", "_blank");
+    helpLink = new Anchor("Help", "", "_blank");
+    signoutLink = new Anchor("Sign Out");
+    signoutLink.addClickHandler(new ClickHandler(){
+      public void onClick(ClickEvent event) {
+        CommandEvent.fire(HeaderPart.this, new SystemSignOutCommand("/splash.html"));
+      }
+    });
+    links.add(author);
+    links.add(docsLink);
+    links.add(helpLink);
+    links.add(signoutLink);
+    brandPanel.add(logo);
+    brandPanel.add(titlePanel);
+    main.setWidget(0, 0, brandPanel);
+    main.setWidget(0, 1, links);
+  }
+  
+  /**
+   * Builds the lower part of the editor.
+   * The lower region contains the title, info and button menu controls.
+   * 
+   * @return a table containing the lower controls
+   */
+  private void buildLower() {
     HorizontalPanel actionsPanel = new HorizontalPanel();
     actionsPanel.setHeight("30px");
     actionsPanel.setStylePrimaryName("gdbe-Actions-Panel");
     MenuBar menu = new MenuBar(false);
+    
     MenuBar shareMenu = new MenuBar(true);
-    addMenuItem(shareMenu, EditorIcons.Blank(), "View as web page (Preview)...", new CurrentDocumentViewAsWebPageCommand());
+    addMenuItem(shareMenu, EditorIcons.icons.Blank(), "View as web page (Preview)...", new CurrentDocumentViewAsWebPageCommand());
     MenuItem item = menu.addItem("Share", true, shareMenu);
     item.setStylePrimaryName("gdbe-HighlightedMenuItem");
     menu.addSeparator();
+    
     addMenuItem(menu, null, "Save", new CurrentDocumentSaveCommand());
     menu.addSeparator();
     addMenuItem(menu, null, "Save & Close", new CurrentDocumentSaveAndCloseCommand());
     actionsPanel.add(menu);
-    
-    lower.setWidget(0, 0, titlePanel);
-    lower.setWidget(0, 1, actionsPanel);
-    return lower;
+    main.setWidget(1, 0, actionsPanel);
   }
   
   /**

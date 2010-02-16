@@ -1,13 +1,14 @@
-package org.latexlab.docs.client.windows;
+package org.latexlab.docs.client.windows.toolbars;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.resources.icons.latex.LatexIcons;
+import org.latexlab.docs.client.windows.ToolbarWindow;
 
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
-public class ArrowsToolbarWindow extends ToolbarWindow{
+public class ToolbarWindowArrows extends ToolbarWindow{
 
-  public ArrowsToolbarWindow() {
+  public ToolbarWindowArrows() {
 	super("Arrows");
     buildToolBar();
   }

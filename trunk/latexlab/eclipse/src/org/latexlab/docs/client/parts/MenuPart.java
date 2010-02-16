@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.commands.CurrentDocumentCopyCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentDeleteCommand;
+import org.latexlab.docs.client.commands.CurrentDocumentExportCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentRenameCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentRevisionHistoryCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentSaveCommand;
@@ -22,6 +23,11 @@ import org.latexlab.docs.client.commands.SystemAboutCommand;
 import org.latexlab.docs.client.commands.SystemFullScreenCommand;
 import org.latexlab.docs.client.commands.SystemNotImplementedCommand;
 import org.latexlab.docs.client.commands.SystemPrintCommand;
+import org.latexlab.docs.client.commands.SystemRedoCommand;
+import org.latexlab.docs.client.commands.SystemReuseToolbarWindowsCommand;
+import org.latexlab.docs.client.commands.SystemSelectResourcesCommand;
+import org.latexlab.docs.client.commands.SystemSpecifyCompilerSettingsCommand;
+import org.latexlab.docs.client.commands.SystemUndoCommand;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.events.HasCommandHandlers;
@@ -93,8 +99,8 @@ public class MenuPart extends Composite implements HasCommandHandlers {
     addMenuItem(fileMenu, EditorIcons.Print(), "Print...", new SystemPrintCommand());
     this.menu.addItem("File", fileMenu);
     MenuBar editMenu = new MenuBar(true);
-    addMenuItem(editMenu, EditorIcons.Undo(), "Undo", new SystemNotImplementedCommand());
-    addMenuItem(editMenu, EditorIcons.Redo(), "Redo", new SystemNotImplementedCommand());
+    addMenuItem(editMenu, EditorIcons.Undo(), "Undo", new SystemUndoCommand());
+    addMenuItem(editMenu, EditorIcons.Redo(), "Redo", new SystemRedoCommand());
     editMenu.addSeparator();
     addMenuItem(editMenu, EditorIcons.Cut(), "Cut", new SystemNotImplementedCommand());
     addMenuItem(editMenu, EditorIcons.Copy(), "Copy", new SystemNotImplementedCommand());
@@ -102,18 +108,27 @@ public class MenuPart extends Composite implements HasCommandHandlers {
     editMenu.addSeparator();
     addMenuItem(editMenu, EditorIcons.Blank(), "Select all", new SystemNotImplementedCommand());
     this.menu.addItem("Edit", editMenu);
+    MenuBar exportMenu = new MenuBar(true);
+    addMenuItem(exportMenu, EditorIcons.Blank(), "Portable Document Format (PDF)", new CurrentDocumentExportCommand("pdf"));
+    addMenuItem(exportMenu, EditorIcons.Blank(), "PostScript Document (PS)", new CurrentDocumentExportCommand("ps"));
+    addMenuItem(exportMenu, EditorIcons.Blank(), "Device Independent Format (DVI)", new CurrentDocumentExportCommand("dvi"));
+    this.menu.addItem("Export", exportMenu);
     MenuBar viewMenu = new MenuBar(true);
+    addMenuItem(viewMenu, EditorIcons.CheckBlack(), "Reuse toolbar windows", new SystemReuseToolbarWindowsCommand());
+    viewMenu.addSeparator();
     addMenuItem(viewMenu, EditorIcons.Blank(), "Full-screen mode", new SystemFullScreenCommand());
     this.menu.addItem("View", viewMenu);
     MenuBar compilerMenu = new MenuBar(true);
-    addMenuItem(compilerMenu, EditorIcons.Blank(), "Options...", new SystemNotImplementedCommand());
+    addMenuItem(compilerMenu, EditorIcons.ItemList(), "Project Resources", new SystemSelectResourcesCommand());
+    compilerMenu.addSeparator();
+    addMenuItem(compilerMenu, EditorIcons.Service(), "Settings...", new SystemSpecifyCompilerSettingsCommand());
     this.menu.addItem("Compiler", compilerMenu);
     MenuBar helpMenu = new MenuBar(true);
     addMenuItem(helpMenu, EditorIcons.Blank(), "About", new SystemAboutCommand());
     this.menu.addItem("Help", helpMenu);
     return menu;
   }
-  
+
   /**
    * Adds a menu item to a menu bar.
    * 
@@ -122,12 +137,18 @@ public class MenuPart extends Composite implements HasCommandHandlers {
    * @param title the title of the new menu item
    * @param command the command type for the new menu item
    */
-  private void addMenuItem(final MenuBar menuBar, AbstractImagePrototype icon, String title, final Command command) {
-    MenuItem item = menuBar.addItem(icon.getHTML() + " " + title, true, new com.google.gwt.user.client.Command() {
+  private void addMenuItem(final MenuBar menuBar, AbstractImagePrototype icon, String title,
+	  final Command command) {
+    addMenuItem(menuBar, icon, title, new com.google.gwt.user.client.Command() {
       public void execute() {
     	CommandEvent.fire(MenuPart.this, command);
       }
     });
+  }
+  
+  private void addMenuItem(final MenuBar menuBar, AbstractImagePrototype icon, String title,
+	  com.google.gwt.user.client.Command command) {
+    MenuItem item = menuBar.addItem(icon.getHTML() + " " + title, true, command);
     itemIndex.put(title, item);
   }
 

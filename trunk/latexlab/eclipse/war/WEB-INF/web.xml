@@ -8,13 +8,18 @@
   <!-- Servlets -->
   
   <servlet>
+    <servlet-name>LatexLabContentServlet</servlet-name>
+    <servlet-class>org.latexlab.docs.server.LatexLabContentServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
     <servlet-name>LatexLabEditorServlet</servlet-name>
     <servlet-class>org.latexlab.docs.server.LatexLabEditorServlet</servlet-class>
   </servlet>
   
   <servlet>
-    <servlet-name>LatexLabServiceServlet</servlet-name>
-    <servlet-class>org.latexlab.docs.server.LatexLabServiceImpl</servlet-class>
+    <servlet-name>ClsiServiceProxy</servlet-name>
+    <servlet-class>org.latexlab.clsi.server.ClsiServiceProxyImpl</servlet-class>
   </servlet>
 
   <servlet>
@@ -23,13 +28,8 @@
   </servlet>
   
   <servlet-mapping>
-    <servlet-name>DocumentsServiceProxy</servlet-name>
-    <url-pattern>/editor/gwt-gdata-ext-rpc</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>DocumentsServiceProxy</servlet-name>
-    <url-pattern>/gwt-gdata-ext-rpc</url-pattern>
+    <servlet-name>LatexLabContentServlet</servlet-name>
+    <url-pattern>/fetch</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
@@ -38,15 +38,25 @@
   </servlet-mapping>
   
   <servlet-mapping>
-    <servlet-name>LatexLabServiceServlet</servlet-name>
-    <url-pattern>/editor/rpc</url-pattern>
+    <servlet-name>DocumentsServiceProxy</servlet-name>
+    <url-pattern>/editor/gdata-rpc</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
-    <servlet-name>LatexLabServiceServlet</servlet-name>
-    <url-pattern>/rpc</url-pattern>
+    <servlet-name>DocumentsServiceProxy</servlet-name>
+    <url-pattern>/gdata-rpc</url-pattern>
   </servlet-mapping>
   
+  <servlet-mapping>
+    <servlet-name>ClsiServiceProxy</servlet-name>
+    <url-pattern>/editor/clsi-rpc</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>ClsiServiceProxy</servlet-name>
+    <url-pattern>/clsi-rpc</url-pattern>
+  </servlet-mapping>
+  <!--
   <security-constraint>
     <web-resource-collection>
       <url-pattern>/*</url-pattern>
@@ -55,5 +65,5 @@
       <transport-guarantee>CONFIDENTIAL</transport-guarantee>
     </user-data-constraint>
   </security-constraint>
-
+  -->
 </web-app>

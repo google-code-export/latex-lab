@@ -23,11 +23,6 @@ public abstract class ToolbarWindow extends Window implements HasCommandHandlers
   public ToolbarWindow(String title) {
     super(title, new HorizontalPanel(), false);
     manager = new HandlerManager(this);
-    closeButton.addClickHandler(new ClickHandler() {
-	    public void onClick(ClickEvent event) {
-	      ToolbarWindow.this.hide();
-	    }
-	});
   }
   
   public void toggle() {

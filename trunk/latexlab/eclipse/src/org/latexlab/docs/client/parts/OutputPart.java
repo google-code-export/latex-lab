@@ -31,7 +31,7 @@ public class OutputPart extends Composite {
    */
   public void appendOutput(String text) {
 	if (this.output == null || !(this.output instanceof Label)) {
-	  this.clearOutput();
+	  this.clear();
 	  this.output = new Label();
 	  this.content.add(this.output);
 	}
@@ -42,7 +42,7 @@ public class OutputPart extends Composite {
   /**
    * Clears the current output text.
    */
-  public void clearOutput() {
+  public void clear() {
 	if (this.output != null) {
 	  this.output.removeFromParent();
 	  this.output = null;
@@ -56,7 +56,7 @@ public class OutputPart extends Composite {
    */
   public void setOutput(String text) {
 	if (this.output == null || !(this.output instanceof Label)) {
-	  this.clearOutput();
+	  this.clear();
 	  Label label = new Label();
 	  label.setSize("100%", "100%");
 	  label.setStylePrimaryName("latexlab-Output");
@@ -74,7 +74,7 @@ public class OutputPart extends Composite {
    */
   public void setUrl(String url) {
     if (this.output == null || !(this.output instanceof Frame)) {
-	  this.clearOutput();
+	  this.clear();
       Frame frame = new Frame();
       frame.setSize("100%", "1500px");
       IFrameElement.as(frame.getElement()).setFrameBorder(0);

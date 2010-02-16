@@ -1,23 +1,31 @@
 package org.latexlab.docs.client.parts;
 
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Frame;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class PreviewerPart extends Composite {
 
-  private Frame frame;
+  private VerticalPanel content;
 	
   public PreviewerPart() {
-    frame = new Frame();
-    frame.setSize("100%", "100%");
-	frame.getElement().setPropertyInt("frameBorder", 0);
-	frame.getElement().setPropertyInt("marginwidth", 0);
-	frame.getElement().setPropertyInt("marginheight", 0);
-	initWidget(frame);
+	content = new VerticalPanel();
+    content.setSize("100%", "100%");
+    content.setStylePrimaryName("lab-Previewer");
+	initWidget(content);
+  }
+  
+  public void clear() {
+    content.clear();
   }
 	
-  public void setUrl(String url) {
-	frame.setUrl(url);
+  public void setUrls(String[] urls) {
+	content.clear();
+	for (String url : urls) {
+	  Image img = new Image();
+	  img.setUrl(url);
+	  content.add(img);
+	}
   }
   
 }

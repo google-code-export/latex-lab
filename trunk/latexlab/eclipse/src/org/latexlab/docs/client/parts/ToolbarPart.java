@@ -1,5 +1,7 @@
 package org.latexlab.docs.client.parts;
 
+import java.util.ArrayList;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.GwtEvent;
@@ -17,7 +19,10 @@ import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.commands.CurrentDocumentCompileCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentSaveCommand;
 import org.latexlab.docs.client.commands.SystemNotImplementedCommand;
+import org.latexlab.docs.client.commands.SystemRedoCommand;
+import org.latexlab.docs.client.commands.SystemSelectResourcesCommand;
 import org.latexlab.docs.client.commands.SystemToggleToolbarCommand;
+import org.latexlab.docs.client.commands.SystemUndoCommand;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.events.HasCommandHandlers;
@@ -31,20 +36,28 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
 
   private HandlerManager manager;
   private HorizontalPanel bar;
+  private ArrayList<Widget> buttons;
   
   /**
    * Constructs a Toolbar part.
    */
   public ToolbarPart() {
 	manager = new HandlerManager(this);
+	buttons = new ArrayList<Widget>();
     bar = new HorizontalPanel();
-    bar.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
-    bar.setSpacing(2);
     bar.setHeight("30px");
     bar.setWidth("100%");
     bar.setStylePrimaryName("gdbe-Tools-Panel");
     bar.add(buildToolBar());
     initWidget(bar);
+  }
+  
+  public void setButtonState(int index, boolean down) {
+    Widget btn = buttons.get(index);
+    if (btn instanceof ToggleButton) {
+    	ToggleButton tbtn = (ToggleButton) btn;
+    	tbtn.setDown(down);
+    }
   }
   
   /**
@@ -58,28 +71,30 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
     toolbarPanel.setStyleName("gdbe-Toolbar");
     toolbarPanel.add(buildButton(EditorIcons.icons.Save(), "Save", false, new CurrentDocumentSaveCommand()));
     toolbarPanel.add(buildButton(EditorIcons.icons.Print(), "Print", false, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(EditorIcons.icons.Undo(), "Undo", false, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(EditorIcons.icons.Redo(), "Redo", false, new SystemNotImplementedCommand()));
+    toolbarPanel.add(buildButton(EditorIcons.icons.Undo(), "Undo", false, new SystemUndoCommand()));
+    toolbarPanel.add(buildButton(EditorIcons.icons.Redo(), "Redo", false, new SystemRedoCommand()));
     toolbarPanel.add(buildSeparator());
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon519(), "Compile", false, new CurrentDocumentCompileCommand()));
+    toolbarPanel.add(buildButton(EditorIcons.icons.ItemList(), "Project resources", false, new SystemSelectResourcesCommand()));
+    //toolbarPanel.add(buildButton(EditorIcons.icons.Service(), "Compiler Settings", false, new SystemSpecifyCompilerSettingsCommand()));
+    toolbarPanel.add(buildButton(EditorIcons.icons.Compile(), "Compile", false, new CurrentDocumentCompileCommand()));
     toolbarPanel.add(buildSeparator());
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon254(), "Formatting", true, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon72(), "Comparison", true, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon89(), "White Spaces & Dots", true, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon106(), "Accents", true, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon123(), "Binary Operators", true, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon140(), "Arrows", true, new SystemToggleToolbarCommand(1)));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon157(), "Logical", true, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon174(), "Sets", true, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon191(), "Diverse Symbols", true, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon208(), "Greek Lowercase Letters", true, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon225(), "Greek Uppercase Letters", true, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon242(), "Boundaries", true, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon259(), "Mathematical", true, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon276(), "Subscript & Superscript", true, new SystemNotImplementedCommand()));
-    toolbarPanel.add(buildButton(LatexIcons.icons.Icon293(), "Operators", true, new SystemNotImplementedCommand()));
     toolbarPanel.add(buildButton(LatexIcons.icons.Icon310(), "Above & Below", true, new SystemToggleToolbarCommand(0)));
-    //toolbarPanel.add(buildButton(latexIcons.Icon327(), "Arrows With Captions", true, new SystemNotImplementedCommand()));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon106(), "Accents", true, new SystemToggleToolbarCommand(1)));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon140(), "Arrows", true, new SystemToggleToolbarCommand(2)));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon140()/*Icon327*/, "Arrows With Captions", true, new SystemToggleToolbarCommand(3)));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon123(), "Binary Operators", true, new SystemToggleToolbarCommand(4)));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon242(), "Boundaries", true, new SystemToggleToolbarCommand(5)));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon72(), "Comparison", true, new SystemToggleToolbarCommand(6)));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon191(), "Diverse Symbols", true, new SystemToggleToolbarCommand(7)));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon254(), "Formatting", true, new SystemToggleToolbarCommand(8)));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon208(), "Greek Lowercase Letters", true, new SystemToggleToolbarCommand(9)));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon225(), "Greek Uppercase Letters", true, new SystemToggleToolbarCommand(10)));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon157(), "Logical", true, new SystemToggleToolbarCommand(11)));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon259(), "Mathematical", true, new SystemToggleToolbarCommand(12)));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon293(), "Operators", true, new SystemToggleToolbarCommand(13)));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon174(), "Sets", true, new SystemToggleToolbarCommand(14)));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon276(), "Subscript & Superscript", true, new SystemToggleToolbarCommand(15)));
+    toolbarPanel.add(buildButton(LatexIcons.icons.Icon89(), "White Spaces & Dots", true, new SystemToggleToolbarCommand(16)));
     return toolbarPanel;
   }
   
@@ -101,6 +116,7 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
           CommandEvent.fire(ToolbarPart.this, command);
         }
       });
+      buttons.add(btn);
       return btn;
     }else{
       final PushButton btn = new PushButton(icon.createImage());
@@ -110,6 +126,7 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
           CommandEvent.fire(ToolbarPart.this, command);
         }
       });
+      buttons.add(btn);
       return btn;
     }
   }

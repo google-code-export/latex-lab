@@ -140,7 +140,7 @@ public abstract class Window extends Composite {
   }
   
   public void addClickHandler(ClickHandler handler) {
-    grid.addClickHandler(handler);
+    closeButton.addClickHandler(handler);
   }
   
   public String getId() {

@@ -235,7 +235,6 @@ public interface LatexIconsImageBundle extends ImageBundle {
   public AbstractImagePrototype Icon5();
   public AbstractImagePrototype Icon50();
   public AbstractImagePrototype Icon51();
-  public AbstractImagePrototype Icon519();
   public AbstractImagePrototype Icon56();
   public AbstractImagePrototype Icon57();
   public AbstractImagePrototype Icon58();

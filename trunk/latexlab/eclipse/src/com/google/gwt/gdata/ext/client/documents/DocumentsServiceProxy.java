@@ -7,7 +7,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 /**
  * The GData remote service.
  */
-@RemoteServiceRelativePath("gwt-gdata-ext-rpc")
+@RemoteServiceRelativePath("gdata-rpc")
 public interface DocumentsServiceProxy extends RemoteService {
   
   /**

@@ -49,6 +49,10 @@ public class FileSystem{
     }
   }
   
+  public static String getAuthenticationToken() {
+	  return User.checkLogin(DOCS_SCOPE);
+  }
+  
   public static void deleteDocument(final String id,
       final AsyncCallback<FileSystemEntry> callback) {
     GDataRequestParameters pars = GDataRequestParameters.newInstance();

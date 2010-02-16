@@ -59,6 +59,7 @@ public class FileListDialog extends Dialog {
       }
     });
     documentsPanel = new ScrollPanel(new VerticalPanel());
+    mainPanel.getFlexCellFormatter().setStyleName(1, 0, "");
     leftPanel = new VerticalPanel();
     leftPanel.setWidth("100px");
     leftPanel.setVerticalAlignment(VerticalPanel.ALIGN_TOP);
@@ -133,7 +134,7 @@ public class FileListDialog extends Dialog {
     final Anchor signoutLink = new Anchor("Sign Out");
     signoutLink.addClickHandler(new ClickHandler(){
       public void onClick(ClickEvent event) {
-    	CommandEvent.fire(FileListDialog.this, new SystemSignOutCommand("/"));
+    	CommandEvent.fire(FileListDialog.this, new SystemSignOutCommand("/splash.html"));
       }
     });
     Anchor newDocumentLink = new Anchor("New Document", "/docs", "_blank");
