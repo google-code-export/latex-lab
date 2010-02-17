@@ -1,6 +1,12 @@
-= POC Versions =
-A few different implementation approaches have been tested. These are available here only for completion:
+#summary Project details
+#labels Phase-Design,Featured
 
-http://gdocs.latexlab.org
+== Implementation ==
+LaTexLab will build on top of the [http://code.google.com/p/gdbe/ Google Docs Base Editor (GDBE)]. The client-side will use plain [http://code.google.com/webtoolkit/overview.html GWT]. On the server will sit the Python GData libraries for Google Docs integration.
 
-http://www.latexlab.org
+For compiling LaTeX documents, the [http://code.google.com/p/common-latex-service-interface/ Common LaTeX Service Interface (CLSI)] is used.
+
+You can contribute to this project by contributing to the [http://code.google.com/p/gdbe/ GDBE] and [http://code.google.com/p/common-latex-service-interface/ CLSI] projects as well.
+
+== Composition ==
+<img src="http://www.bloo.us/media/images/latex-lab-composition.png" />
