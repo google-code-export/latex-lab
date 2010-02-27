@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.commands.CurrentDocumentCompileCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentSaveCommand;
+import org.latexlab.docs.client.commands.ExistingDocumentOpenCommand;
 import org.latexlab.docs.client.commands.SystemNotImplementedCommand;
 import org.latexlab.docs.client.commands.SystemRedoCommand;
 import org.latexlab.docs.client.commands.SystemSelectResourcesCommand;
@@ -69,8 +70,10 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
     HorizontalPanel toolbarPanel = new HorizontalPanel();
     toolbarPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
     toolbarPanel.setStyleName("gdbe-Toolbar");
+    toolbarPanel.add(buildButton(EditorIcons.icons.OpenDocument(), "Open Document", false, new ExistingDocumentOpenCommand()));
     toolbarPanel.add(buildButton(EditorIcons.icons.Save(), "Save", false, new CurrentDocumentSaveCommand()));
     toolbarPanel.add(buildButton(EditorIcons.icons.Print(), "Print", false, new SystemNotImplementedCommand()));
+    toolbarPanel.add(buildSeparator());
     toolbarPanel.add(buildButton(EditorIcons.icons.Undo(), "Undo", false, new SystemUndoCommand()));
     toolbarPanel.add(buildButton(EditorIcons.icons.Redo(), "Redo", false, new SystemRedoCommand()));
     toolbarPanel.add(buildSeparator());

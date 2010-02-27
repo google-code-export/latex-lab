@@ -28,6 +28,7 @@ import org.latexlab.docs.client.commands.SystemReuseToolbarWindowsCommand;
 import org.latexlab.docs.client.commands.SystemSelectResourcesCommand;
 import org.latexlab.docs.client.commands.SystemSpecifyCompilerSettingsCommand;
 import org.latexlab.docs.client.commands.SystemUndoCommand;
+import org.latexlab.docs.client.commands.SystemUploadDocumentsCommand;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.events.HasCommandHandlers;
@@ -95,6 +96,8 @@ public class MenuPart extends Composite implements HasCommandHandlers {
     addMenuItem(fileMenu, EditorIcons.Blank(), "Rename...", new CurrentDocumentRenameCommand());
     addMenuItem(fileMenu, EditorIcons.Blank(), "Delete...", new CurrentDocumentDeleteCommand());
     addMenuItem(fileMenu, EditorIcons.Blank(), "Revision History", new CurrentDocumentRevisionHistoryCommand());
+    fileMenu.addSeparator();
+    addMenuItem(fileMenu, EditorIcons.UploadDocument(), "Upload Files...", new SystemUploadDocumentsCommand());
     fileMenu.addSeparator();
     addMenuItem(fileMenu, EditorIcons.Print(), "Print...", new SystemPrintCommand());
     this.menu.addItem("File", fileMenu);

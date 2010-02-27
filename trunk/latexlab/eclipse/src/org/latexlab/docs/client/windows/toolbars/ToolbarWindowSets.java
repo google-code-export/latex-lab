@@ -4,7 +4,7 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.resources.icons.latex.LatexIcons;
 import org.latexlab.docs.client.windows.ToolbarWindow;
 
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 public class ToolbarWindowSets extends ToolbarWindow{
 
@@ -14,7 +14,7 @@ public class ToolbarWindowSets extends ToolbarWindow{
   }
 
   private void buildToolBar() {
-	HorizontalPanel panel = (HorizontalPanel) contentWidget;
+	FlowPanel panel = (FlowPanel) contentWidget;
     panel.setStyleName("gdbe-Toolbar");
     panel.add(buildButton(LatexIcons.icons.Icon349(), "Element of", false, new SystemPasteCommand("\\in")));
     panel.add(buildButton(LatexIcons.icons.Icon366(), "Not element of", false, new SystemPasteCommand("\\notin")));

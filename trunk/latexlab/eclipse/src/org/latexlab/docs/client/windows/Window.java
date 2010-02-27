@@ -59,6 +59,7 @@ public abstract class Window extends Composite {
     }
   }
 
+  protected static final int WINDOW_ZINDEX = 3;
   protected HandlerManager manager;
   public PickupDragController registeredDragController;
   protected int contentHeight, contentWidth,
@@ -93,8 +94,9 @@ public abstract class Window extends Composite {
     buttons = new HorizontalPanel();
     buttons.setStylePrimaryName("Buttons");
     buttons.setWidth("36px");
-    buttons.setSpacing(0);
+    buttons.setSpacing(4);
     buttons.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
+    buttons.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
     buttons.add(closeButton);
     
     titleLabel = new Label(title);
@@ -136,7 +138,7 @@ public abstract class Window extends Composite {
     grid.setCellPadding(0);
     grid.setStylePrimaryName("lab-Window");
     initWidget(grid);
-	this.getElement().getStyle().setZIndex(3);
+	this.getElement().getStyle().setZIndex(WINDOW_ZINDEX);
   }
   
   public void addClickHandler(ClickHandler handler) {

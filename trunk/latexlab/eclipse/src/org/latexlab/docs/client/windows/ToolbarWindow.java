@@ -5,13 +5,17 @@ import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.events.HasCommandHandlers;
 
+import com.google.gwt.dom.client.Style.BorderStyle;
+import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.dom.client.Style.Overflow;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
@@ -21,7 +25,9 @@ public abstract class ToolbarWindow extends Window implements HasCommandHandlers
   private HandlerManager manager;
 	
   public ToolbarWindow(String title) {
-    super(title, new HorizontalPanel(), false);
+    super(title, new FlowPanel(), false);
+    FlowPanel panel = (FlowPanel)this.contentWidget;
+    panel.getElement().getStyle().setOverflow(Overflow.HIDDEN);
     manager = new HandlerManager(this);
   }
   
@@ -45,6 +51,7 @@ public abstract class ToolbarWindow extends Window implements HasCommandHandlers
   protected Widget buildButton(AbstractImagePrototype icon, String title, boolean isToggle, final Command command){
     if(isToggle){
       final ToggleButton btn = new ToggleButton(icon.createImage());
+      btn.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
       btn.setTitle(title);
       btn.addClickHandler(new ClickHandler(){
         public void onClick(ClickEvent event) {
@@ -54,6 +61,7 @@ public abstract class ToolbarWindow extends Window implements HasCommandHandlers
       return btn;
     }else{
       final PushButton btn = new PushButton(icon.createImage());
+      btn.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
       btn.setTitle(title);
       btn.addClickHandler(new ClickHandler(){
         public void onClick(ClickEvent event) {
@@ -62,6 +70,12 @@ public abstract class ToolbarWindow extends Window implements HasCommandHandlers
       });
       return btn;
     }
+  }
+  
+  @Override
+  public void onResize(int width, int height) {
+	FlowPanel panel = (FlowPanel) this.contentWidget;
+	panel.setPixelSize(width, height);
   }
   
   @Override

@@ -27,6 +27,8 @@ public interface EditorIconsImageBundle extends ImageBundle {
 	public AbstractImagePrototype Document();
 	public AbstractImagePrototype DownArrowBlue();
 	public AbstractImagePrototype DownArrowWhite();
+	public AbstractImagePrototype File();
+	public AbstractImagePrototype Folder();
 	public AbstractImagePrototype Font();
 	public AbstractImagePrototype Footnote();
 	public AbstractImagePrototype HorizontalLine();
@@ -37,6 +39,7 @@ public interface EditorIconsImageBundle extends ImageBundle {
 	public AbstractImagePrototype Logo();
 	public AbstractImagePrototype LogoLarge();
 	public AbstractImagePrototype LatexLabLogoLarge();
+	public AbstractImagePrototype OpenDocument();
 	public AbstractImagePrototype OrederedList();
 	public AbstractImagePrototype PageBreak();
 	public AbstractImagePrototype Paste();
@@ -66,4 +69,5 @@ public interface EditorIconsImageBundle extends ImageBundle {
 	public AbstractImagePrototype Underline();
 	public AbstractImagePrototype Undo();
 	public AbstractImagePrototype UnorderedList();
+	public AbstractImagePrototype UploadDocument();
 }

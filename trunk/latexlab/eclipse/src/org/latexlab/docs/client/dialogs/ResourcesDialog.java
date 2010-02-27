@@ -14,12 +14,11 @@ import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-import org.latexlab.docs.client.commands.ResourceWindowListDocumentsCommand;
+import org.latexlab.docs.client.commands.ResourceDialogListDocumentsCommand;
 import org.latexlab.docs.client.commands.SystemSetResourcesCommand;
-import org.latexlab.docs.client.data.FileSystemEntry;
-import org.latexlab.docs.client.data.FileSystemEntry.Types;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
+import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
 
 /**
  * A dialog window displaying details of the application.
@@ -39,14 +38,14 @@ public class ResourcesDialog extends Dialog {
   private VerticalPanel content;
   private Tree tree;
   private Button ok, cancel;
-  private HashMap<CheckBox, FileSystemEntry> entries;
+  private HashMap<CheckBox, DocumentServiceEntry> entries;
 
   /**
    * Constructs an About dialog window.
    */
   public ResourcesDialog() {
     super("Project Resources", true);
-    entries = new HashMap<CheckBox, FileSystemEntry>();
+    entries = new HashMap<CheckBox, DocumentServiceEntry>();
     ClickHandler cancelHandler = new ClickHandler() {
       public void onClick(ClickEvent event) {
         hide();
@@ -66,7 +65,7 @@ public class ResourcesDialog extends Dialog {
     ok = new Button("OK", new ClickHandler(){
       public void onClick(ClickEvent event) {
         hide();
-        ArrayList<FileSystemEntry> resources = getSelectedResources();
+        ArrayList<DocumentServiceEntry> resources = getSelectedResources();
         CommandEvent.fire(ResourcesDialog.this, new SystemSetResourcesCommand(resources));
       }
     });
@@ -83,55 +82,31 @@ public class ResourcesDialog extends Dialog {
   public void show() {
     super.show();
     if (tree.getItemCount() == 0) {
-      CommandEvent.fire(this, new ResourceWindowListDocumentsCommand());
+      CommandEvent.fire(this, new ResourceDialogListDocumentsCommand(true));
     }
   }
 
-  public void setEntries(ArrayList<FileSystemEntry> entries) {
-	HashMap<String, TreeItem> added = new HashMap<String, TreeItem>();
-	HashMap<String, ArrayList<TreeItem>> pending = new HashMap<String, ArrayList<TreeItem>>();
+  public void setEntries(DocumentServiceEntry[] entries, String excludeId) {
 	TreeItem root = new TreeItem("Home");
-    for (FileSystemEntry entry : entries) {
-      final TreeItem item;
-      if (entry.getType() == Types.FOLDER) {
-        item = new TreeItem(new Label(entry.getName()));
-      } else {
-        CheckBox box = new CheckBox(entry.getName());
-    	item = new TreeItem(box);
-        this.entries.put(box, entry);
+    for (DocumentServiceEntry entry : entries) {
+      if (excludeId != null && entry.getDocumentId().equals(excludeId)) {
+        continue;
       }
-      if (entry.getParent() == null) {
-        root.addItem(item);
-      } else {
-    	if (added.containsKey(entry.getParent())) {
-    	  added.get(entry.getParent()).addItem(item);
-    	} else {
-    	  if (!pending.containsKey(entry.getParent())) {
-    	    pending.put(entry.getParent(), new ArrayList<TreeItem>());
-    	  }
-    	  pending.get(entry.getParent()).add(item);
-    	}
-      }
-      if (entry.getType() == Types.FOLDER) {
-    	added.put(entry.getName(), item);
-    	if (pending.containsKey(entry.getName())) {
-    	  for (TreeItem ti : pending.get(entry.getName())) {
-    	    item.addItem(ti);
-    	  }
-    	  pending.remove(entry.getName());
-    	}
-      }
+      CheckBox box = new CheckBox(entry.getTitle());
+	  TreeItem item = new TreeItem(box);
+	  root.addItem(item);
+      this.entries.put(box, entry);
     }
     tree.clear();
     tree.addItem(root);
     root.setState(true);
   }
   
-  private ArrayList<FileSystemEntry> getSelectedResources() {
-	ArrayList<FileSystemEntry> selected = new ArrayList<FileSystemEntry>();
+  private ArrayList<DocumentServiceEntry> getSelectedResources() {
+	ArrayList<DocumentServiceEntry> selected = new ArrayList<DocumentServiceEntry>();
 	for (CheckBox box : entries.keySet()) {
 	  if (box.getValue()) {
-	    FileSystemEntry entry = entries.get(box);
+	    DocumentServiceEntry entry = entries.get(box);
 	    selected.add(entry);
 	  }
     }

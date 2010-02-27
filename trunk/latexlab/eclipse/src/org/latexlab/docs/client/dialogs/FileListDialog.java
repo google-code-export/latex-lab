@@ -1,5 +1,8 @@
 package org.latexlab.docs.client.dialogs;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -10,22 +13,23 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.Tree;
+import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-import java.util.ArrayList;
-
-import org.latexlab.docs.client.commands.FileDialogListStarredDocumentsCommand;
+import org.latexlab.docs.client.commands.FileDialogListDocumentsCommand;
 import org.latexlab.docs.client.commands.FileDialogStarDocumentCommand;
 import org.latexlab.docs.client.commands.FileDialogUnstarDocumentCommand;
 import org.latexlab.docs.client.commands.SystemSignOutCommand;
-import org.latexlab.docs.client.data.FileSystemEntry;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
+import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
 import org.latexlab.docs.client.resources.icons.EditorIcons;
 
 /**
@@ -43,7 +47,7 @@ public class FileListDialog extends Dialog {
     return instance;
   }
   
-  private ArrayList<FileSystemEntry> entries;
+  private DocumentServiceEntry[] entries;
   private VerticalPanel leftPanel, rightPanel;
   private ScrollPanel linksPanel, documentsPanel;
   private TabBar tabs;
@@ -105,7 +109,7 @@ public class FileListDialog extends Dialog {
   private void loadEntries() {
     documentsPanel.clear();
     documentsPanel.add(new Label("Loading..."));
-    CommandEvent.fire(this, new FileDialogListStarredDocumentsCommand());
+    CommandEvent.fire(this, new FileDialogListDocumentsCommand(true));
   }
   
   /**
@@ -115,11 +119,12 @@ public class FileListDialog extends Dialog {
     tabs = new TabBar();
     tabs.addTab("Starred Documents");
     tabs.addTab("All Documents");
+    tabs.addTab("Current Project");
     tabs.selectTab(0);
     tabs.setWidth("100%");
     tabs.addSelectionHandler(new SelectionHandler<Integer>(){
       public void onSelection(SelectionEvent<Integer> event) {
-        showEntries(event.getSelectedItem() == 0);
+        showEntries();
       }
     });
     setTopWidget(tabs);
@@ -137,6 +142,16 @@ public class FileListDialog extends Dialog {
     	CommandEvent.fire(FileListDialog.this, new SystemSignOutCommand("/splash.html"));
       }
     });
+    Anchor refreshLink = new Anchor("Refresh");
+    refreshLink.addClickHandler(new ClickHandler() {
+		@Override
+		public void onClick(ClickEvent event) {
+		  rightPanel.clear();
+		  CommandEvent.fire(FileListDialog.this, new FileDialogListDocumentsCommand(false));
+		  event.preventDefault();
+		  event.stopPropagation();
+		}
+    });
     Anchor newDocumentLink = new Anchor("New Document", "/docs", "_blank");
     Anchor acLink = new Anchor("Google Access Control", "https://www.google.com/accounts/IssuedAuthSubTokens", "_blank");
     Anchor docsLink = new Anchor("Google Documents", "http://docs.google.com/", "_blank");
@@ -145,6 +160,7 @@ public class FileListDialog extends Dialog {
     Anchor issuesLink = new Anchor("Issue Tracker", "http://code.google.com/p/gdbe/issues/list", "_blank");
     Anchor downloadsLink = new Anchor("Downloads", "http://code.google.com/p/gdbe/downloads/list", "_blank");
     panel.add(new HTML("<br /><b>Actions</b>"));
+    panel.add(refreshLink);
     panel.add(newDocumentLink);
     panel.add(signoutLink);
     panel.add(new HTML("<br /><b>Links</b>"));
@@ -166,6 +182,7 @@ public class FileListDialog extends Dialog {
    */
   private void resize() {
     int targetHeight = Window.getClientHeight() - 180;
+    rightPanel.setPixelSize(500, targetHeight);
     documentsPanel.setPixelSize(500, targetHeight);
     linksPanel.setPixelSize(120, targetHeight);
   }
@@ -175,21 +192,33 @@ public class FileListDialog extends Dialog {
    * 
    * @param documents the documents to display
    */
-  public void setEntries(ArrayList<FileSystemEntry> entries) {
+  public void setEntries(DocumentServiceEntry[] entries) {
     this.entries = entries;
   }
   
-  public void showEntries(boolean starredOnly) {
-    rightPanel.clear();
+  public void showEntries() {
+	switch(tabs.getSelectedTab()) {
+	  case 0:
+		showQuickView();
+	    break;
+	  case 1:
+		showExplorerView();
+		break;
+	  case 2:
+		break;
+	}
+  }
+  
+  private void showQuickView() {
+	rightPanel.clear();
     VerticalPanel panel = new VerticalPanel();
     panel.setStylePrimaryName("gdbe-Explorer-Documents");
     int totalEntries = 0;
-    for (FileSystemEntry entry : entries) {
-      if (entry.getType() != FileSystemEntry.Types.FILE ||
-          starredOnly && !entry.isStarred()) {
+    for (DocumentServiceEntry entry : entries) {
+      if (!entry.isStarred()) {
         continue;
       }
-      final String id = entry.getId();
+      final String id = entry.getDocumentId();
       FlexTable docTable = new FlexTable();
       docTable.insertRow(0);
       docTable.insertCell(0, 0);
@@ -205,9 +234,9 @@ public class FileListDialog extends Dialog {
       docTable.insertCell(2, 2);
       docTable.setStylePrimaryName("gdbe-Explorer-Document");
       Anchor link = new Anchor();
-      link.setText(entry.getName());
+      link.setText(entry.getTitle());
       link.setTarget("_blank");
-      link.setHref("/docs?docid=" + entry.getId());
+      link.setHref("/docs?docid=" + entry.getDocumentId());
       ToggleButton star = new ToggleButton(
           EditorIcons.icons.StarEmpty().createImage(),
           EditorIcons.icons.StarFull().createImage());
@@ -218,31 +247,92 @@ public class FileListDialog extends Dialog {
           if (btn.isDown()) {
             CommandEvent.fire(FileListDialog.this, new FileDialogStarDocumentCommand(id));
           } else {
-              CommandEvent.fire(FileListDialog.this, new FileDialogUnstarDocumentCommand(id));
+            CommandEvent.fire(FileListDialog.this, new FileDialogUnstarDocumentCommand(id));
           }
         }
       });
-      Label info = new Label(entry.getModified().toString() + " by " + entry.getModifiedBy());
+      Label info = new Label(entry.getEdited().toString() + " by " + entry.getEditor());
       info.setStylePrimaryName("gdbe-Explorer-Document-Info");
       docTable.setWidget(0, 0, star);
       docTable.setWidget(0, 1, EditorIcons.icons.Document().createImage());
       docTable.setWidget(0, 2, link);
       docTable.setWidget(1, 2, info);
-      Label folder = new Label(entry.getParent());
-      folder.setStylePrimaryName("gdbe-Explorer-Document-Folder");
-      docTable.setWidget(2, 2, folder);
+      if (entry.getFolders().length > 0) {
+        Label folder = new Label(entry.getFolders()[0]);
+        folder.setStylePrimaryName("gdbe-Explorer-Document-Folder");
+        docTable.setWidget(2, 2, folder);
+      }
       panel.add(docTable);
       totalEntries++;
     }
     if (totalEntries == 0) {
-      if (starredOnly) {
-        panel.add(new Label("You have no starred documents."));
-      } else {
-        panel.add(new Label("No documents available."));
-      }
+      panel.add(new Label("You have no starred documents."));
     }
     documentsPanel = new ScrollPanel(panel);
     rightPanel.add(documentsPanel);
     resize();
+  }
+  
+  private void showExplorerView() {
+    rightPanel.clear();
+    Tree tree = new Tree();
+    HashMap<String, ArrayList<DocumentServiceEntry>> hier = getEntryHierarchy();
+    if (hier.containsKey("")) {
+      for (DocumentServiceEntry entry : hier.get("")) {
+    	tree.addItem(getEntryTreeItem(entry, hier));
+      }
+    } else {
+      //no items
+    }
+    documentsPanel = new ScrollPanel(tree);
+    rightPanel.add(documentsPanel);
+    resize();
+  }
+  
+  private TreeItem getEntryTreeItem(DocumentServiceEntry entry,
+      HashMap<String, ArrayList<DocumentServiceEntry>> hierarchy) {
+	HorizontalPanel panel = new HorizontalPanel();
+	panel.setSpacing(4);
+	String type = entry.getType();
+	if (type.equalsIgnoreCase("folder")) {
+	  panel.add(EditorIcons.icons.Folder().createImage());
+	  panel.add(new Label(entry.getTitle()));
+	} else if (type.equalsIgnoreCase("document")) {
+	  panel.add(EditorIcons.icons.Document().createImage());
+	  Anchor link = new Anchor();
+      link.setText(entry.getTitle());
+      link.setTarget("_blank");
+      link.setHref("/docs?docid=" + entry.getDocumentId());
+	  panel.add(link);
+	} else {
+	  panel.add(EditorIcons.icons.File().createImage());
+	  panel.add(new Label(entry.getTitle()));
+	}
+	TreeItem item = new TreeItem(panel);
+	if (type.equalsIgnoreCase("folder")) {
+	  if (hierarchy.containsKey(entry.getTitle())) {
+	    ArrayList<DocumentServiceEntry> children = hierarchy.get(entry.getTitle());
+	    for (DocumentServiceEntry child : children) {
+	      item.addItem(getEntryTreeItem(child, hierarchy));
+	    }
+	  }
+	}
+	return item;
+  }
+  
+  private HashMap<String, ArrayList<DocumentServiceEntry>> getEntryHierarchy() {
+	HashMap<String, ArrayList<DocumentServiceEntry>> map =
+	    new HashMap<String, ArrayList<DocumentServiceEntry>>();
+	for (DocumentServiceEntry entry : entries) {
+	  String parent = "";
+	  if (entry.getFolders().length > 0) {
+		parent = entry.getFolders()[0];
+	  }
+	  if (!map.containsKey(parent)) {
+		map.put(parent, new ArrayList<DocumentServiceEntry>());
+	  }
+	  map.get(parent).add(entry);
+	}
+	return map;
   }
 }

@@ -2,16 +2,16 @@ package org.latexlab.docs.client;
 
 import java.util.ArrayList;
 
-import org.latexlab.docs.client.data.FileSystemEntry;
+import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
 
 public class DocsEditorSettings {
   
   private boolean reuseToolbarWindows = true;
   private String clsiServiceUrl, clsiServiceToken, clsiServiceId, clsiAsyncPath, compilerName;
-  private ArrayList<FileSystemEntry> resources;
+  private ArrayList<DocumentServiceEntry> resources;
 	
   public DocsEditorSettings() {
-    resources = new ArrayList<FileSystemEntry>();
+    resources = new ArrayList<DocumentServiceEntry>();
   }
 
   public boolean isReuseToolbarWindows() {
@@ -22,11 +22,11 @@ public class DocsEditorSettings {
     this.reuseToolbarWindows = reuseToolbarWindows;
   }
 
-  public ArrayList<FileSystemEntry> getResources() {
+  public ArrayList<DocumentServiceEntry> getResources() {
     return resources;
   }
 
-  public void setResources(ArrayList<FileSystemEntry> resources) {
+  public void setResources(ArrayList<DocumentServiceEntry> resources) {
     this.resources = resources;
   }
   

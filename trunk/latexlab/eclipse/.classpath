@@ -11,8 +11,8 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gdata-media-1.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/google-collect-1.0-rc1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-dnd-3.0.0.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-gdata.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-incubator-july-14-2009.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/gae-clsi-client.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/jre6/lib/plugin.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-clsi.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

@@ -21,7 +21,8 @@ import com.google.gwt.user.client.ui.Widget;
  * A base dialog box implementation with glass panel support and close button.
  */
 public abstract class Dialog extends DialogBox implements HasCommandHandlers {
-	
+
+  protected final int DIALOG_ZINDEX = 5;
   protected HandlerManager manager;
   protected FlexTable mainPanel;
   protected Label titleLabel;
@@ -37,7 +38,7 @@ public abstract class Dialog extends DialogBox implements HasCommandHandlers {
 	manager = new HandlerManager(this);
     setModal(modal);
     this.getElement().getStyle().setZIndex(5);
-    GlassPanel.setGlassPanelVisibility(false, getZIndex()-1);
+    GlassPanel.setGlassPanelVisibility(false, DIALOG_ZINDEX - 1);
     titleLabel = new Label();
     titleLabel.setText(title);
     closeButton = new PushButton(EditorIcons.icons.CloseBlue().createImage());
@@ -73,7 +74,7 @@ public abstract class Dialog extends DialogBox implements HasCommandHandlers {
   @Override
   public void show() {
     if (this.isModal()) {
-      GlassPanel.setGlassPanelVisibility(true, getZIndex()-1);
+      GlassPanel.setGlassPanelVisibility(true, DIALOG_ZINDEX-1);
     }
     super.show();
   }
@@ -84,7 +85,7 @@ public abstract class Dialog extends DialogBox implements HasCommandHandlers {
   @Override
   public void hide() {
     if (this.isShowing() && this.isModal()) {
-      GlassPanel.setGlassPanelVisibility(false, getZIndex()-1);
+      GlassPanel.setGlassPanelVisibility(false, DIALOG_ZINDEX-1);
     }
     super.hide();
   }
@@ -126,14 +127,6 @@ public abstract class Dialog extends DialogBox implements HasCommandHandlers {
    */
   public String getTitle() {
     return titleLabel.getText();
-  }
-  
-  private int getZIndex() {
-	  String z = this.getElement().getStyle().getZIndex();
-	  if (z != null && !z.equals("")) {
-		  return Integer.parseInt(z);
-	  }
-	  return 0;
   }
   
   /**

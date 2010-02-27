@@ -8,29 +8,19 @@
   <!-- Servlets -->
   
   <servlet>
-    <servlet-name>LatexLabContentServlet</servlet-name>
-    <servlet-class>org.latexlab.docs.server.LatexLabContentServlet</servlet-class>
-  </servlet>
-  
-  <servlet>
     <servlet-name>LatexLabEditorServlet</servlet-name>
     <servlet-class>org.latexlab.docs.server.LatexLabEditorServlet</servlet-class>
   </servlet>
-  
+
   <servlet>
-    <servlet-name>ClsiServiceProxy</servlet-name>
-    <servlet-class>org.latexlab.clsi.server.ClsiServiceProxyImpl</servlet-class>
+    <servlet-name>DocumentsService</servlet-name>
+    <servlet-class>org.latexlab.docs.server.gdocs.DocumentServiceImpl</servlet-class>
   </servlet>
 
   <servlet>
-    <servlet-name>DocumentsServiceProxy</servlet-name>
-    <servlet-class>com.google.gwt.gdata.ext.server.documents.DocumentsServiceProxyImpl</servlet-class>
+    <servlet-name>LatexLabService</servlet-name>
+    <servlet-class>org.latexlab.docs.server.LatexLabServiceImpl</servlet-class>
   </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>LatexLabContentServlet</servlet-name>
-    <url-pattern>/fetch</url-pattern>
-  </servlet-mapping>
   
   <servlet-mapping>
     <servlet-name>LatexLabEditorServlet</servlet-name>
@@ -38,24 +28,30 @@
   </servlet-mapping>
   
   <servlet-mapping>
-    <servlet-name>DocumentsServiceProxy</servlet-name>
-    <url-pattern>/editor/gdata-rpc</url-pattern>
+    <servlet-name>DocumentsService</servlet-name>
+    <url-pattern>/editor/doc-rpc</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
-    <servlet-name>DocumentsServiceProxy</servlet-name>
-    <url-pattern>/gdata-rpc</url-pattern>
+    <servlet-name>DocumentsService</servlet-name>
+    <url-pattern>/doc-rpc</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
-    <servlet-name>ClsiServiceProxy</servlet-name>
-    <url-pattern>/editor/clsi-rpc</url-pattern>
+    <servlet-name>LatexLabService</servlet-name>
+    <url-pattern>/editor/lab-rpc</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
-    <servlet-name>ClsiServiceProxy</servlet-name>
-    <url-pattern>/clsi-rpc</url-pattern>
+    <servlet-name>LatexLabService</servlet-name>
+    <url-pattern>/lab-rpc</url-pattern>
   </servlet-mapping>
+  
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>splash.html</welcome-file>
+  </welcome-file-list>
+  
   <!--
   <security-constraint>
     <web-resource-collection>

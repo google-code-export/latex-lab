@@ -36,7 +36,7 @@ public class CompilerSettingsDialog extends Dialog {
 
   private VerticalPanel content;
   private FlexTable settingsPanel;
-  private RadioButton useDefault, useCustom;
+  private RadioButton useDefault, useMikTex, useTexLive, useCustom;
   private TextBox clsiServiceUrl, clsiServiceToken, clsiAsyncPath, compilerName;
   private Button ok, cancel;
   
@@ -68,7 +68,17 @@ public class CompilerSettingsDialog extends Dialog {
     useCustom = new RadioButton("usage");
     useCustom.setHTML("Use a third party <a href=\"http://code.google.com/p/common-latex-service-interface/\" target=\"_blank\">CLSI</a> provider.");
     useCustom.addValueChangeHandler(changeHandler);
+    useMikTex = new RadioButton("usage");
+    useMikTex.setHTML("Use a local <a href=\"http://miktex.org/\" target=\"_blank\">MikTeX</a> installation.");
+    useMikTex.addValueChangeHandler(changeHandler);
+    useMikTex.setEnabled(false);
+    useTexLive = new RadioButton("usage");
+    useTexLive.setHTML("Use a local <a href=\"http://www.tug.org/texlive/\" target=\"_blank\">TeX Live</a> installation.");
+    useTexLive.addValueChangeHandler(changeHandler);
+    useTexLive.setEnabled(false);
     usage.add(useDefault);
+    usage.add(useMikTex);
+    usage.add(useTexLive);
     usage.add(useCustom);
     content.add(usage);
     settingsPanel = new FlexTable();
