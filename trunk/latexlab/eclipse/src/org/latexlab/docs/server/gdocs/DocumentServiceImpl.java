@@ -70,7 +70,7 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
   public DocumentServiceEntry getNewDocument() {
     UserService userService = UserServiceFactory.getUserService();
     DocumentServiceEntry doc = new DocumentServiceEntry();
-    doc.setTitle("Untitled");
+    doc.setTitle("Untitled Document");
     doc.setAuthor(userService.getCurrentUser().getEmail());
     doc.setEditor(userService.getCurrentUser().getNickname());
     return doc;
@@ -150,7 +150,6 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
   public boolean setDocumentContents(String documentId, String etag, String contents) throws DocumentServiceException {
     DocsService svc = getDocsService();
     svc.getRequestFactory().setHeader("If-Match", etag);
-    contents = encodeDocumentContents(contents);
     MediaByteArraySource source = new MediaByteArraySource(contents.getBytes(), "text/plain");
     String editMediaUri = DOCS_SCOPE + "default/media/document%3A" + documentId;
     try {
@@ -321,6 +320,14 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
     return null;
   }
   
+  public DocumentUser setUser(String email, String token) {
+	AuthenticationToken authToken = store.getUserToken(email);
+	if (authToken == null) {
+	  store.setUserToken(email, token);
+	}
+	return getUser();
+  }
+  
   /**
    * Ends the current user's session
    * 
@@ -395,29 +402,17 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
     doc.setFolders(folders);
     return doc;
   }
-  
-  /**
-   * Encodes a string for document contents.
-   * The GData export script doesn't like "<" and ">" and replaces each of these characters
-   * with the following bytes: EF BF BD EF BF BD
-   * Since these characters are lost, use this function to encode them in a reversible manner.
-   * Add other encode logic to this function as needed.
-   * 
-   * @param value the value to encode
-   * @return the encoded value
-   */
-  private String encodeDocumentContents(String value) {
-    return value.replace("<", "&lt;").replace(">", "&gt;");
-  }
 
   /**
    * Decodes a string for document contents.
+   * The GData export script doesn't like "<" and ">" and replaces each of these characters
+   * with UTF-8 double brackets "«" (\u00C2\u00AB) and "»" (\u00C2\u00BB).
    * 
    * @param value the value to decode
    * @return the decoded value
    */
   private String decodeDocumentContents(String value) {
-    return value.replace("&lt;", "<").replace("&gt;", ">");
+    return value.replace("\u00C2\u00AB", "<").replace("\u00C2\u00BB", ">");
   }
   
   /**

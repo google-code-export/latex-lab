@@ -117,6 +117,8 @@ public interface DocumentService extends RemoteService {
    */
   DocumentUser getUser();
   
+  DocumentUser setUser(String email, String token);
+  
   /**
    * Ends the current user's session
    * 

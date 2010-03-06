@@ -106,6 +106,8 @@ public interface DocumentServiceAsync {
    */
   void getUser(AsyncCallback<DocumentUser> callback);
   
+  void setUser(String email, String token, AsyncCallback<DocumentUser> callback);
+  
   /**
    * Ends the current user's session
    * 

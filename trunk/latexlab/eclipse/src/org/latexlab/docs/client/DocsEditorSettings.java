@@ -9,6 +9,7 @@ public class DocsEditorSettings {
   private boolean reuseToolbarWindows = true;
   private String clsiServiceUrl, clsiServiceToken, clsiServiceId, clsiAsyncPath, compilerName;
   private ArrayList<DocumentServiceEntry> resources;
+  private DocumentServiceEntry primaryResource;
 	
   public DocsEditorSettings() {
     resources = new ArrayList<DocumentServiceEntry>();
@@ -70,4 +71,12 @@ public class DocsEditorSettings {
     this.compilerName = compilerName;
   }
 
+  public DocumentServiceEntry getPrimaryResource() {
+    return primaryResource;
+  }
+
+  public void setPrimaryResource(DocumentServiceEntry primaryResource) {
+    this.primaryResource = primaryResource;
+  }
+  
 }

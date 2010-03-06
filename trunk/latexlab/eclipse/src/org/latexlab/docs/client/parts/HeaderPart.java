@@ -100,6 +100,7 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
     title.addClickHandler(this);
     info = new HTML();
     info.setStylePrimaryName("gdbe-Header-Info");
+    info.setHTML("not saved");
     titlePanel.add(title);
     titlePanel.add(info);
     links = new HorizontalPanel();

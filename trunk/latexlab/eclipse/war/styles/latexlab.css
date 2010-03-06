@@ -27,6 +27,24 @@
 .gwt-VerticalSplitPanel .vsplitter img{
 	display: none;
 }
+/* Tree */
+.gwt-Tree .gwt-TreeItem {
+  font-size: 12px;
+  padding: 1px 0px;
+  margin: 0px;
+  white-space: nowrap;
+  cursor: hand;
+  cursor: pointer;
+}
+.gwt-Tree .gwt-TreeItem * {
+  font-size: 12px;
+}
+.gwt-Tree .gwt-TreeItem-selected {
+}
+.gwt-TreeItem .gwt-RadioButton input,
+.gwt-TreeItem .gwt-CheckBox input {
+  margin-left: 0px;
+}
 /* Windows */
 .lab-Window {
 	border: solid 1px #3A5774;
@@ -73,5 +91,12 @@
 	font-size: 1px;
 }
 .lab-Previewer {
-	margin: 10px;
+	padding: 10px;
+}
+.lab-Form-Label {
+	font-size: 12px;
+	padding-right: 10px;
+}
+.lab-Form-Field {
+	font-size: 12px;
 }

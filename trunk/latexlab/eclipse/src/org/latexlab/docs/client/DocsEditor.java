@@ -12,12 +12,16 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-import org.latexlab.clsi.client.ClsiService;
-import org.latexlab.clsi.client.ClsiServiceCompileResponse;
-import org.latexlab.clsi.client.ResourceReference;
+import org.latexlab.clsi.client.async.CompileCallback;
+import org.latexlab.clsi.client.async.ReadyCallback;
+import org.latexlab.clsi.client.local.ClsiLocalService;
+import org.latexlab.clsi.client.protocol.ClsiResourceReference;
+import org.latexlab.clsi.client.protocol.ClsiServiceCompileResponse;
+import org.latexlab.clsi.client.remote.ClsiRemoteService;
 import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.commands.CurrentDocumentCloseCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentCompileCommand;
+import org.latexlab.docs.client.commands.CurrentDocumentCompileLocalCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentCopyCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentDeleteCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentExportCommand;
@@ -100,7 +104,7 @@ public class DocsEditor implements EntryPoint, CommandHandler {
   private final DocumentServiceAsync docService = GWT.create(DocumentService.class);
   @SuppressWarnings("unused")
   private final LatexLabServiceAsync labService = GWT.create(LatexLabService.class);
-  private ClsiService clsiService;
+  private ClsiRemoteService clsiService;
   private AbsolutePanel root;
   private DialogManager dialogManager;
   private WindowManager windowManager;
@@ -123,7 +127,7 @@ public class DocsEditor implements EntryPoint, CommandHandler {
    * Builds and initializes the editor module.
    */
   public void onModuleLoad() {
-	clsiService = new ClsiService();
+	clsiService = new ClsiRemoteService();
 	docService.getUser(new AsyncCallback<DocumentUser>() {
 		@Override
 		public void onFailure(Throwable caught) {
@@ -132,15 +136,47 @@ public class DocsEditor implements EntryPoint, CommandHandler {
 		@Override
 		public void onSuccess(DocumentUser result) {
   		  if (result == null) {
-  		    Window.alert("No login detected. Ensure that any requests go through the server side, " +
-  		        "to enforce authentication, rather than directly to the HTML " +
-  		        "content.");
+  		    if (GWT.isClient()) {
+  			  //if running in dev mode, auto-authenticate with a test account
+  			  docService.setUser("non.gwt.gdata@gmail.com", "CIuortn_DxDp3Zci", new AsyncCallback<DocumentUser>() {
+  				  @Override
+  				  public void onFailure(Throwable caught) {
+  				  }
+  				  @Override
+  				  public void onSuccess(DocumentUser result) {
+  	  		        currentUser = result;
+  	                start();
+  				  }
+  			  });
+  			} else {
+  		      Window.alert("No login detected. Ensure that any requests go through the server side, " +
+  		          "to enforce authentication, rather than directly to the HTML " +
+  		          "content.");
+  			}
   		  } else {
   		    currentUser = result;
             start();
   		  }
 		}
 	});
+	if (GWT.isClient()) {
+	  //if running in dev mode, auto-authenticate with a test account
+	  docService.setUser("non.gwt.gdata@gmail.com", "CIuortn_DxDp3Zci", new AsyncCallback<DocumentUser>() {
+		  @Override
+		  public void onFailure(Throwable caught) {
+			checkAuthentication();
+		  }
+		  @Override
+		  public void onSuccess(DocumentUser result) {
+			checkAuthentication();
+		  }
+	  });
+	} else {
+	  checkAuthentication();
+	}
+  }
+  
+  public void checkAuthentication() {
   }
   
   public void start() {
@@ -412,7 +448,7 @@ public class DocsEditor implements EntryPoint, CommandHandler {
     	CurrentDocumentExportCommand cdeCmd = (CurrentDocumentExportCommand) cmd;
         showStatus("Exporting document...", false);
         compile(cdeCmd.getExportFormat(),
-    	    new AsyncCallback<ClsiServiceCompileResponse>() {
+    	    new CompileCallback() {
     		@Override
     		public void onFailure(Throwable caught) {
               handleError(caught, cmd, null, 0);
@@ -422,7 +458,7 @@ public class DocsEditor implements EntryPoint, CommandHandler {
     		  String r = String.valueOf(new Date().getTime());
 			  if (result.getOutputErrors().length == 0 && result.getOutputFiles().length > 0) {
     			String url = result.getOutputFiles()[0].getUrl() + "?r=" + r;
-	    	    Window.open(url, currentDocument.getTitle(), "");
+    			Window.open(url, currentDocument.getDocumentId() + "_pdf", "");
     		  }
     		  if (result.getOutputLogs().length > 0) {
       		    output.setUrl(result.getOutputLogs()[0].getUrl() + "?r=" + r);
@@ -439,7 +475,7 @@ public class DocsEditor implements EntryPoint, CommandHandler {
         showStatus("Compiling document...", false);
         previewer.clear();
         output.clear();
-        compile("png", new AsyncCallback<ClsiServiceCompileResponse>() {
+        compile("png", new CompileCallback() {
     		@Override
     		public void onFailure(Throwable caught) {
               handleError(caught, cmd, null, 0);
@@ -584,7 +620,7 @@ public class DocsEditor implements EntryPoint, CommandHandler {
 			@Override
 			public void onSuccess(DocumentServiceEntry result) {
 		      setDocument(result);
-		      editor.setText("\\documentclass[10pt]{article}\n\\begin{document}\n\nHello LaTeX Lab!! :)\n\n\\end{document}\n");
+		      editor.setText("\\documentclass[10pt]{article}\n\\author{Bobby Soares}\n\\title{Untitled Document}\n\\date{" + (new Date()).toString() + "}\n\\begin{document}\n\\maketitle\n\nHello LaTeX Lab!! :)\n\n\\end{document}\n");
 	          editor.init();
 			}
     	});
@@ -610,6 +646,7 @@ public class DocsEditor implements EntryPoint, CommandHandler {
       case SystemSetResourcesCommand.serialUid:
     	SystemSetResourcesCommand ssrCmd = (SystemSetResourcesCommand) cmd;
     	settings.setResources(ssrCmd.getResources());
+    	settings.setPrimaryResource(ssrCmd.getPrimaryResource());
     	break;
       case SystemReuseToolbarWindowsCommand.serialUid:
     	settings.setReuseToolbarWindows(!settings.isReuseToolbarWindows());
@@ -704,13 +741,37 @@ public class DocsEditor implements EntryPoint, CommandHandler {
       case SystemRedoCommand.serialUid:
     	editor.redo();
     	break;
+      case CurrentDocumentCompileLocalCommand.serialUid:
+    	Window.alert("Starting local service...");
+    	final ClsiLocalService svc = new ClsiLocalService("/editor/");
+    	svc.start(new ReadyCallback() {
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("On ready failure: " + caught.getMessage());
+			}
+			@Override
+			public void onSuccess(Boolean result) {
+				Window.alert("On ready succeeded.");
+		    	svc.compile("name", "contents", "primary", null, "compiler", "format", new CompileCallback() {
+					@Override
+					public void onFailure(Throwable caught) {
+					  Window.alert("Local compile command failed: " + caught.getMessage());
+					}
+					@Override
+					public void onSuccess(ClsiServiceCompileResponse result) {
+					  Window.alert("Local compile command succeeded.");
+					}
+		    	});
+			}
+    	});
+    	break;
       default:
         Window.alert("Not implemented");
         break;
     }
   }
 
-  private void getResourceReferences(final AsyncCallback<ResourceReference[]> callback) {
+  private void getResourceReferences(final AsyncCallback<ClsiResourceReference[]> callback) {
 	final int size = settings.getResources().size();
 	String[] docIds = new String[size];
 	for (int i=0; i<size; i++) {
@@ -724,28 +785,33 @@ public class DocsEditor implements EntryPoint, CommandHandler {
 		  }
 		  @Override
 		  public void onSuccess(DocumentSignedLocation[] result) {
-		    ResourceReference[] refs = new ResourceReference[size];
+			  ClsiResourceReference[] refs = new ClsiResourceReference[size];
 		    for (int i=0; i<size; i++) {
 		      DocumentSignedLocation dsl = result[i];
 		      DocumentServiceEntry entry = settings.getResources().get(i);
-		      refs[i] = ResourceReference.newInstance(entry.getDocumentId(),
-		          entry.getTitle(), dsl.getUrl(), dsl.getAuthorization(), entry.getEdited());
+		      refs[i] = ClsiResourceReference.newInstance(entry.getDocumentId(),
+		          entry.getTitle(), dsl.getUrl(), dsl.getAuthorization(),
+		          entry.getType(), "UTF-8", entry.getEdited());
 		    }
 		    callback.onSuccess(refs);
 		  }
 	});
   }
   
-  private void compile(final String format, final AsyncCallback<ClsiServiceCompileResponse> callback) {
-    getResourceReferences(new AsyncCallback<ResourceReference[]>() {
+  private void compile(final String format, final CompileCallback callback) {
+    getResourceReferences(new AsyncCallback<ClsiResourceReference[]>() {
 		@Override
 		public void onFailure(Throwable caught) {
 		  callback.onFailure(caught);
 		}
 		@Override
-		public void onSuccess(ResourceReference[] result) {
+		public void onSuccess(ClsiResourceReference[] result) {
+		  String primary = currentDocument.getTitle();
+		  if (settings.getPrimaryResource() != null) {
+		    primary = settings.getPrimaryResource().getTitle();
+		  }
 	      clsiService.compile(currentDocument.getTitle(), editor.getText(),
-	          result, "latex", format, callback);
+	          primary, result, "latex", format, callback);
 		}
     });
   }

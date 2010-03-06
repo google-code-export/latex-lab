@@ -4,9 +4,13 @@ body {
 
 .editbox {
   font-family: monospace;
-  padding: 0.2em;
+  font-size: 13px;
+  padding: 11px;
+  padding-left: 40px;
   margin: 0;
   background-color: #FFFFFF;
+  background-image: url(/images/line-numbers.png);
+  background-repeat: no-repeat;
 }
 
 .editbox p {

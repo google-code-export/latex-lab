@@ -1,8 +1,5 @@
 package org.latexlab.docs.client.dialogs;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -13,14 +10,11 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import org.latexlab.docs.client.commands.FileDialogListDocumentsCommand;
@@ -31,6 +25,7 @@ import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
 import org.latexlab.docs.client.resources.icons.EditorIcons;
+import org.latexlab.docs.client.widgets.ExplorerTree;
 
 /**
  * A dialog window displaying the user's documents.
@@ -119,7 +114,6 @@ public class FileListDialog extends Dialog {
     tabs = new TabBar();
     tabs.addTab("Starred Documents");
     tabs.addTab("All Documents");
-    tabs.addTab("Current Project");
     tabs.selectTab(0);
     tabs.setWidth("100%");
     tabs.addSelectionHandler(new SelectionHandler<Integer>(){
@@ -204,8 +198,6 @@ public class FileListDialog extends Dialog {
 	  case 1:
 		showExplorerView();
 		break;
-	  case 2:
-		break;
 	}
   }
   
@@ -275,64 +267,11 @@ public class FileListDialog extends Dialog {
   
   private void showExplorerView() {
     rightPanel.clear();
-    Tree tree = new Tree();
-    HashMap<String, ArrayList<DocumentServiceEntry>> hier = getEntryHierarchy();
-    if (hier.containsKey("")) {
-      for (DocumentServiceEntry entry : hier.get("")) {
-    	tree.addItem(getEntryTreeItem(entry, hier));
-      }
-    } else {
-      //no items
-    }
+    ExplorerTree tree = new ExplorerTree(false);
+    tree.setEntries(entries);
     documentsPanel = new ScrollPanel(tree);
     rightPanel.add(documentsPanel);
     resize();
   }
   
-  private TreeItem getEntryTreeItem(DocumentServiceEntry entry,
-      HashMap<String, ArrayList<DocumentServiceEntry>> hierarchy) {
-	HorizontalPanel panel = new HorizontalPanel();
-	panel.setSpacing(4);
-	String type = entry.getType();
-	if (type.equalsIgnoreCase("folder")) {
-	  panel.add(EditorIcons.icons.Folder().createImage());
-	  panel.add(new Label(entry.getTitle()));
-	} else if (type.equalsIgnoreCase("document")) {
-	  panel.add(EditorIcons.icons.Document().createImage());
-	  Anchor link = new Anchor();
-      link.setText(entry.getTitle());
-      link.setTarget("_blank");
-      link.setHref("/docs?docid=" + entry.getDocumentId());
-	  panel.add(link);
-	} else {
-	  panel.add(EditorIcons.icons.File().createImage());
-	  panel.add(new Label(entry.getTitle()));
-	}
-	TreeItem item = new TreeItem(panel);
-	if (type.equalsIgnoreCase("folder")) {
-	  if (hierarchy.containsKey(entry.getTitle())) {
-	    ArrayList<DocumentServiceEntry> children = hierarchy.get(entry.getTitle());
-	    for (DocumentServiceEntry child : children) {
-	      item.addItem(getEntryTreeItem(child, hierarchy));
-	    }
-	  }
-	}
-	return item;
-  }
-  
-  private HashMap<String, ArrayList<DocumentServiceEntry>> getEntryHierarchy() {
-	HashMap<String, ArrayList<DocumentServiceEntry>> map =
-	    new HashMap<String, ArrayList<DocumentServiceEntry>>();
-	for (DocumentServiceEntry entry : entries) {
-	  String parent = "";
-	  if (entry.getFolders().length > 0) {
-		parent = entry.getFolders()[0];
-	  }
-	  if (!map.containsKey(parent)) {
-		map.put(parent, new ArrayList<DocumentServiceEntry>());
-	  }
-	  map.get(parent).add(entry);
-	}
-	return map;
-  }
 }

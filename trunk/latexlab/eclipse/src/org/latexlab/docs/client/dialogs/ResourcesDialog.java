@@ -1,24 +1,28 @@
 package org.latexlab.docs.client.dialogs;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import org.latexlab.docs.client.commands.ResourceDialogListDocumentsCommand;
 import org.latexlab.docs.client.commands.SystemSetResourcesCommand;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
+import org.latexlab.docs.client.widgets.ExplorerTree;
+import org.latexlab.docs.client.widgets.ExplorerTree.ExplorerTreeItem;
 
 /**
  * A dialog window displaying details of the application.
@@ -36,16 +40,16 @@ public class ResourcesDialog extends Dialog {
   }
  
   private VerticalPanel content;
-  private Tree tree;
+  private ScrollPanel scroll;
+  private ListBox primary;
+  private ExplorerTree tree;
   private Button ok, cancel;
-  private HashMap<CheckBox, DocumentServiceEntry> entries;
 
   /**
    * Constructs an About dialog window.
    */
   public ResourcesDialog() {
     super("Project Resources", true);
-    entries = new HashMap<CheckBox, DocumentServiceEntry>();
     ClickHandler cancelHandler = new ClickHandler() {
       public void onClick(ClickEvent event) {
         hide();
@@ -56,17 +60,38 @@ public class ResourcesDialog extends Dialog {
     setTopWidget(info);
     content = new VerticalPanel();
     content.setWidth("650px");
-    ScrollPanel scroll = new ScrollPanel();
-    scroll.setHeight("250px");
-    tree = new Tree();
+    scroll = new ScrollPanel();
+    tree = new ExplorerTree(true);
     tree.setSize("100%", "100%");
+    tree.addSelectionHandler(new SelectionHandler<TreeItem>() {
+		@Override
+		public void onSelection(SelectionEvent<TreeItem> event) {
+		  ExplorerTreeItem item = (ExplorerTreeItem) event.getSelectedItem();
+		  refreshPrimaryList(item.getLabel(), item.getValue(), !item.isSelected());
+		}
+    });
     scroll.add(tree);
     content.add(scroll);
+    primary = new ListBox();
+    primary.setWidth("400px");
+    primary.addItem("Current Document", "");
+    addNamedField(primary, "Primary Resource: ");
     ok = new Button("OK", new ClickHandler(){
       public void onClick(ClickEvent event) {
         hide();
+        String primaryResourceId = primary.getValue(primary.getSelectedIndex());
+        DocumentServiceEntry primaryResource = null;
         ArrayList<DocumentServiceEntry> resources = getSelectedResources();
-        CommandEvent.fire(ResourcesDialog.this, new SystemSetResourcesCommand(resources));
+        if (!primaryResourceId.equals("")) {
+          for (DocumentServiceEntry entry : resources) {
+            if (entry.getDocumentId().equals(primaryResourceId)) {
+              primaryResource = entry;
+              break;
+            }
+          }
+        }
+        CommandEvent.fire(ResourcesDialog.this,
+            new SystemSetResourcesCommand(resources, primaryResource));
       }
     });
     cancel = new Button("Cancel", cancelHandler);
@@ -77,40 +102,68 @@ public class ResourcesDialog extends Dialog {
     content.add(buttons);
     setContentWidget(content);
   }
+  
+  private void addNamedField(Widget field, String name) {
+	HorizontalPanel row = new HorizontalPanel();
+	row.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
+	Label label = new Label(name);
+	label.setStylePrimaryName("lab-Form-Label");
+	field.setStylePrimaryName("lab-Form-Field");
+	row.add(label);
+	row.add(field);
+	content.add(row);
+  }
+  
+  private void refreshPrimaryList(String label, String value, boolean selected) {
+	ArrayList<DocumentServiceEntry> entries = tree.getSelectedEntries();
+	String selectedValue = primary.getValue(primary.getSelectedIndex());
+	primary.clear();
+	primary.addItem("Current Document", "");
+	for (DocumentServiceEntry entry : entries) {
+	  String id = entry.getDocumentId();
+	  if (!selected && id.equals(value)) {
+	    continue;
+	  }
+	  primary.addItem(entry.getTitle(), id);
+	  if (id.equals(selectedValue)) {
+		primary.setSelectedIndex(primary.getItemCount() - 1);
+	  }
+	}
+	if (selected) {
+	  primary.addItem(label, value);
+	}
+  }
+  
+  /**
+   * Resizes the dialog window to match the browser window size.
+   */
+  private void resize() {
+    int targetHeight = Window.getClientHeight() - 180;
+    content.setPixelSize(620, targetHeight);
+    scroll.setPixelSize(620, targetHeight - 80);
+  }
 
+  /**
+   * Makes the dialog window visible. Resets the tab selection to
+   * display the default documents view and triggers a refresh.
+   */
   @Override
   public void show() {
     super.show();
+    resize();
     if (tree.getItemCount() == 0) {
       CommandEvent.fire(this, new ResourceDialogListDocumentsCommand(true));
     }
   }
 
   public void setEntries(DocumentServiceEntry[] entries, String excludeId) {
-	TreeItem root = new TreeItem("Home");
-    for (DocumentServiceEntry entry : entries) {
-      if (excludeId != null && entry.getDocumentId().equals(excludeId)) {
-        continue;
-      }
-      CheckBox box = new CheckBox(entry.getTitle());
-	  TreeItem item = new TreeItem(box);
-	  root.addItem(item);
-      this.entries.put(box, entry);
-    }
-    tree.clear();
-    tree.addItem(root);
-    root.setState(true);
+	tree.setExcluded(excludeId);
+	tree.setEntries(entries);
+    resize();
   }
   
   private ArrayList<DocumentServiceEntry> getSelectedResources() {
-	ArrayList<DocumentServiceEntry> selected = new ArrayList<DocumentServiceEntry>();
-	for (CheckBox box : entries.keySet()) {
-	  if (box.getValue()) {
-	    DocumentServiceEntry entry = entries.get(box);
-	    selected.add(entry);
-	  }
-    }
-    return selected;
+	return tree.getSelectedEntries();
   }
   
 }
