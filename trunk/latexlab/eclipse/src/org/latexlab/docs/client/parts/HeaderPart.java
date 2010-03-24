@@ -1,6 +1,6 @@
 package org.latexlab.docs.client.parts;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.GwtEvent;
@@ -24,13 +24,11 @@ import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.commands.CurrentDocumentRenameCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentSaveAndCloseCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentSaveCommand;
-import org.latexlab.docs.client.commands.CurrentDocumentViewAsWebPageCommand;
 import org.latexlab.docs.client.commands.SystemSignOutCommand;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.events.HasCommandHandlers;
-import org.latexlab.docs.client.resources.icons.EditorIcons;
-import org.latexlab.docs.client.resources.icons.EditorIconsImageBundle;
+import org.latexlab.docs.client.resources.icons.Icons;
 
 import java.util.Date;
 
@@ -43,8 +41,8 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
   private VerticalPanel content;
   private FlexTable main;
   private Label author;
-  private HorizontalPanel links, status;
-  private Anchor title, docsLink, helpLink, signoutLink;
+  private HorizontalPanel leftLinks, rightLinks, status;
+  private Anchor title, signoutLink;
   private HTML info;
   
   /**
@@ -56,20 +54,21 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
     content.setWidth("100%");
     status = new HorizontalPanel();
     status.setWidth("100%");
-    status.setStylePrimaryName("gdbe-Header-Status");
+    status.setStylePrimaryName("lab-Header-Status");
     status.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
     main = new FlexTable();
     main.setWidth("100%");
+    main.setCellSpacing(0);
     main.insertRow(0);
     main.insertCell(0, 0);
-    main.insertCell(0, 1);
-    main.getFlexCellFormatter().setVerticalAlignment(0, 0, HorizontalPanel.ALIGN_BOTTOM);
-    main.getFlexCellFormatter().setHorizontalAlignment(0, 1, HorizontalPanel.ALIGN_RIGHT);
+    main.getFlexCellFormatter().setHeight(0, 0, "12");
+    main.getFlexCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
+    main.getFlexCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_LEFT);
     main.setWidth("100%");
     main.insertRow(1);
     main.insertCell(1, 0);
-    main.getFlexCellFormatter().setHorizontalAlignment(1, 0, HasHorizontalAlignment.ALIGN_RIGHT);
-    main.getFlexCellFormatter().setRowSpan(0, 0, 2);
+    main.getFlexCellFormatter().setVerticalAlignment(1, 0, HasVerticalAlignment.ALIGN_MIDDLE);
+    main.getFlexCellFormatter().setHorizontalAlignment(1, 0, HasHorizontalAlignment.ALIGN_LEFT);
     content.add(status);
     content.add(main);
     buildUpper();
@@ -84,44 +83,48 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
    * @return a table containing the upper controls
    */
   private void buildUpper() {
-    EditorIconsImageBundle EditorIcons = (EditorIconsImageBundle)GWT.create(EditorIconsImageBundle.class);
+	FlexTable table = new FlexTable();
+	table.setWidth("100%");
+	table.setCellSpacing(0);
+	table.setCellPadding(0);
+	table.insertRow(0);
+	table.insertCell(0, 0);
+	table.insertCell(0, 1);
+	table.getFlexCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
+    table.getFlexCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_LEFT);
+	table.getFlexCellFormatter().setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
+    table.getFlexCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT);
+    table.getFlexCellFormatter().setStylePrimaryName(0, 0, "lab-Header-Links");
+    table.getFlexCellFormatter().setStylePrimaryName(0, 1, "lab-Header-Links");
     /* Upper Header Panel */
-    VerticalPanel brandPanel = new VerticalPanel();
-    brandPanel.setHeight("100%");
-    brandPanel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
-    brandPanel.setSpacing(2);
-    Image logo = EditorIcons.Logo().createImage();
-    logo.setStylePrimaryName("gdbe-Logo");
-    HorizontalPanel titlePanel = new HorizontalPanel();
-    titlePanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-    title = new Anchor("", "");
-    title.setStylePrimaryName("gdbe-Header-Title");
-    title.setTitle("Click to rename this document");
-    title.addClickHandler(this);
-    info = new HTML();
-    info.setStylePrimaryName("gdbe-Header-Info");
-    info.setHTML("not saved");
-    titlePanel.add(title);
-    titlePanel.add(info);
-    links = new HorizontalPanel();
-    links.setStylePrimaryName("gdbe-Header-Links");
+    leftLinks = new HorizontalPanel();
+    Anchor projectLink = new Anchor("Project", "http://code.google.com/p/latex-lab", "_blank");
+    Anchor wikiLink = new Anchor("Wiki", "http://code.google.com/p/latex-lab/w/list", "_blank");
+    Anchor issuesLink = new Anchor("Issues", "http://code.google.com/p/latex-lab/issues/list", "_blank");
+    Anchor contLink = new Anchor("Contribute", "http://code.google.com/p/", "_blank");
+    leftLinks.add(projectLink);
+    leftLinks.add(wikiLink);
+    leftLinks.add(issuesLink);
+    leftLinks.add(contLink);
+    rightLinks = new HorizontalPanel();
     author = new Label();
-    docsLink = new Anchor("Docs Home", "http://docs.google.com/", "_blank");
-    helpLink = new Anchor("Help", "", "_blank");
+    Anchor docsLink = new Anchor("Docs Home", "http://docs.google.com/", "_blank");
+    Anchor helpLink = new Anchor("Help", "http://code.google.com/p/latex-lab/wiki/UsingLaTeXLab", "_blank");
+    Anchor acLink = new Anchor("Google Access Control", "https://www.google.com/accounts/IssuedAuthSubTokens", "_blank");
     signoutLink = new Anchor("Sign Out");
     signoutLink.addClickHandler(new ClickHandler(){
       public void onClick(ClickEvent event) {
         CommandEvent.fire(HeaderPart.this, new SystemSignOutCommand("/splash.html"));
       }
     });
-    links.add(author);
-    links.add(docsLink);
-    links.add(helpLink);
-    links.add(signoutLink);
-    brandPanel.add(logo);
-    brandPanel.add(titlePanel);
-    main.setWidget(0, 0, brandPanel);
-    main.setWidget(0, 1, links);
+    rightLinks.add(author);
+    rightLinks.add(docsLink);
+    rightLinks.add(acLink);
+    rightLinks.add(helpLink);
+    rightLinks.add(signoutLink);
+    table.setWidget(0, 0, leftLinks);
+    table.setWidget(0, 1, rightLinks);
+    main.setWidget(0, 0, table);
   }
   
   /**
@@ -131,22 +134,43 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
    * @return a table containing the lower controls
    */
   private void buildLower() {
+	FlexTable table = new FlexTable();
+	table.setWidth("100%");
+	table.setCellSpacing(0);
+	table.setCellPadding(0);
+	table.insertRow(0);
+	table.insertCell(0, 0);
+	table.insertCell(0, 1);
+	table.getFlexCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);
+    table.getFlexCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_LEFT);
+	table.getFlexCellFormatter().setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_MIDDLE);
+    table.getFlexCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT);
+    Image logo = Icons.editorIcons.Logo().createImage();
+    logo.setStylePrimaryName("lab-Header-Logo");
+    HorizontalPanel titlePanel = new HorizontalPanel();
+    titlePanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+    titlePanel.getElement().getStyle().setOverflow(Overflow.HIDDEN);
+    title = new Anchor("", "");
+    title.setStylePrimaryName("lab-Header-Title");
+    title.setTitle("Click to rename this document");
+    title.addClickHandler(this);
+    info = new HTML();
+    info.setStylePrimaryName("lab-Header-Info");
+    info.setHTML("not saved");
+    titlePanel.add(logo);
+    titlePanel.add(title);
+    titlePanel.add(info);
     HorizontalPanel actionsPanel = new HorizontalPanel();
     actionsPanel.setHeight("30px");
-    actionsPanel.setStylePrimaryName("gdbe-Actions-Panel");
+    actionsPanel.setStylePrimaryName("lab-Header-Actions");
     MenuBar menu = new MenuBar(false);
-    
-    MenuBar shareMenu = new MenuBar(true);
-    addMenuItem(shareMenu, EditorIcons.icons.Blank(), "View as web page (Preview)...", new CurrentDocumentViewAsWebPageCommand());
-    MenuItem item = menu.addItem("Share", true, shareMenu);
-    item.setStylePrimaryName("gdbe-HighlightedMenuItem");
-    menu.addSeparator();
-    
     addMenuItem(menu, null, "Save", new CurrentDocumentSaveCommand());
     menu.addSeparator();
-    addMenuItem(menu, null, "Save & Close", new CurrentDocumentSaveAndCloseCommand());
+    addMenuItem(menu, null, "Save & Close", new CurrentDocumentSaveAndCloseCommand()).setStylePrimaryName("lab-HighlightedMenuItem");
     actionsPanel.add(menu);
-    main.setWidget(1, 0, actionsPanel);
+    table.setWidget(0, 0, titlePanel);
+    table.setWidget(0, 1, actionsPanel);
+    main.setWidget(1, 0, table);
   }
   
   /**
@@ -157,7 +181,7 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
    * @param title the menu item's title
    * @param command the menu items associated command type
    */
-  private void addMenuItem(final MenuBar menuBar, AbstractImagePrototype icon, String title, final Command command) {
+  private MenuItem addMenuItem(final MenuBar menuBar, AbstractImagePrototype icon, String title, final Command command) {
     MenuItem mi;
     if (icon == null) {
       mi = menuBar.addItem(title, true, (com.google.gwt.user.client.Command)null);
@@ -169,6 +193,7 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
       	CommandEvent.fire(HeaderPart.this, command);
       }
     });
+    return mi;
   }
   
   /**

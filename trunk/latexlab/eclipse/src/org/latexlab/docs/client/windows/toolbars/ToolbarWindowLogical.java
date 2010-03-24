@@ -1,26 +1,42 @@
 package org.latexlab.docs.client.windows.toolbars;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
-import org.latexlab.docs.client.resources.icons.latex.LatexIcons;
+import org.latexlab.docs.client.events.CommandHandler;
+import org.latexlab.docs.client.resources.icons.Icons;
 import org.latexlab.docs.client.windows.ToolbarWindow;
+import org.latexlab.docs.client.windows.WindowManager;
 
-import com.google.gwt.user.client.ui.FlowPanel;
+public class ToolbarWindowLogical extends ToolbarWindow {
 
-public class ToolbarWindowLogical extends ToolbarWindow{
+  public final static String TITLE = "Logical";
 
-  public ToolbarWindowLogical() {
-	super("Logical");
+  protected static ToolbarWindowLogical instance;
+  
+  public static ToolbarWindowLogical get(CommandHandler handler,
+	    WindowManager manager) {
+    if (instance == null) {
+      instance = new ToolbarWindowLogical();
+      instance.addCommandHandler(handler);
+	  instance.registeredDragController = manager.getWindowController().getPickupDragController();
+	  instance.hide();
+	  manager.getWindowController().makeResizable(instance);
+	  manager.getBoundaryPanel().add(instance, 500, 120);
+    }
+    return instance;
+  }
+
+  protected ToolbarWindowLogical() {
+	super(TITLE);
     buildToolBar();
   }
 
   private void buildToolBar() {
-	FlowPanel panel = (FlowPanel) contentWidget;
-    panel.setStyleName("gdbe-Toolbar");
-    panel.add(buildButton(LatexIcons.icons.Icon247(), " ", false, new SystemPasteCommand("\\ni")));
-    panel.add(buildButton(LatexIcons.icons.Icon264(), "Exists", false, new SystemPasteCommand("\\exists")));
-    panel.add(buildButton(LatexIcons.icons.Icon281(), "For all", false, new SystemPasteCommand("\\forall")));
-    panel.add(buildButton(LatexIcons.icons.Icon298(), "Negation", false, new SystemPasteCommand("\\neg")));
-    panel.add(buildButton(LatexIcons.icons.Icon315(), "And", false, new SystemPasteCommand("\\wedge")));
-    panel.add(buildButton(LatexIcons.icons.Icon332(), "Or", false, new SystemPasteCommand("\\vee")));
+    addButton(Icons.latexLogicalIcons.NotIn(), " ", false, new SystemPasteCommand("\\ni"));
+    addButton(Icons.latexLogicalIcons.Exists(), "Exists", false, new SystemPasteCommand("\\exists"));
+    addButton(Icons.latexLogicalIcons.ForAll(), "For all", false, new SystemPasteCommand("\\forall"));
+    addButton(Icons.latexLogicalIcons.Negation(), "Negation", false, new SystemPasteCommand("\\neg"));
+    addButton(Icons.latexLogicalIcons.And(), "And", false, new SystemPasteCommand("\\wedge"));
+    addButton(Icons.latexLogicalIcons.Or(), "Or", false, new SystemPasteCommand("\\vee"));
+    resize();
   }
 }

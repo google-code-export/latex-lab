@@ -12,6 +12,7 @@ import com.allen_sauer.gwt.dnd.client.DragStartEvent;
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.allen_sauer.gwt.dnd.client.VetoDragException;
 import com.allen_sauer.gwt.dnd.client.drop.BoundaryDropController;
+import com.allen_sauer.gwt.dnd.client.util.DragClientBundle;
 import com.allen_sauer.gwt.dnd.client.util.Location;
 import com.allen_sauer.gwt.dnd.client.util.WidgetLocation;
 
@@ -57,6 +58,26 @@ public class WindowManager {
       resizeDragController.setBehaviorConstrainedToBoundaryPanel(false);
       resizeDragController.setConstrainWidgetToBoundaryPanel(false);
       resizeDragController.setBehaviorMultipleSelection(false);
+      DragHandler glassHandler = new DragHandler() {
+		@Override
+		public void onDragEnd(DragEndEvent event) {
+		  GlassPanel.setGlassPanelVisibility(false, 3);
+		}
+		@Override
+		public void onDragStart(DragStartEvent event) {
+		  GlassPanel.setGlassPanelVisibility(true, 3);
+		}
+		@Override
+		public void onPreviewDragEnd(DragEndEvent event)
+				throws VetoDragException {
+		}
+		@Override
+		public void onPreviewDragStart(DragStartEvent event)
+				throws VetoDragException {
+		}
+      };
+      pickupDragController.addDragHandler(glassHandler);
+      resizeDragController.addDragHandler(glassHandler);
     }
 
     public AbsolutePanel getBoundaryPanel() {
@@ -72,26 +93,7 @@ public class WindowManager {
     }
     
     public void makeResizable(final Window window) {
-      DragHandler glassHandler = new DragHandler() {
-		@Override
-		public void onDragEnd(DragEndEvent event) {
-		    GlassPanel.setGlassPanelVisibility(false, 3);
-		}
-		@Override
-		public void onDragStart(DragStartEvent event) {
-		    GlassPanel.setGlassPanelVisibility(true, 3);
-		}
-		@Override
-		public void onPreviewDragEnd(DragEndEvent event)
-				throws VetoDragException {
-		}
-		@Override
-		public void onPreviewDragStart(DragStartEvent event)
-				throws VetoDragException {
-		}
-      };
       windowController.getPickupDragController().makeDraggable(window, window.getHeaderWidget());
-      windowController.getPickupDragController().addDragHandler(glassHandler);
       window.addClickHandler(new ClickHandler() {
         public void onClick(ClickEvent event) {
           AbsolutePanel boundaryPanel = windowController.getBoundaryPanel();
@@ -110,7 +112,6 @@ public class WindowManager {
       windowController.getResizeDragController().makeDraggable(window.getBoundaryWidget(Direction.SOUTH_WEST), Direction.SOUTH_WEST);
       windowController.getResizeDragController().makeDraggable(window.getBoundaryWidget(Direction.SOUTH), Direction.SOUTH);
       windowController.getResizeDragController().makeDraggable(window.getBoundaryWidget(Direction.SOUTH_EAST), Direction.SOUTH_EAST);
-      windowController.getResizeDragController().addDragHandler(glassHandler);
     }
     
     public final class WindowResizeDragController extends AbstractDragController {
@@ -165,14 +166,15 @@ public class WindowManager {
       public void dragStart() {
         super.dragStart();
         windowPanel = (Window) context.draggable.getParent().getParent();
-        windowPanel.onDragStart();
+        windowPanel.addStyleName(DragClientBundle.INSTANCE.css().dragging());
       }
       
       @Override
       public void dragEnd() {
         super.dragEnd();
         windowPanel = (Window) context.draggable.getParent().getParent();
-        windowPanel.onDragEnd();
+        windowPanel.removeStyleName(DragClientBundle.INSTANCE.css().dragging());
+        windowPanel.setContentSizeFinal();
       }
 
       public void makeDraggable(Widget widget, Direction direction) {

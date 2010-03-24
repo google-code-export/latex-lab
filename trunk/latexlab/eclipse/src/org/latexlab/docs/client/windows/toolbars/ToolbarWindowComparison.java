@@ -1,31 +1,47 @@
 package org.latexlab.docs.client.windows.toolbars;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
-import org.latexlab.docs.client.resources.icons.latex.LatexIcons;
+import org.latexlab.docs.client.events.CommandHandler;
+import org.latexlab.docs.client.resources.icons.Icons;
 import org.latexlab.docs.client.windows.ToolbarWindow;
+import org.latexlab.docs.client.windows.WindowManager;
 
-import com.google.gwt.user.client.ui.FlowPanel;
+public class ToolbarWindowComparison extends ToolbarWindow {
 
-public class ToolbarWindowComparison extends ToolbarWindow{
+  public final static String TITLE = "Comparison";
 
-  public ToolbarWindowComparison() {
-	super("Comparison");
+  protected static ToolbarWindowComparison instance;
+  
+  public static ToolbarWindowComparison get(CommandHandler handler,
+	    WindowManager manager) {
+    if (instance == null) {
+      instance = new ToolbarWindowComparison();
+      instance.addCommandHandler(handler);
+	  instance.registeredDragController = manager.getWindowController().getPickupDragController();
+	  instance.hide();
+	  manager.getWindowController().makeResizable(instance);
+	  manager.getBoundaryPanel().add(instance, 500, 120);
+    }
+    return instance;
+  }
+
+  protected ToolbarWindowComparison() {
+	super(TITLE);
     buildToolBar();
   }
 
   private void buildToolBar() {
-	FlowPanel panel = (FlowPanel) contentWidget;
-    panel.setStyleName("gdbe-Toolbar");
-    panel.add(buildButton(LatexIcons.icons.Icon90(), "Lesser than or equal", false, new SystemPasteCommand("\\leq")));
-    panel.add(buildButton(LatexIcons.icons.Icon107(), "Greater than or equal", false, new SystemPasteCommand("\\geq")));
-    panel.add(buildButton(LatexIcons.icons.Icon124(), "Preceding", false, new SystemPasteCommand("\\prec")));
-    panel.add(buildButton(LatexIcons.icons.Icon141(), "Succeding", false, new SystemPasteCommand("\\succ")));
-    panel.add(buildButton(LatexIcons.icons.Icon158(), "Triangle left", false, new SystemPasteCommand("\\triangleleft")));
-    panel.add(buildButton(LatexIcons.icons.Icon175(), "Triangle right", false, new SystemPasteCommand("\\triangleright")));
-    panel.add(buildButton(LatexIcons.icons.Icon192(), "Not equal", false, new SystemPasteCommand("\\neq")));
-    panel.add(buildButton(LatexIcons.icons.Icon209(), "Equivalent", false, new SystemPasteCommand("\\equiv")));
-    panel.add(buildButton(LatexIcons.icons.Icon226(), "Approximately", false, new SystemPasteCommand("\\approx")));
-    panel.add(buildButton(LatexIcons.icons.Icon243(), "Congruent", false, new SystemPasteCommand("\\cong")));
-    panel.add(buildButton(LatexIcons.icons.Icon260(), "Prop to", false, new SystemPasteCommand("\\propto")));
+    addButton(Icons.latexComparisonIcons.LesserThanOrEqual(), "Lesser than or equal", false, new SystemPasteCommand("\\leq"));
+    addButton(Icons.latexComparisonIcons.GreaterThanOrEqual(), "Greater than or equal", false, new SystemPasteCommand("\\geq"));
+    addButton(Icons.latexComparisonIcons.Preceding(), "Preceding", false, new SystemPasteCommand("\\prec"));
+    addButton(Icons.latexComparisonIcons.Succeding(), "Succeding", false, new SystemPasteCommand("\\succ"));
+    addButton(Icons.latexComparisonIcons.TriangleLeft(), "Triangle left", false, new SystemPasteCommand("\\triangleleft"));
+    addButton(Icons.latexComparisonIcons.TriangleRight(), "Triangle right", false, new SystemPasteCommand("\\triangleright"));
+    addButton(Icons.latexComparisonIcons.NotEqual(), "Not equal", false, new SystemPasteCommand("\\neq"));
+    addButton(Icons.latexComparisonIcons.Equivalent(), "Equivalent", false, new SystemPasteCommand("\\equiv"));
+    addButton(Icons.latexComparisonIcons.Approximately(), "Approximately", false, new SystemPasteCommand("\\approx"));
+    addButton(Icons.latexComparisonIcons.Congruent(), "Congruent", false, new SystemPasteCommand("\\cong"));
+    addButton(Icons.latexComparisonIcons.PropTo(), "Prop to", false, new SystemPasteCommand("\\propto"));
+    resize();
   }
 }

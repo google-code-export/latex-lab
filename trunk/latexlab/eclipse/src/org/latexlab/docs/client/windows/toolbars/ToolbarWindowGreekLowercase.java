@@ -1,48 +1,64 @@
 package org.latexlab.docs.client.windows.toolbars;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
-import org.latexlab.docs.client.resources.icons.latex.LatexIcons;
+import org.latexlab.docs.client.events.CommandHandler;
+import org.latexlab.docs.client.resources.icons.Icons;
 import org.latexlab.docs.client.windows.ToolbarWindow;
+import org.latexlab.docs.client.windows.WindowManager;
 
-import com.google.gwt.user.client.ui.FlowPanel;
+public class ToolbarWindowGreekLowercase extends ToolbarWindow {
 
-public class ToolbarWindowGreekLowercase extends ToolbarWindow{
+  public final static String TITLE = "Greek Lowercase Letters";
 
-  public ToolbarWindowGreekLowercase() {
-	super("Greek Lowercase Letters");
+  protected static ToolbarWindowGreekLowercase instance;
+  
+  public static ToolbarWindowGreekLowercase get(CommandHandler handler,
+	    WindowManager manager) {
+    if (instance == null) {
+      instance = new ToolbarWindowGreekLowercase();
+      instance.addCommandHandler(handler);
+	  instance.registeredDragController = manager.getWindowController().getPickupDragController();
+	  instance.hide();
+	  manager.getWindowController().makeResizable(instance);
+	  manager.getBoundaryPanel().add(instance, 500, 120);
+    }
+    return instance;
+  }
+
+  protected ToolbarWindowGreekLowercase() {
+	super(TITLE);
     buildToolBar();
   }
 
   private void buildToolBar() {
-	FlowPanel panel = (FlowPanel) contentWidget;
-    panel.setStyleName("gdbe-Toolbar");
-    panel.add(buildButton(LatexIcons.icons.Icon248(), "Small alpha", false, new SystemPasteCommand("\\alpha")));
-    panel.add(buildButton(LatexIcons.icons.Icon265(), "Small beta", false, new SystemPasteCommand("\\beta")));
-    panel.add(buildButton(LatexIcons.icons.Icon282(), "Small chi", false, new SystemPasteCommand("\\chi")));
-    panel.add(buildButton(LatexIcons.icons.Icon299(), "Small delta", false, new SystemPasteCommand("\\delta")));
-    panel.add(buildButton(LatexIcons.icons.Icon316(), "Small epsilon", false, new SystemPasteCommand("\\epsilon")));
-    panel.add(buildButton(LatexIcons.icons.Icon333(), "Small phi", false, new SystemPasteCommand("\\phi")));
-    panel.add(buildButton(LatexIcons.icons.Icon350(), "Small variiertes phi", false, new SystemPasteCommand("\\varphi")));
-    panel.add(buildButton(LatexIcons.icons.Icon367(), "Small gamma", false, new SystemPasteCommand("\\gamma")));
-    panel.add(buildButton(LatexIcons.icons.Icon113(), "Small eta", false, new SystemPasteCommand("\\eta")));
-    panel.add(buildButton(LatexIcons.icons.Icon130(), "Small iota", false, new SystemPasteCommand("\\iota")));
-    panel.add(buildButton(LatexIcons.icons.Icon147(), "Small kappa", false, new SystemPasteCommand("\\kappa")));
-    panel.add(buildButton(LatexIcons.icons.Icon164(), "Small lambda", false, new SystemPasteCommand("\\lambda")));
-    panel.add(buildButton(LatexIcons.icons.Icon181(), "Small mu", false, new SystemPasteCommand("\\mu")));
-    panel.add(buildButton(LatexIcons.icons.Icon198(), "Small nu", false, new SystemPasteCommand("\\nu")));
-    panel.add(buildButton(LatexIcons.icons.Icon215(), "Small o", false, new SystemPasteCommand("\\o")));
-    panel.add(buildButton(LatexIcons.icons.Icon232(), "Small pi", false, new SystemPasteCommand("\\pi")));
-    panel.add(buildButton(LatexIcons.icons.Icon249(), "Small variiertes pi", false, new SystemPasteCommand("\\varpi")));
-    panel.add(buildButton(LatexIcons.icons.Icon266(), "Small theta", false, new SystemPasteCommand("\\theta")));
-    panel.add(buildButton(LatexIcons.icons.Icon283(), "Small variiertes theta", false, new SystemPasteCommand("\\vartheta")));
-    panel.add(buildButton(LatexIcons.icons.Icon300(), "Small rho", false, new SystemPasteCommand("\\rho")));
-    panel.add(buildButton(LatexIcons.icons.Icon317(), "Small sigma", false, new SystemPasteCommand("\\sigma")));
-    panel.add(buildButton(LatexIcons.icons.Icon334(), "Small variiertes sigma", false, new SystemPasteCommand("\\varsigma")));
-    panel.add(buildButton(LatexIcons.icons.Icon351(), "Small tau", false, new SystemPasteCommand("\\tau")));
-    panel.add(buildButton(LatexIcons.icons.Icon368(), "Small upsilon", false, new SystemPasteCommand("\\upsilon")));
-    panel.add(buildButton(LatexIcons.icons.Icon385(), "Small omega", false, new SystemPasteCommand("\\omega")));
-    panel.add(buildButton(LatexIcons.icons.Icon402(), "Small xi", false, new SystemPasteCommand("\\xi")));
-    panel.add(buildButton(LatexIcons.icons.Icon12(), "Small psi", false, new SystemPasteCommand("\\psi")));
-    panel.add(buildButton(LatexIcons.icons.Icon29(), "Small zeta", false, new SystemPasteCommand("\\zeta")));
+    addButton(Icons.latexGreekLowercaseIcons.SmallAlpha(), "Small alpha", false, new SystemPasteCommand("\\alpha"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallBeta(), "Small beta", false, new SystemPasteCommand("\\beta"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallChi(), "Small chi", false, new SystemPasteCommand("\\chi"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallDelta(), "Small delta", false, new SystemPasteCommand("\\delta"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallEpsilon(), "Small epsilon", false, new SystemPasteCommand("\\epsilon"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallPhi(), "Small phi", false, new SystemPasteCommand("\\phi"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallVariiertesPhi(), "Small variiertes phi", false, new SystemPasteCommand("\\varphi"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallGamma(), "Small gamma", false, new SystemPasteCommand("\\gamma"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallEta(), "Small eta", false, new SystemPasteCommand("\\eta"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallIota(), "Small iota", false, new SystemPasteCommand("\\iota"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallKappa(), "Small kappa", false, new SystemPasteCommand("\\kappa"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallLambda(), "Small lambda", false, new SystemPasteCommand("\\lambda"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallMu(), "Small mu", false, new SystemPasteCommand("\\mu"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallNu(), "Small nu", false, new SystemPasteCommand("\\nu"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallOmega(), "Small o", false, new SystemPasteCommand("\\o"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallPi(), "Small pi", false, new SystemPasteCommand("\\pi"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallVariiertesPi(), "Small variiertes pi", false, new SystemPasteCommand("\\varpi"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallTheta(), "Small theta", false, new SystemPasteCommand("\\theta"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallVariiertesTheta(), "Small variiertes theta", false, new SystemPasteCommand("\\vartheta"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallRho(), "Small rho", false, new SystemPasteCommand("\\rho"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallSigma(), "Small sigma", false, new SystemPasteCommand("\\sigma"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallVariiertesSigma(), "Small variiertes sigma", false, new SystemPasteCommand("\\varsigma"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallTau(), "Small tau", false, new SystemPasteCommand("\\tau"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallUpsilon(), "Small upsilon", false, new SystemPasteCommand("\\upsilon"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallOmega(), "Small omega", false, new SystemPasteCommand("\\omega"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallXi(), "Small xi", false, new SystemPasteCommand("\\xi"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallPsi(), "Small psi", false, new SystemPasteCommand("\\psi"));
+    addButton(Icons.latexGreekLowercaseIcons.SmallZeta(), "Small zeta", false, new SystemPasteCommand("\\zeta"));
+    resize();
   }
 }

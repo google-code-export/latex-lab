@@ -4,19 +4,19 @@ public class SystemToggleToolbarCommand extends Command {
 
   public final static int serialUid = 84;
   
-  private int index;
+  private String name;
   
-  public SystemToggleToolbarCommand(int index) {
+  public SystemToggleToolbarCommand(String name) {
 	super("Toggle toolbar.");
-	this.index = index;
+	this.name = name;
   }
 
-  public int getIndex() {
-	return index;
+  public String getName() {
+	return name;
   }
   
-  public void setIndex(int index) {
-	this.index = index;
+  public void setName(String name) {
+	this.name = name;
   }
 
   @Override

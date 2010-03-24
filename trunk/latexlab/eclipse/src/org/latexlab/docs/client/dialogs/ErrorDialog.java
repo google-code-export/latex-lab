@@ -19,7 +19,7 @@ public class ErrorDialog extends Dialog {
 
   protected static ErrorDialog instance;
   
-  public static ErrorDialog getInstance(CommandHandler handler) {
+  public static ErrorDialog get(CommandHandler handler) {
     if (instance == null) {
       instance = new ErrorDialog();
       instance.addCommandHandler(handler);

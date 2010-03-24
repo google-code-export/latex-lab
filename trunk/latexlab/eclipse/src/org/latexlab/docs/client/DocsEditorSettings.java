@@ -6,7 +6,8 @@ import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
 
 public class DocsEditorSettings {
   
-  private boolean reuseToolbarWindows = true;
+  private boolean reuseToolbarWindows = true, colorSyntax = true, showLineNumbers = true,
+      wrapText = true, hasCompilerSettings = false;
   private String clsiServiceUrl, clsiServiceToken, clsiServiceId, clsiAsyncPath, compilerName;
   private ArrayList<DocumentServiceEntry> resources;
   private DocumentServiceEntry primaryResource;
@@ -77,6 +78,38 @@ public class DocsEditorSettings {
 
   public void setPrimaryResource(DocumentServiceEntry primaryResource) {
     this.primaryResource = primaryResource;
+  }
+
+  public boolean isColorSyntax() {
+    return colorSyntax;
+  }
+
+  public void setColorSyntax(boolean colorSyntax) {
+    this.colorSyntax = colorSyntax;
+  }
+
+  public boolean isShowLineNumbers() {
+    return showLineNumbers;
+  }
+
+  public void setShowLineNumbers(boolean showLineNumbers) {
+    this.showLineNumbers = showLineNumbers;
+  }
+
+  public boolean isWrapText() {
+    return wrapText;
+  }
+
+  public void setWrapText(boolean wrapText) {
+    this.wrapText = wrapText;
+  }
+
+  public boolean getHasCompilerSettings() {
+    return hasCompilerSettings;
+  }
+
+  public void setHasCompilerSettings(boolean hasCompilerSettings) {
+    this.hasCompilerSettings = hasCompilerSettings;
   }
   
 }

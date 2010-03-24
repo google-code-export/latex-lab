@@ -1,8 +1,10 @@
 package org.latexlab.docs.client.windows;
 
-import org.latexlab.docs.client.resources.icons.EditorIcons;
+import org.latexlab.docs.client.resources.icons.Icons;
 
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
+import com.google.gwt.dom.client.Style.Overflow;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
@@ -87,21 +89,22 @@ public abstract class Window extends Composite {
     contentWidget = content;
     
     closeButton = new PushButton();
-    closeButton = new PushButton(EditorIcons.icons.CloseBlue().createImage());
+    closeButton = new PushButton(Icons.editorIcons.CloseBlue().createImage());
     closeButton.setTitle("Close");
     closeButton.setStylePrimaryName("CloseButton");
     
     buttons = new HorizontalPanel();
     buttons.setStylePrimaryName("Buttons");
-    buttons.setWidth("36px");
+    buttons.setWidth("16px");
     buttons.setSpacing(4);
     buttons.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
     buttons.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
     buttons.add(closeButton);
     
     titleLabel = new Label(title);
+    titleLabel.setTitle(title);
     titleLabel.setWordWrap(false);
-    titleLabel.setWidth("100%");
+    titleLabel.getElement().getStyle().setOverflow(Overflow.HIDDEN);
     
     mainPanel = new FlexTable();
     mainPanel.setCellSpacing(0);
@@ -115,6 +118,7 @@ public abstract class Window extends Composite {
     mainPanel.getRowFormatter().addStyleName(0, "Header");
     mainPanel.getCellFormatter().setHorizontalAlignment(0, 1, HorizontalPanel.ALIGN_RIGHT);
     mainPanel.getFlexCellFormatter().addStyleName(0, 0, "Title");
+    mainPanel.getFlexCellFormatter().setWidth(0, 1, "16px");
     mainPanel.getFlexCellFormatter().addStyleName(1, 0, "Content");
     mainPanel.addStyleName("Base");
     mainPanel.setWidget(0, 0, titleLabel);
@@ -193,15 +197,6 @@ public abstract class Window extends Composite {
   public void show() {
     grid.setVisible(true);
   }
-  
-  public void onDragStart() {
-  }
-  
-  public void onDragEnd() {
-  }
-  
-  public void onResize(int width, int height) {
-  }
 
   public void setContentSize(int width, int height) {
     if (width < minContentWidth) return;
@@ -217,8 +212,14 @@ public abstract class Window extends Composite {
       westWidget.setPixelSize(BORDER_THICKNESS, contentHeight + headerHeight);
       eastWidget.setPixelSize(BORDER_THICKNESS, contentHeight + headerHeight);
     }
+    titleLabel.getElement().getStyle().setWidth(width - 20, Unit.PX);
     contentWidget.setPixelSize(contentWidth, contentHeight);
-    onResize(contentWidth, contentHeight);
+  }
+  
+  public void setContentSizeFinal() {
+	int width = contentWidget.getOffsetWidth();
+	int height = contentWidget.getOffsetHeight();
+	setContentSize(width, height);
   }
 
   private Widget setupCell(Direction direction) {

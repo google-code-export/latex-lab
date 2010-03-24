@@ -1,5 +1,6 @@
 package org.latexlab.docs.client.dialogs;
 
+import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.commands.SystemApplyCompilerSettingsCommand;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
@@ -11,6 +12,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
@@ -26,18 +28,20 @@ public class CompilerSettingsDialog extends Dialog {
 
   protected static CompilerSettingsDialog instance;
   
-  public static CompilerSettingsDialog getInstance(CommandHandler handler) {
+  public static CompilerSettingsDialog get(CommandHandler handler, Command continueCommand) {
     if (instance == null) {
       instance = new CompilerSettingsDialog();
       instance.addCommandHandler(handler);
     }
+    instance.setContinueCommand(continueCommand);
     return instance;
   }
 
-  private VerticalPanel content;
+  private VerticalPanel content, warning;
   private FlexTable settingsPanel;
   private RadioButton useDefault, useMikTex, useTexLive, useCustom;
   private TextBox clsiServiceUrl, clsiServiceToken, clsiAsyncPath, compilerName;
+  private Command continueCommand;
   private Button ok, cancel;
   
   /**
@@ -54,6 +58,7 @@ public class CompilerSettingsDialog extends Dialog {
 	  @Override
 	  public void onValueChange(ValueChangeEvent<Boolean> event) {
 		settingsPanel.setVisible(useCustom.getValue());
+		warning.setVisible(useDefault.getValue());
 		CompilerSettingsDialog.this.center();
 	  }
     };
@@ -81,6 +86,16 @@ public class CompilerSettingsDialog extends Dialog {
     usage.add(useTexLive);
     usage.add(useCustom);
     content.add(usage);
+    warning = new VerticalPanel();
+    warning.setStylePrimaryName("lab-Warning");
+    warning.add(new HTML("The default LaTeX Lab compiler is a shared environment which may " +
+    		"temporarily cache document contents for performance. For sensitive documents " +
+    		"you are encouraged to use LaTeX Lab with a local MikTeX/TeX Live installation or a private CLSI environment. " +
+    		"<br /><br />For more information visit the <a href=\"http://code.google.com/p/latex-lab\" target=\"_blank\">Privacy</a> " +
+    		"and <a href=\"http://code.google.com/p/latex-lab\" target=\"_blank\">Terms and Conditions</a> pages." +
+    		"<br /><br />By using the default LaTeX Lab compiler you agree to the " +
+    		"<a href=\"http://code.google.com/p/latex-lab\" target=\"_blank\">Terms and Conditions</a>."));
+    content.add(warning);
     settingsPanel = new FlexTable();
     settingsPanel.setVisible(false);
     clsiServiceUrl = new TextBox();
@@ -117,8 +132,11 @@ public class CompilerSettingsDialog extends Dialog {
     	        compilerName.getValue());
     	  }
     	}
-    	CommandEvent.fire(CompilerSettingsDialog.this, cmd);
         hide();
+    	CommandEvent.fire(CompilerSettingsDialog.this, cmd);
+    	if (continueCommand != null) {
+    	  CommandEvent.fire(CompilerSettingsDialog.this, continueCommand);
+    	}
       }
     });
     cancel = new Button("Cancel", cancelHandler);
@@ -138,5 +156,13 @@ public class CompilerSettingsDialog extends Dialog {
     settingsPanel.setWidget(i, 0, new Label(name + ":"));
     settingsPanel.setWidget(i, 1, field);
   }
-  
+
+  public Command getContinueCommand() {
+    return continueCommand;
+  }
+
+  public void setContinueCommand(Command continueCommand) {
+    this.continueCommand = continueCommand;
+  }
+
 }

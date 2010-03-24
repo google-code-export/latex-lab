@@ -6,7 +6,9 @@ import com.google.gwt.user.client.ui.ImageBundle;
 /**
  * An image bundle storing GDBE icons and images.
  */
+@SuppressWarnings("deprecation")
 public interface EditorIconsImageBundle extends ImageBundle {
+	
 	public AbstractImagePrototype AlignLeft();
 	public AbstractImagePrototype AlignMiddle();
 	public AbstractImagePrototype AlignRight();
@@ -70,4 +72,5 @@ public interface EditorIconsImageBundle extends ImageBundle {
 	public AbstractImagePrototype Undo();
 	public AbstractImagePrototype UnorderedList();
 	public AbstractImagePrototype UploadDocument();
+	
 }

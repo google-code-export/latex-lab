@@ -3,7 +3,7 @@ package org.latexlab.docs.client.dialogs;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.events.HasCommandHandlers;
-import org.latexlab.docs.client.resources.icons.EditorIcons;
+import org.latexlab.docs.client.resources.icons.Icons;
 import org.latexlab.docs.client.widgets.GlassPanel;
 
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -41,7 +41,7 @@ public abstract class Dialog extends DialogBox implements HasCommandHandlers {
     GlassPanel.setGlassPanelVisibility(false, DIALOG_ZINDEX - 1);
     titleLabel = new Label();
     titleLabel.setText(title);
-    closeButton = new PushButton(EditorIcons.icons.CloseBlue().createImage());
+    closeButton = new PushButton(Icons.editorIcons.CloseBlue().createImage());
     closeButton.setStylePrimaryName("CloseButton");
     mainPanel = new FlexTable();
     mainPanel.setCellSpacing(0);
@@ -56,6 +56,7 @@ public abstract class Dialog extends DialogBox implements HasCommandHandlers {
     mainPanel.insertCell(2, 0);
     mainPanel.getRowFormatter().setStylePrimaryName(0, "Header");
     mainPanel.getCellFormatter().setHorizontalAlignment(0, 1, HorizontalPanel.ALIGN_RIGHT);
+    mainPanel.getCellFormatter().setWidth(0, 1, "16px");
     mainPanel.getCellFormatter().setStylePrimaryName(0, 0, "Title");
     mainPanel.getCellFormatter().setStylePrimaryName(1, 0, "Tabs");
     mainPanel.getCellFormatter().setStylePrimaryName(2, 0, "Content");

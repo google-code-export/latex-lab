@@ -4,7 +4,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class DocumentUser implements IsSerializable {
 
-  private String id, name, email;
+  private String id, name, email, token;
 	
   public DocumentUser() { }
 
@@ -31,6 +31,14 @@ public class DocumentUser implements IsSerializable {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
   }
   
 }

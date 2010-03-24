@@ -12,7 +12,7 @@ public class LoadingDialog extends Dialog {
 
   protected static LoadingDialog instance;
   
-  public static LoadingDialog getInstance(CommandHandler handler) {
+  public static LoadingDialog get(CommandHandler handler) {
     if (instance == null) {
       instance = new LoadingDialog();
       instance.addCommandHandler(handler);

@@ -29,7 +29,12 @@
   
   <servlet-mapping>
     <servlet-name>DocumentsService</servlet-name>
-    <url-pattern>/editor/doc-rpc</url-pattern>
+    <url-pattern>/editor_advanced/doc-rpc</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>DocumentsService</servlet-name>
+    <url-pattern>/editor_simple/doc-rpc</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
@@ -39,7 +44,12 @@
   
   <servlet-mapping>
     <servlet-name>LatexLabService</servlet-name>
-    <url-pattern>/editor/lab-rpc</url-pattern>
+    <url-pattern>/editor_advanced/lab-rpc</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>LatexLabService</servlet-name>
+    <url-pattern>/editor_simple/lab-rpc</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>

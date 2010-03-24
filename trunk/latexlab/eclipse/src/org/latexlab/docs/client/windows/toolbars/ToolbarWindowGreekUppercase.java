@@ -1,44 +1,60 @@
 package org.latexlab.docs.client.windows.toolbars;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
-import org.latexlab.docs.client.resources.icons.latex.LatexIcons;
+import org.latexlab.docs.client.events.CommandHandler;
+import org.latexlab.docs.client.resources.icons.Icons;
 import org.latexlab.docs.client.windows.ToolbarWindow;
+import org.latexlab.docs.client.windows.WindowManager;
 
-import com.google.gwt.user.client.ui.FlowPanel;
+public class ToolbarWindowGreekUppercase extends ToolbarWindow {
 
-public class ToolbarWindowGreekUppercase extends ToolbarWindow{
+  public final static String TITLE = "Greek Uppercase Letters";
 
-  public ToolbarWindowGreekUppercase() {
-	super("Greek Uppercase Letters");
+  protected static ToolbarWindowGreekUppercase instance;
+  
+  public static ToolbarWindowGreekUppercase get(CommandHandler handler,
+	    WindowManager manager) {
+    if (instance == null) {
+      instance = new ToolbarWindowGreekUppercase();
+      instance.addCommandHandler(handler);
+	  instance.registeredDragController = manager.getWindowController().getPickupDragController();
+	  instance.hide();
+	  manager.getWindowController().makeResizable(instance);
+	  manager.getBoundaryPanel().add(instance, 500, 120);
+    }
+    return instance;
+  }
+
+  protected ToolbarWindowGreekUppercase() {
+	super(TITLE);
     buildToolBar();
   }
 
   private void buildToolBar() {
-	FlowPanel panel = (FlowPanel) contentWidget;
-    panel.setStyleName("gdbe-Toolbar");
-    panel.add(buildButton(LatexIcons.icons.Icon46(), "Capital alpha", false, new SystemPasteCommand("A")));
-    panel.add(buildButton(LatexIcons.icons.Icon63(), "Capital beta", false, new SystemPasteCommand("B")));
-    panel.add(buildButton(LatexIcons.icons.Icon80(), "Capital chi", false, new SystemPasteCommand("X")));
-    panel.add(buildButton(LatexIcons.icons.Icon97(), "Capital delta", false, new SystemPasteCommand("\\Delta")));
-    panel.add(buildButton(LatexIcons.icons.Icon114(), "Capital epsilon", false, new SystemPasteCommand("E")));
-    panel.add(buildButton(LatexIcons.icons.Icon131(), "Capital phi", false, new SystemPasteCommand("\\Phi")));
-    panel.add(buildButton(LatexIcons.icons.Icon148(), "Capital gamma", false, new SystemPasteCommand("\\Gamma")));
-    panel.add(buildButton(LatexIcons.icons.Icon165(), "Capital eta", false, new SystemPasteCommand("H")));
-    panel.add(buildButton(LatexIcons.icons.Icon182(), "Capital iota", false, new SystemPasteCommand("I")));
-    panel.add(buildButton(LatexIcons.icons.Icon199(), "Capital kappa", false, new SystemPasteCommand("K")));
-    panel.add(buildButton(LatexIcons.icons.Icon216(), "Capital lambda", false, new SystemPasteCommand("\\Lambda")));
-    panel.add(buildButton(LatexIcons.icons.Icon233(), "Capital mu", false, new SystemPasteCommand("M")));
-    panel.add(buildButton(LatexIcons.icons.Icon250(), "Capital nu", false, new SystemPasteCommand("N")));
-    panel.add(buildButton(LatexIcons.icons.Icon267(), "Capital o", false, new SystemPasteCommand("O")));
-    panel.add(buildButton(LatexIcons.icons.Icon284(), "Capital pi", false, new SystemPasteCommand("\\Pi")));
-    panel.add(buildButton(LatexIcons.icons.Icon301(), "Capital theta", false, new SystemPasteCommand("\\Theta")));
-    panel.add(buildButton(LatexIcons.icons.Icon318(), "Capital rho", false, new SystemPasteCommand("P")));
-    panel.add(buildButton(LatexIcons.icons.Icon335(), "Capital sigma", false, new SystemPasteCommand("\\Sigma")));
-    panel.add(buildButton(LatexIcons.icons.Icon352(), "Capital tau", false, new SystemPasteCommand("T")));
-    panel.add(buildButton(LatexIcons.icons.Icon369(), "Capital upsilon", false, new SystemPasteCommand("\\Upsilon")));
-    panel.add(buildButton(LatexIcons.icons.Icon386(), "Capital omega", false, new SystemPasteCommand("\\Omega")));
-    panel.add(buildButton(LatexIcons.icons.Icon403(), "Capital xi", false, new SystemPasteCommand("\\Xi")));
-    panel.add(buildButton(LatexIcons.icons.Icon13(), "Capital psi", false, new SystemPasteCommand("\\Psi")));
-    panel.add(buildButton(LatexIcons.icons.Icon30(), "Capital zeta", false, new SystemPasteCommand("Z")));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalAlpha(), "Capital alpha", false, new SystemPasteCommand("A"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalBeta(), "Capital beta", false, new SystemPasteCommand("B"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalChi(), "Capital chi", false, new SystemPasteCommand("X"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalDelta(), "Capital delta", false, new SystemPasteCommand("\\Delta"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalEpsilon(), "Capital epsilon", false, new SystemPasteCommand("E"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalPhi(), "Capital phi", false, new SystemPasteCommand("\\Phi"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalGamma(), "Capital gamma", false, new SystemPasteCommand("\\Gamma"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalEta(), "Capital eta", false, new SystemPasteCommand("H"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalIota(), "Capital iota", false, new SystemPasteCommand("I"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalKappa(), "Capital kappa", false, new SystemPasteCommand("K"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalLambda(), "Capital lambda", false, new SystemPasteCommand("\\Lambda"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalMu(), "Capital mu", false, new SystemPasteCommand("M"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalNu(), "Capital nu", false, new SystemPasteCommand("N"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalO(), "Capital o", false, new SystemPasteCommand("O"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalPi(), "Capital pi", false, new SystemPasteCommand("\\Pi"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalTheta(), "Capital theta", false, new SystemPasteCommand("\\Theta"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalRho(), "Capital rho", false, new SystemPasteCommand("P"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalSigma(), "Capital sigma", false, new SystemPasteCommand("\\Sigma"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalTau(), "Capital tau", false, new SystemPasteCommand("T"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalUpsilon(), "Capital upsilon", false, new SystemPasteCommand("\\Upsilon"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalOmega(), "Capital omega", false, new SystemPasteCommand("\\Omega"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalXi(), "Capital xi", false, new SystemPasteCommand("\\Xi"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalPsi(), "Capital psi", false, new SystemPasteCommand("\\Psi"));
+    addButton(Icons.latexGreekUppercaseIcons.CapitalZeta(), "Capital zeta", false, new SystemPasteCommand("Z"));
+    resize();
   }
 }

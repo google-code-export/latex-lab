@@ -1,30 +1,46 @@
 package org.latexlab.docs.client.windows.toolbars;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
-import org.latexlab.docs.client.resources.icons.latex.LatexIcons;
+import org.latexlab.docs.client.events.CommandHandler;
+import org.latexlab.docs.client.resources.icons.Icons;
 import org.latexlab.docs.client.windows.ToolbarWindow;
+import org.latexlab.docs.client.windows.WindowManager;
 
-import com.google.gwt.user.client.ui.FlowPanel;
+public class ToolbarWindowSets extends ToolbarWindow {
 
-public class ToolbarWindowSets extends ToolbarWindow{
+  public final static String TITLE = "Sets";
 
-  public ToolbarWindowSets() {
-	super("Sets");
+  protected static ToolbarWindowSets instance;
+  
+  public static ToolbarWindowSets get(CommandHandler handler,
+	    WindowManager manager) {
+    if (instance == null) {
+      instance = new ToolbarWindowSets();
+      instance.addCommandHandler(handler);
+	  instance.registeredDragController = manager.getWindowController().getPickupDragController();
+	  instance.hide();
+	  manager.getWindowController().makeResizable(instance);
+	  manager.getBoundaryPanel().add(instance, 500, 120);
+    }
+    return instance;
+  }
+
+  protected ToolbarWindowSets() {
+	super(TITLE);
     buildToolBar();
   }
 
   private void buildToolBar() {
-	FlowPanel panel = (FlowPanel) contentWidget;
-    panel.setStyleName("gdbe-Toolbar");
-    panel.add(buildButton(LatexIcons.icons.Icon349(), "Element of", false, new SystemPasteCommand("\\in")));
-    panel.add(buildButton(LatexIcons.icons.Icon366(), "Not element of", false, new SystemPasteCommand("\\notin")));
-    panel.add(buildButton(LatexIcons.icons.Icon383(), "Union", false, new SystemPasteCommand("\\cup")));
-    panel.add(buildButton(LatexIcons.icons.Icon400(), "Intersection", false, new SystemPasteCommand("\\cap")));
-    panel.add(buildButton(LatexIcons.icons.Icon10(), "Union Large", false, new SystemPasteCommand("\\bigcup")));
-    panel.add(buildButton(LatexIcons.icons.Icon27(), "Intersection Large", false, new SystemPasteCommand("\\bigcap")));
-    panel.add(buildButton(LatexIcons.icons.Icon44(), "Contained in", false, new SystemPasteCommand("\\subset")));
-    panel.add(buildButton(LatexIcons.icons.Icon61(), "Contains", false, new SystemPasteCommand("\\supset")));
-    panel.add(buildButton(LatexIcons.icons.Icon78(), "Contained in or equal to", false, new SystemPasteCommand("\\subseteq")));
-    panel.add(buildButton(LatexIcons.icons.Icon95(), "Contains or equal to", false, new SystemPasteCommand("\\supseteq")));
+    addButton(Icons.latexSetsIcons.ElementOf(), "Element of", false, new SystemPasteCommand("\\in"));
+    addButton(Icons.latexSetsIcons.NotElementOf(), "Not element of", false, new SystemPasteCommand("\\notin"));
+    addButton(Icons.latexSetsIcons.Union(), "Union", false, new SystemPasteCommand("\\cup"));
+    addButton(Icons.latexSetsIcons.Intersection(), "Intersection", false, new SystemPasteCommand("\\cap"));
+    addButton(Icons.latexSetsIcons.UnionLarge(), "Union Large", false, new SystemPasteCommand("\\bigcup"));
+    addButton(Icons.latexSetsIcons.IntersectionLarge(), "Intersection Large", false, new SystemPasteCommand("\\bigcap"));
+    addButton(Icons.latexSetsIcons.ContainedIn(), "Contained in", false, new SystemPasteCommand("\\subset"));
+    addButton(Icons.latexSetsIcons.Contains(), "Contains", false, new SystemPasteCommand("\\supset"));
+    addButton(Icons.latexSetsIcons.ContainedInOrEqualTo(), "Contained in or equal to", false, new SystemPasteCommand("\\subseteq"));
+    addButton(Icons.latexSetsIcons.ContainsOrEqualTo(), "Contains or equal to", false, new SystemPasteCommand("\\supseteq"));
+    resize();
   }
 }

@@ -1,14 +1,12 @@
 package org.latexlab.docs.client.windows;
 
 import org.latexlab.docs.client.commands.Command;
+import org.latexlab.docs.client.commands.SystemToggleToolbarCommand;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.events.HasCommandHandlers;
 
-import com.google.gwt.dom.client.Style.BorderStyle;
-import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Overflow;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.GwtEvent;
@@ -23,12 +21,20 @@ import com.google.gwt.user.client.ui.Widget;
 public abstract class ToolbarWindow extends Window implements HasCommandHandlers {
 
   private HandlerManager manager;
+  protected FlowPanel panel;
+  protected int buttonsPerRow = 10, buttonWidth = 27, buttonHeight = 27;
 	
   public ToolbarWindow(String title) {
     super(title, new FlowPanel(), false);
-    FlowPanel panel = (FlowPanel)this.contentWidget;
+	mainPanel.getFlexCellFormatter().setStylePrimaryName(1, 0, "lab-Toolbar");
+    panel = (FlowPanel)this.contentWidget;
     panel.getElement().getStyle().setOverflow(Overflow.HIDDEN);
     manager = new HandlerManager(this);
+    addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          CommandEvent.fire(ToolbarWindow.this, new SystemToggleToolbarCommand(ToolbarWindow.this.getTitle()));
+	    }
+	});
   }
   
   public void toggle() {
@@ -37,6 +43,18 @@ public abstract class ToolbarWindow extends Window implements HasCommandHandlers
     } else {
       this.show();
     }
+  }
+  
+  protected void addButton(AbstractImagePrototype icon, String title, boolean isToggle, final Command command) {
+    panel.add(buildButton(icon, title, isToggle, command));
+  }
+  
+  protected void resize() {
+    int xcount = buttonsPerRow;
+    if (xcount > panel.getWidgetCount()) {
+      xcount = panel.getWidgetCount();
+    }
+    setContentSizeFinal();
   }
   
   /**
@@ -51,7 +69,6 @@ public abstract class ToolbarWindow extends Window implements HasCommandHandlers
   protected Widget buildButton(AbstractImagePrototype icon, String title, boolean isToggle, final Command command){
     if(isToggle){
       final ToggleButton btn = new ToggleButton(icon.createImage());
-      btn.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
       btn.setTitle(title);
       btn.addClickHandler(new ClickHandler(){
         public void onClick(ClickEvent event) {
@@ -61,7 +78,6 @@ public abstract class ToolbarWindow extends Window implements HasCommandHandlers
       return btn;
     }else{
       final PushButton btn = new PushButton(icon.createImage());
-      btn.getElement().getStyle().setDisplay(Display.INLINE_BLOCK);
       btn.setTitle(title);
       btn.addClickHandler(new ClickHandler(){
         public void onClick(ClickEvent event) {
@@ -73,9 +89,37 @@ public abstract class ToolbarWindow extends Window implements HasCommandHandlers
   }
   
   @Override
-  public void onResize(int width, int height) {
-	FlowPanel panel = (FlowPanel) this.contentWidget;
-	panel.setPixelSize(width, height);
+  public void setContentSize(int width, int height) {
+	int minWidth = buttonWidth * 2;
+	if (width < minWidth) {
+	  width = minWidth;
+	}
+	if (width < buttonWidth) {
+	  width = buttonWidth;
+	}
+	if (height < buttonHeight) {
+	  height = buttonHeight;
+	}
+	super.setContentSize(width, height);
+  }
+  
+  @Override
+  public void setContentSizeFinal() {
+	int width = panel.getOffsetWidth();
+	int height = panel.getOffsetHeight();
+	if (width == 0) {
+	  width = buttonsPerRow * buttonWidth;
+	}
+	int count = panel.getWidgetCount();
+	int xcount = (int) Math.ceil((float) width / (float) buttonWidth);
+    int ycount = (int) Math.ceil((float) count / (float) xcount);
+	if (xcount > count) {
+	  xcount = count;
+	  ycount = 1;
+	}
+	width = xcount * buttonWidth;
+	height = ycount * buttonHeight;
+	super.setContentSize(width, height);
   }
   
   @Override

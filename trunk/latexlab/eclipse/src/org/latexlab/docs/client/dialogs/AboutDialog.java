@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import org.latexlab.docs.client.events.CommandHandler;
-import org.latexlab.docs.client.resources.icons.EditorIcons;
+import org.latexlab.docs.client.resources.icons.Icons;
 
 /**
  * A dialog window displaying details of the application.
@@ -19,7 +19,7 @@ public class AboutDialog extends Dialog {
 
   protected static AboutDialog instance;
   
-  public static AboutDialog getInstance(CommandHandler handler) {
+  public static AboutDialog get(CommandHandler handler) {
     if (instance == null) {
       instance = new AboutDialog();
       instance.addCommandHandler(handler);
@@ -38,8 +38,8 @@ public class AboutDialog extends Dialog {
       }
     });
     VerticalPanel content = new VerticalPanel();
-    content.setStylePrimaryName("gdbe-About");
-    Image logo = EditorIcons.icons.LogoLarge().createImage();
+    content.setStylePrimaryName("lab-About");
+    Image logo = Icons.editorIcons.LogoLarge().createImage();
     content.setHorizontalAlignment(VerticalPanel.ALIGN_LEFT);
     content.add(logo);
     content.setSize("650px", "100px");

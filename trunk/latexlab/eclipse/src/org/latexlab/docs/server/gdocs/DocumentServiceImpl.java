@@ -114,21 +114,16 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
       MediaSource ms = svc.getMedia(mc);
       InputStreamReader reader = null;
       try {
-        reader = new InputStreamReader(ms.getInputStream());
+        reader = new InputStreamReader(ms.getInputStream(), "UTF8");
         BufferedReader br = new BufferedReader(reader);
         StringBuilder contents = new StringBuilder();
         String line = null;
         while ((line = br.readLine()) != null) {
           contents.append(line + "\n");
         }
-        /*
-         * Contents exported as text start with the UTF-8 byte-order-mark. Remove them.
-         */
-        String txt = contents.toString();
-        if(txt.length() > 3){
-          txt = txt.substring(3);
-        }
-        return decodeDocumentContents(txt);
+        String text = contents.toString();
+        text = text.substring(1); //remove UTF-8 byte-order-mark character
+        return decodeDocumentContents(text);
       }  finally {
         if (reader != null) {
           reader.close();
@@ -150,9 +145,9 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
   public boolean setDocumentContents(String documentId, String etag, String contents) throws DocumentServiceException {
     DocsService svc = getDocsService();
     svc.getRequestFactory().setHeader("If-Match", etag);
-    MediaByteArraySource source = new MediaByteArraySource(contents.getBytes(), "text/plain");
-    String editMediaUri = DOCS_SCOPE + "default/media/document%3A" + documentId;
     try {
+	  MediaByteArraySource source = new MediaByteArraySource(contents.getBytes("UTF8"), "text/plain");
+	  String editMediaUri = DOCS_SCOPE + "default/media/document%3A" + documentId;
       svc.updateMedia(new URL(editMediaUri), DocumentListEntry.class, source);
     } catch (Exception e) {
       throw new DocumentServiceException(e.getMessage());
@@ -309,8 +304,10 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
     User user = userService.getCurrentUser();
     if (user != null){
       String email = user.getEmail();
-      if (AuthenticationToken.getUserToken(email) != null) {
+      AuthenticationToken at = AuthenticationToken.getUserToken(email);
+      if (at != null) {
         DocumentUser docUser = new DocumentUser();
+        docUser.setToken(at.getToken());
         docUser.setName(user.getNickname());
         docUser.setEmail(user.getEmail());
         docUser.setId(user.getUserId());
@@ -337,7 +334,7 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
     AuthenticationToken token = store.getUserToken();
     if (token != null) {
       try {
-        AuthSubUtil.revokeToken(token.getToken(), null);
+        AuthSubUtil.revokeToken(token.getToken(), AuthenticationKey.getAuthSubKey());
         AuthenticationToken.clearUserToken(token.getEmail());
         UserService userService = UserServiceFactory.getUserService();
         URI url = new URI(this.getThreadLocalRequest().getRequestURL().toString());
@@ -412,7 +409,7 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
    * @return the decoded value
    */
   private String decodeDocumentContents(String value) {
-    return value.replace("\u00C2\u00AB", "<").replace("\u00C2\u00BB", ">");
+    return value.replace("\u00AB", "<").replace("\u00BB", ">");
   }
   
   /**

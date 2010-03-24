@@ -1,25 +1,41 @@
 package org.latexlab.docs.client.windows.toolbars;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
-import org.latexlab.docs.client.resources.icons.latex.LatexIcons;
+import org.latexlab.docs.client.events.CommandHandler;
+import org.latexlab.docs.client.resources.icons.Icons;
 import org.latexlab.docs.client.windows.ToolbarWindow;
+import org.latexlab.docs.client.windows.WindowManager;
 
-import com.google.gwt.user.client.ui.FlowPanel;
+public class ToolbarWindowOperators extends ToolbarWindow {
 
-public class ToolbarWindowOperators extends ToolbarWindow{
+  public final static String TITLE = "Operators";
 
-  public ToolbarWindowOperators() {
-	super("Operators");
+  protected static ToolbarWindowOperators instance;
+  
+  public static ToolbarWindowOperators get(CommandHandler handler,
+	    WindowManager manager) {
+    if (instance == null) {
+      instance = new ToolbarWindowOperators();
+      instance.addCommandHandler(handler);
+	  instance.registeredDragController = manager.getWindowController().getPickupDragController();
+	  instance.hide();
+	  manager.getWindowController().makeResizable(instance);
+	  manager.getBoundaryPanel().add(instance, 500, 120);
+    }
+    return instance;
+  }
+
+  protected ToolbarWindowOperators() {
+	super(TITLE);
     buildToolBar();
   }
 
   private void buildToolBar() {
-	FlowPanel panel = (FlowPanel) contentWidget;
-    panel.setStyleName("gdbe-Toolbar");
-    panel.add(buildButton(LatexIcons.icons.Icon201(), "Sum", false, new SystemPasteCommand("\\sum")));
-    panel.add(buildButton(LatexIcons.icons.Icon218(), "Integral", false, new SystemPasteCommand("\\int")));
-    panel.add(buildButton(LatexIcons.icons.Icon235(), "O Integral", false, new SystemPasteCommand("\\oint")));
-    panel.add(buildButton(LatexIcons.icons.Icon252(), "Product", false, new SystemPasteCommand("\\prod")));
-    panel.add(buildButton(LatexIcons.icons.Icon269(), "Co-product", false, new SystemPasteCommand("\\coprod")));
+    addButton(Icons.latexOperatorsIcons.Sum(), "Sum", false, new SystemPasteCommand("\\sum"));
+    addButton(Icons.latexOperatorsIcons.Integral(), "Integral", false, new SystemPasteCommand("\\int"));
+    addButton(Icons.latexOperatorsIcons.OIntegral(), "O Integral", false, new SystemPasteCommand("\\oint"));
+    addButton(Icons.latexOperatorsIcons.Product(), "Product", false, new SystemPasteCommand("\\prod"));
+    addButton(Icons.latexOperatorsIcons.CoProduct(), "Co-product", false, new SystemPasteCommand("\\coprod"));
+    resize();
   }
 }

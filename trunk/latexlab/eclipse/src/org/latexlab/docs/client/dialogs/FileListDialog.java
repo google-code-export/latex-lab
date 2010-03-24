@@ -10,7 +10,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabBar;
@@ -20,12 +20,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import org.latexlab.docs.client.commands.FileDialogListDocumentsCommand;
 import org.latexlab.docs.client.commands.FileDialogStarDocumentCommand;
 import org.latexlab.docs.client.commands.FileDialogUnstarDocumentCommand;
-import org.latexlab.docs.client.commands.SystemSignOutCommand;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
-import org.latexlab.docs.client.resources.icons.EditorIcons;
+import org.latexlab.docs.client.resources.icons.Icons;
 import org.latexlab.docs.client.widgets.ExplorerTree;
+import org.latexlab.docs.client.widgets.ExplorerTree.StarHandler;
 
 /**
  * A dialog window displaying the user's documents.
@@ -34,7 +34,7 @@ public class FileListDialog extends Dialog {
 
   protected static FileListDialog instance;
   
-  public static FileListDialog getInstance(CommandHandler handler) {
+  public static FileListDialog get(CommandHandler handler) {
     if (instance == null) {
       instance = new FileListDialog();
       instance.addCommandHandler(handler);
@@ -58,7 +58,6 @@ public class FileListDialog extends Dialog {
       }
     });
     documentsPanel = new ScrollPanel(new VerticalPanel());
-    mainPanel.getFlexCellFormatter().setStyleName(1, 0, "");
     leftPanel = new VerticalPanel();
     leftPanel.setWidth("100px");
     leftPanel.setVerticalAlignment(VerticalPanel.ALIGN_TOP);
@@ -129,13 +128,8 @@ public class FileListDialog extends Dialog {
    */
   private void buildLinks() {
     VerticalPanel panel = new VerticalPanel();
-    panel.setStylePrimaryName("gdbe-Explorer-Links");
-    final Anchor signoutLink = new Anchor("Sign Out");
-    signoutLink.addClickHandler(new ClickHandler(){
-      public void onClick(ClickEvent event) {
-    	CommandEvent.fire(FileListDialog.this, new SystemSignOutCommand("/splash.html"));
-      }
-    });
+    panel.setStylePrimaryName("lab-Explorer-Links");
+    mainPanel.getFlexCellFormatter().setStyleName(1, 0, ""); //cancel default style
     Anchor refreshLink = new Anchor("Refresh");
     refreshLink.addClickHandler(new ClickHandler() {
 		@Override
@@ -149,26 +143,14 @@ public class FileListDialog extends Dialog {
     Anchor newDocumentLink = new Anchor("New Document", "/docs", "_blank");
     Anchor acLink = new Anchor("Google Access Control", "https://www.google.com/accounts/IssuedAuthSubTokens", "_blank");
     Anchor docsLink = new Anchor("Google Documents", "http://docs.google.com/", "_blank");
-    Anchor projLink = new Anchor("Project Site", "http://code.google.com/p/gdbe/", "_blank");
-    Anchor wikiLink = new Anchor("Project Wiki", "http://code.google.com/p/gdbe/w/list", "_blank");
-    Anchor issuesLink = new Anchor("Issue Tracker", "http://code.google.com/p/gdbe/issues/list", "_blank");
-    Anchor downloadsLink = new Anchor("Downloads", "http://code.google.com/p/gdbe/downloads/list", "_blank");
     panel.add(new HTML("<br /><b>Actions</b>"));
     panel.add(refreshLink);
     panel.add(newDocumentLink);
-    panel.add(signoutLink);
     panel.add(new HTML("<br /><b>Links</b>"));
     panel.add(acLink);
     panel.add(docsLink);
-    panel.add(new HTML("<br /><b>Project</b>"));
-    panel.add(projLink);
-    panel.add(wikiLink);
-    panel.add(issuesLink);
-    panel.add(downloadsLink);
     linksPanel = new ScrollPanel(panel);
     leftPanel.add(linksPanel);
-    Image logo = EditorIcons.icons.Logo().createImage();
-    leftPanel.add(logo);
   }
   
   /**
@@ -204,7 +186,7 @@ public class FileListDialog extends Dialog {
   private void showQuickView() {
 	rightPanel.clear();
     VerticalPanel panel = new VerticalPanel();
-    panel.setStylePrimaryName("gdbe-Explorer-Documents");
+    panel.setStylePrimaryName("lab-Explorer-Documents");
     int totalEntries = 0;
     for (DocumentServiceEntry entry : entries) {
       if (!entry.isStarred()) {
@@ -224,14 +206,14 @@ public class FileListDialog extends Dialog {
       docTable.insertCell(2, 0);
       docTable.insertCell(2, 1);
       docTable.insertCell(2, 2);
-      docTable.setStylePrimaryName("gdbe-Explorer-Document");
+      docTable.setStylePrimaryName("lab-Explorer-Document");
       Anchor link = new Anchor();
       link.setText(entry.getTitle());
       link.setTarget("_blank");
       link.setHref("/docs?docid=" + entry.getDocumentId());
       ToggleButton star = new ToggleButton(
-          EditorIcons.icons.StarEmpty().createImage(),
-          EditorIcons.icons.StarFull().createImage());
+          Icons.editorIcons.StarEmpty().createImage(),
+          Icons.editorIcons.StarFull().createImage());
       star.setDown(entry.isStarred());
       star.addClickHandler(new ClickHandler(){
         public void onClick(ClickEvent event) {
@@ -244,15 +226,17 @@ public class FileListDialog extends Dialog {
         }
       });
       Label info = new Label(entry.getEdited().toString() + " by " + entry.getEditor());
-      info.setStylePrimaryName("gdbe-Explorer-Document-Info");
+      info.setStylePrimaryName("lab-Explorer-Document-Info");
       docTable.setWidget(0, 0, star);
-      docTable.setWidget(0, 1, EditorIcons.icons.Document().createImage());
+      docTable.setWidget(0, 1, Icons.editorIcons.Document().createImage());
       docTable.setWidget(0, 2, link);
       docTable.setWidget(1, 2, info);
       if (entry.getFolders().length > 0) {
-        Label folder = new Label(entry.getFolders()[0]);
-        folder.setStylePrimaryName("gdbe-Explorer-Document-Folder");
-        docTable.setWidget(2, 2, folder);
+        Label folderLabel = new Label(entry.getFolders()[0]);
+        folderLabel.setStylePrimaryName("lab-Explorer-Document-Folder");
+    	HorizontalPanel folderPanel = new HorizontalPanel();
+    	folderPanel.add(folderLabel);
+        docTable.setWidget(2, 2, folderPanel);
       }
       panel.add(docTable);
       totalEntries++;
@@ -267,7 +251,16 @@ public class FileListDialog extends Dialog {
   
   private void showExplorerView() {
     rightPanel.clear();
-    ExplorerTree tree = new ExplorerTree(false);
+    ExplorerTree tree = new ExplorerTree(false, new StarHandler(){
+		@Override
+		public void onStar(String id) {
+		  CommandEvent.fire(FileListDialog.this, new FileDialogStarDocumentCommand(id));
+		}
+		@Override
+		public void onUnstar(String id) {
+		  CommandEvent.fire(FileListDialog.this, new FileDialogUnstarDocumentCommand(id));
+		}
+    });
     tree.setEntries(entries);
     documentsPanel = new ScrollPanel(tree);
     rightPanel.add(documentsPanel);

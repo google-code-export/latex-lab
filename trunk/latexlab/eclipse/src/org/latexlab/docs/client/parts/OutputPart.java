@@ -59,7 +59,7 @@ public class OutputPart extends Composite {
 	  this.clear();
 	  Label label = new Label();
 	  label.setSize("100%", "100%");
-	  label.setStylePrimaryName("latexlab-Output");
+	  label.setStylePrimaryName("lab-Output");
 	  this.output = label;
 	  this.content.add(this.output);
 	}
@@ -76,14 +76,13 @@ public class OutputPart extends Composite {
     if (this.output == null || !(this.output instanceof Frame)) {
 	  this.clear();
       Frame frame = new Frame();
-      frame.setSize("100%", "1500px");
+      frame.setSize("100%", "99%");
       IFrameElement.as(frame.getElement()).setFrameBorder(0);
       IFrameElement.as(frame.getElement()).setMarginHeight(0);
       IFrameElement.as(frame.getElement()).setMarginWidth(0);
-      IFrameElement.as(frame.getElement()).setScrolling("no");
       this.output = frame;
       this.content.add(this.output);
-      this.content.getElement().getParentElement().getStyle().setProperty("overflowX", "hidden");
+      this.content.getElement().getParentElement().getStyle().setProperty("overflow", "hidden");
     }
     Frame frame = (Frame) this.output;
     frame.setUrl(url);

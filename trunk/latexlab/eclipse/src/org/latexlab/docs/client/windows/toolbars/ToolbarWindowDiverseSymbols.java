@@ -1,36 +1,52 @@
 package org.latexlab.docs.client.windows.toolbars;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
-import org.latexlab.docs.client.resources.icons.latex.LatexIcons;
+import org.latexlab.docs.client.events.CommandHandler;
+import org.latexlab.docs.client.resources.icons.Icons;
 import org.latexlab.docs.client.windows.ToolbarWindow;
+import org.latexlab.docs.client.windows.WindowManager;
 
-import com.google.gwt.user.client.ui.FlowPanel;
+public class ToolbarWindowDiverseSymbols extends ToolbarWindow {
 
-public class ToolbarWindowDiverseSymbols extends ToolbarWindow{
+  public final static String TITLE = "Diverse Symbols";
 
-  public ToolbarWindowDiverseSymbols() {
-	super("Diverse Symbols");
+  protected static ToolbarWindowDiverseSymbols instance;
+  
+  public static ToolbarWindowDiverseSymbols get(CommandHandler handler,
+	    WindowManager manager) {
+    if (instance == null) {
+      instance = new ToolbarWindowDiverseSymbols();
+      instance.addCommandHandler(handler);
+	  instance.registeredDragController = manager.getWindowController().getPickupDragController();
+	  instance.hide();
+	  manager.getWindowController().makeResizable(instance);
+	  manager.getBoundaryPanel().add(instance, 500, 120);
+    }
+    return instance;
+  }
+
+  protected ToolbarWindowDiverseSymbols() {
+	super(TITLE);
     buildToolBar();
   }
 
   private void buildToolBar() {
-	FlowPanel panel = (FlowPanel) contentWidget;
-    panel.setStyleName("gdbe-Toolbar");
-    panel.add(buildButton(LatexIcons.icons.Icon112(), "Partial", false, new SystemPasteCommand("\\partial")));
-    panel.add(buildButton(LatexIcons.icons.Icon129(), "Nabla", false, new SystemPasteCommand("\\nabla")));
-    panel.add(buildButton(LatexIcons.icons.Icon146(), "Infinity", false, new SystemPasteCommand("\\infty")));
-    panel.add(buildButton(LatexIcons.icons.Icon163(), " ", false, new SystemPasteCommand("\\Im")));
-    panel.add(buildButton(LatexIcons.icons.Icon180(), " ", false, new SystemPasteCommand("\\Re")));
-    panel.add(buildButton(LatexIcons.icons.Icon197(), " ", false, new SystemPasteCommand("\\aleph")));
-    panel.add(buildButton(LatexIcons.icons.Icon214(), "Angle", false, new SystemPasteCommand("\\angle")));
-    panel.add(buildButton(LatexIcons.icons.Icon231(), "Bot", false, new SystemPasteCommand("\\bot")));
-    panel.add(buildButton(LatexIcons.icons.Icon384(), "Diamond", false, new SystemPasteCommand("\\diamond")));
-    panel.add(buildButton(LatexIcons.icons.Icon401(), "Ell", false, new SystemPasteCommand("\\ell")));
-    panel.add(buildButton(LatexIcons.icons.Icon11(), "Wp", false, new SystemPasteCommand("\\wp")));
-    panel.add(buildButton(LatexIcons.icons.Icon28(), "Hbar", false, new SystemPasteCommand("\\hbar")));
-    panel.add(buildButton(LatexIcons.icons.Icon45(), "Integral", false, new SystemPasteCommand("\\int")));
-    panel.add(buildButton(LatexIcons.icons.Icon62(), "Sum", false, new SystemPasteCommand("\\sum")));
-    panel.add(buildButton(LatexIcons.icons.Icon79(), "Product", false, new SystemPasteCommand("\\prod")));
-    panel.add(buildButton(LatexIcons.icons.Icon96(), "Co-Product", false, new SystemPasteCommand("\\coprod")));
+    addButton(Icons.latexDiverseSymbolsIcons.Partial(), "Partial", false, new SystemPasteCommand("\\partial"));
+    addButton(Icons.latexDiverseSymbolsIcons.Nabla(), "Nabla", false, new SystemPasteCommand("\\nabla"));
+    addButton(Icons.latexDiverseSymbolsIcons.Infinity(), "Infinity", false, new SystemPasteCommand("\\infty"));
+    addButton(Icons.latexDiverseSymbolsIcons.Im(), " ", false, new SystemPasteCommand("\\Im"));
+    addButton(Icons.latexDiverseSymbolsIcons.Re(), " ", false, new SystemPasteCommand("\\Re"));
+    addButton(Icons.latexDiverseSymbolsIcons.Aleph(), " ", false, new SystemPasteCommand("\\aleph"));
+    addButton(Icons.latexDiverseSymbolsIcons.Angle(), "Angle", false, new SystemPasteCommand("\\angle"));
+    addButton(Icons.latexDiverseSymbolsIcons.Bot(), "Bot", false, new SystemPasteCommand("\\bot"));
+    addButton(Icons.latexDiverseSymbolsIcons.Diamond(), "Diamond", false, new SystemPasteCommand("\\diamond"));
+    addButton(Icons.latexDiverseSymbolsIcons.Ell(), "Ell", false, new SystemPasteCommand("\\ell"));
+    addButton(Icons.latexDiverseSymbolsIcons.Wp(), "Wp", false, new SystemPasteCommand("\\wp"));
+    addButton(Icons.latexDiverseSymbolsIcons.Hbar(), "Hbar", false, new SystemPasteCommand("\\hbar"));
+    addButton(Icons.latexDiverseSymbolsIcons.Integral(), "Integral", false, new SystemPasteCommand("\\int"));
+    addButton(Icons.latexDiverseSymbolsIcons.Sum(), "Sum", false, new SystemPasteCommand("\\sum"));
+    addButton(Icons.latexDiverseSymbolsIcons.Product(), "Product", false, new SystemPasteCommand("\\prod"));
+    addButton(Icons.latexDiverseSymbolsIcons.CoProduct(), "Co-Product", false, new SystemPasteCommand("\\coprod"));
+    resize();
   }
 }
