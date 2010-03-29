@@ -762,6 +762,12 @@ var Editor = (function(){
         event.stop();
       }
       else if ((event.ctrlKey || event.metaKey) && !event.altKey) {
+        /**CUSTOM:Added control callback**/
+    	if (this.options.controlFunction) {
+          this.options.controlFunction(code);
+          event.stop();
+    	}
+        /*********************************/
         if ((event.shiftKey && code == 90) || code == 89) { // shift-Z, Y
           select.scrollToNode(this.history.redo());
           event.stop();

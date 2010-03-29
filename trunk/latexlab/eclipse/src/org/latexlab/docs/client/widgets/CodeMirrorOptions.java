@@ -1,5 +1,7 @@
 package org.latexlab.docs.client.widgets;
 
+import org.latexlab.docs.client.events.IntRunnable;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 
@@ -36,6 +38,12 @@ public class CodeMirrorOptions extends JavaScriptObject {
   public final native void setChangeCallback(Runnable onChange) /*-{
   	this.onChange = function() {
   		onChange.@java.lang.Runnable::run()();
+  	};
+  }-*/;
+  
+  public final native void setControlCallback(IntRunnable controlFunction) /*-{
+  	this.controlFunction = function(k) {
+  		controlFunction.@org.latexlab.docs.client.events.IntRunnable::run(I)(k);
   	};
   }-*/;
   

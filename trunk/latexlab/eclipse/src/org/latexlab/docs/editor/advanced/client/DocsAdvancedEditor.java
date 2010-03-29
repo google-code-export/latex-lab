@@ -5,12 +5,16 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -71,6 +75,7 @@ import org.latexlab.docs.client.dialogs.LoadingDialog;
 import org.latexlab.docs.client.dialogs.ResourcesDialog;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
+import org.latexlab.docs.client.events.IntRunnable;
 import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
 import org.latexlab.docs.client.gdocs.DocumentService;
 import org.latexlab.docs.client.gdocs.DocumentServiceAsync;
@@ -133,6 +138,7 @@ public class DocsAdvancedEditor implements EntryPoint, CommandHandler {
   private DocumentServiceEntry currentDocument;
   private DocumentServiceEntry[] allDocuments;
   private ToolbarWindow[] toolbars;
+  private IntRunnable controlKeyHandler;
   
   private DocsEditorSettings settings;
 
@@ -245,7 +251,36 @@ public class DocsAdvancedEditor implements EntryPoint, CommandHandler {
     root = new AbsolutePanel();
     root.setSize("100%", "100%");
     root.add(contentPane);
-    RootPanel.get().add(root);
+    FocusPanel wrap = new FocusPanel(root);
+    controlKeyHandler = new IntRunnable() {
+		@Override
+		public void run(int i) {
+	      Event e = Event.getCurrentEvent();
+	      switch(i) {
+	      case 83: //CTRL+S
+	    	if (e != null) e.preventDefault();
+			execute(new CurrentDocumentSaveCommand());
+			break;
+		  case 79: //CTRL+O
+	    	if (e != null) e.preventDefault();
+			execute(new ExistingDocumentOpenCommand());
+			break;
+		  case 78: //CTRL+N
+	    	if (e != null) e.preventDefault();
+			execute(new NewDocumentStartCommand());
+			break;
+		  }
+		}
+    };
+    wrap.addKeyDownHandler(new KeyDownHandler() {
+		@Override
+		public void onKeyDown(KeyDownEvent event) {
+		  if (event.isControlKeyDown()) {
+			controlKeyHandler.run(event.getNativeKeyCode());
+		  }
+		}
+    });
+    RootPanel.get().add(wrap);
     
     windowManager = new WindowManager(root);
     PickupDragController dragController = new PickupDragController(root, true);
@@ -619,7 +654,8 @@ public class DocsAdvancedEditor implements EntryPoint, CommandHandler {
 			@Override
 			public void onSuccess(DocumentServiceEntry result) {
 		      setDocument(result);
-		      loadEditor("\\documentclass[11pt]{article}\n\\usepackage[utf8]{inputenc}\n\\author{Bobby Soares}\n\\title{Untitled Document}\n\\date{" + (new Date()).toString() + "}\n\\begin{document}\n\\maketitle\n\nHello LaTeX Lab!! :)\n\n\\end{document}\n");
+		      loadEditor("\\documentclass[12pt]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{amsmath}\n\\title{\\LaTeX}\n\\date{}\n\\begin{document}\n  \\maketitle \n  \\LaTeX{} is a document preparation system for the \\TeX{} \n  typesetting program. It offers programmable desktop publishing \n  features and extensive facilities for automating most aspects of \n  typesetting and desktop publishing, including numbering and \n  cross-referencing, tables and figures, page layout, bibliographies, \n  and much more. \\LaTeX{} was originally written in 1984 by Leslie \n  Lamport and has become the dominant method for using \\TeX; few \n  people write in plain \\TeX{} anymore. The current version is \n  \\LaTeXe.\n \n  % This is a comment; it is not shown in the final output.\n  % The following shows a little of the typesetting power of LaTeX\n  \\begin{align}\n    E &= mc^2                              \\\\\n    m &= \\frac{m_0}{\\sqrt{1-\\frac{v^2}{c^2}}}\n  \\end{align}\n\\end{document}\n");
+		      //loadEditor("\\documentclass[11pt]{article}\n\\usepackage[utf8]{inputenc}\n\\author{Bobby Soares}\n\\title{Untitled Document}\n\\date{" + (new Date()).toString() + "}\n\\begin{document}\n\\maketitle\n\nHello LaTeX Lab!! :)\n\n\\end{document}\n");
 			}
     	});
         break;
@@ -666,10 +702,10 @@ public class DocsAdvancedEditor implements EntryPoint, CommandHandler {
       case SystemApplyCompilerSettingsCommand.serialUid:
     	SystemApplyCompilerSettingsCommand sacsCmd = (SystemApplyCompilerSettingsCommand) cmd;
     	if (sacsCmd.isUseDefault()) {
-    	  settings.setClsiAsyncPath("http://clsi.latexlab.org/out/async/");
+    	  settings.setClsiAsyncPath("http://dev-clsi.latexlab.org/out/async/");
     	  settings.setClsiServiceToken(CLSI_TOKEN);
     	  settings.setClsiServiceId(currentUser.getToken());
-    	  settings.setClsiServiceUrl("http://clsi.latexlab.org/service.php");
+    	  settings.setClsiServiceUrl("http://dev-clsi.latexlab.org/service.php");
     	  settings.setCompilerName("latex");
     	} else {
     	  settings.setClsiAsyncPath(sacsCmd.getClsiAsyncPath());
@@ -889,9 +925,13 @@ public class DocsAdvancedEditor implements EntryPoint, CommandHandler {
 		    for (int i=0; i<size; i++) {
 		      DocumentSignedLocation dsl = result[i];
 		      DocumentServiceEntry entry = settings.getResources().get(i);
+		      String enc = null;
+		      if (entry.getType().equalsIgnoreCase("document")) {
+		    	enc = "UTF-8";
+		      }
 		      refs[i] = ClsiResourceReference.newInstance(entry.getDocumentId(),
 		          entry.getTitle(), dsl.getUrl(), dsl.getAuthorization(),
-		          entry.getType(), "UTF-8", entry.getEdited());
+		          entry.getContentType(), enc, entry.getEdited());
 		    }
 		    callback.onSuccess(refs);
 		  }
@@ -907,7 +947,8 @@ public class DocsAdvancedEditor implements EntryPoint, CommandHandler {
           clearStatus();
 	    }
     });
-    editor.init(settings.isColorSyntax(), settings.isWrapText(), settings.isShowLineNumbers());
+    editor.init(settings.isColorSyntax(), settings.isWrapText(),
+        settings.isShowLineNumbers(), controlKeyHandler);
   }
   
   private void compile(final String format, final CompileCallback callback) {

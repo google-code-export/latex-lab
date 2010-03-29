@@ -606,10 +606,10 @@ public class DocsSimpleEditor implements EntryPoint, CommandHandler {
       case SystemApplyCompilerSettingsCommand.serialUid:
     	SystemApplyCompilerSettingsCommand sacsCmd = (SystemApplyCompilerSettingsCommand) cmd;
     	if (sacsCmd.isUseDefault()) {
-    	  settings.setClsiAsyncPath("http://clsi.latexlab.org/out/async/");
+    	  settings.setClsiAsyncPath("http://dev-clsi.latexlab.org/out/async/");
     	  settings.setClsiServiceToken("token555555555555");
     	  settings.setClsiServiceId("TempId" + (new Date().getTime()));
-    	  settings.setClsiServiceUrl("http://clsi.latexlab.org/service.php");
+    	  settings.setClsiServiceUrl("http://dev-clsi.latexlab.org/service.php");
     	  settings.setCompilerName("latex");
     	} else {
     	  settings.setClsiAsyncPath(sacsCmd.getClsiAsyncPath());
@@ -705,9 +705,13 @@ public class DocsSimpleEditor implements EntryPoint, CommandHandler {
 		    for (int i=0; i<size; i++) {
 		      DocumentSignedLocation dsl = result[i];
 		      DocumentServiceEntry entry = settings.getResources().get(i);
+		      String enc = null;
+		      if (entry.getType().equalsIgnoreCase("document")) {
+		    	enc = "UTF-8";
+		      }
 		      refs[i] = ClsiResourceReference.newInstance(entry.getDocumentId(),
 		          entry.getTitle(), dsl.getUrl(), dsl.getAuthorization(),
-		          entry.getType(), "UTF-8", entry.getEdited());
+		          entry.getContentType(), enc, entry.getEdited());
 		    }
 		    callback.onSuccess(refs);
 		  }

@@ -15,6 +15,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.TextArea;
 
+import org.latexlab.docs.client.events.IntRunnable;
 import org.latexlab.docs.client.widgets.CodeMirror;
 import org.latexlab.docs.client.widgets.CodeMirrorOptions;
 
@@ -47,7 +48,8 @@ public class EditorPart extends Composite
     initWidget(editor);
   }
   
-  public void init(boolean colorSyntax, boolean wrapText, boolean showLineNumbers) {
+  public void init(boolean colorSyntax, boolean wrapText, boolean showLineNumbers,
+	  IntRunnable controlCallback) {
 	if (!CodeMirror.isProbablySupported()) {
 	  return;
 	}
@@ -69,6 +71,7 @@ public class EditorPart extends Composite
 	opts.setLineNumbers(showLineNumbers);
 	opts.setTextWrapping(wrapText);
 	opts.setLineNumberDelay(0);
+	opts.setControlCallback(controlCallback);
 	opts.setClickCallback(new Runnable() {
 		@Override
 		public void run() {

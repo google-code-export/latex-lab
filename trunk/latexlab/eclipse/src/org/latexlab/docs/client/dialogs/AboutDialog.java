@@ -58,7 +58,7 @@ public class AboutDialog extends Dialog {
     		"<a href=\"http://code.google.com/p/gwt-dnd/\">Gwt-Dnd Project</a>, " +
     		"<a href=\"http://code.google.com/p/gwt-gdata/\">Gwt-GData Project</a>, " +
     		"<a href=\"http://code.google.com/p/gdbe/\">Google-Docs Base Editor (GDBE)</a>, " +
-    		"<br /><a href=\"http://code.google.com/latex-lab\">Visit the LaTeX Lab Project site</a>";
+    		"<br /><a href=\"http://code.google.com/p/latex-lab\">Visit the LaTeX Lab Project site</a>";
     HTML links = new HTML(linksHtml);
     content.add(l1);
     content.add(links);
