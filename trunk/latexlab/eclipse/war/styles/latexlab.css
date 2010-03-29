@@ -67,6 +67,8 @@ a, a:visited, a:hover {
 /** Main Menu Panel */
 .lab-Menu-Panel{
 	border-top: solid 2px #BDCFFF;
+	background-color: #E7EBFF;
+	padding-left: 4px;
 }
 .lab-Menu-Panel .gwt-MenuBar{
 }
@@ -87,7 +89,6 @@ a, a:visited, a:hover {
 	padding-right: 8px;
 	padding-top: 6px;
 	padding-bottom: 7px;
-	border-left: solid 6px #E7EBFF;
 	white-space: nowrap;
 }
 .lab-Menu-Panel .gwt-MenuBar-horizontal .gwt-MenuItem-selected{
@@ -117,11 +118,9 @@ a, a:visited, a:hover {
 	font-weight: normal;
 	font-size: 12px;
 	color: #333333;
-	padding-top: 4px;
-	padding-bottom: 2px;
+	padding-top: 6px;
+	padding-bottom: 6px;
 	padding-left: 6px;
-	border-top: solid 4px #FFFFFF;
-	border-bottom: solid 4px #FFFFFF;
 	width: 210px;
 	white-space: nowrap;
 }
@@ -205,6 +204,10 @@ a, a:visited, a:hover {
 }
 .gwt-DialogBox .Content {
 	padding: 8px;
+	font-family: Arial;
+	font-size: 12px;
+}
+.gwt-DialogBox .Content * {
 	font-family: Arial;
 	font-size: 12px;
 }
@@ -588,7 +591,6 @@ a.lab-Header-Title:hover{
 	font-size: 1px;
 }
 .lab-Previewer {
-	padding: 10px;
 }
 .lab-Form-Label {
 	font-size: 12px;
@@ -626,4 +628,12 @@ a.lab-Header-Title:hover{
 }
 .lab-Warning * {
 	font-size: 11px;
+}
+.gwt-HorizontalSplitPanel left {
+	padding: 0px;
+	overflow: hidden;
+}
+.gwt-HorizontalSplitPanel right {
+	padding: 0px;
+	overflow: hidden;
 }

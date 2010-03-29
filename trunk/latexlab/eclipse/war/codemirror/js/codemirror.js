@@ -249,6 +249,9 @@ var CodeMirror = (function(){
 
       function sizeBar() {
         if (frame.offsetWidth == 0) return;
+        /**CUSTOM:Added overflowY:hidden for IE issue causing whitespace to the left of the frame **/
+        frame.parentNode.style.overflowY = 'hidden';
+        /********************************************************************************************/
         for (var root = frame; root.parentNode; root = root.parentNode);
         if (!nums.parentNode || root != document || !win.Editor) {
           // Clear event handlers (their nodes might already be collected, so try/catch)

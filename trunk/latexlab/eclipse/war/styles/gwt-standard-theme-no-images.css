@@ -287,66 +287,6 @@ a, a:visited, a:hover {
 .gwt-MenuBar-vertical .subMenuIcon-selected {
   background: #E0EDFE;
 }
-.gwt-MenuBarPopup {
-  margin: 0px 0px 0px 3px;
-}
-.gwt-MenuBarPopup .menuPopupTopCenter {
-}
-.gwt-MenuBarPopup .menuPopupBottomCenter {
-}
-.gwt-MenuBarPopup .menuPopupMiddleLeft {
-}
-.gwt-MenuBarPopup .menuPopupMiddleRight {
-}
-.gwt-MenuBarPopup .menuPopupTopLeftInner {
-  width: 5px;
-  height: 5px;
-  zoom: 1;
-}
-.gwt-MenuBarPopup .menuPopupTopRightInner {
-  width: 8px;
-  height: 5px;
-  zoom: 1;
-}
-.gwt-MenuBarPopup .menuPopupBottomLeftInner {
-  width: 5px;
-  height: 8px;
-  zoom: 1;
-}
-.gwt-MenuBarPopup .menuPopupBottomRightInner {
-  width: 8px;
-  height: 8px;
-  zoom: 1;
-}
-.gwt-MenuBarPopup .menuPopupTopLeft {
-}
-.gwt-MenuBarPopup .menuPopupTopRight {
-}
-.gwt-MenuBarPopup .menuPopupBottomLeft {
-}
-.gwt-MenuBarPopup .menuPopupBottomRight {
-}
-* html .gwt-MenuBarPopup .menuPopupTopLeftInner {
-  width: 5px;
-  height: 5px;
-  overflow: hidden;
-}
-* html .gwt-MenuBarPopup .menuPopupTopRightInner {
-  width: 8px;
-  height: 5px;
-  overflow: hidden;
-}
-* html .gwt-MenuBarPopup .menuPopupBottomLeftInner {
-  width: 5px;
-  height: 8px;
-  overflow: hidden;
-}
-* html .gwt-MenuBarPopup .menuPopupBottomRightInner {
-  width: 8px;
-  height: 8px;
-  overflow: hidden;
-}
-
 .gwt-PasswordTextBox {
   padding: 2px;
 }

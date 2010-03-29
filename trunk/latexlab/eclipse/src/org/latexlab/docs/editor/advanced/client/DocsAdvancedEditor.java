@@ -228,7 +228,9 @@ public class DocsAdvancedEditor implements EntryPoint, CommandHandler {
     editor.addClickHandler(new ClickHandler() {
 		@Override
 		public void onClick(ClickEvent event) {
-		  menu.close();
+	      try {
+		    menu.close();
+	      } catch (Exception x) { }
 		}
     });
     previewer = new PreviewerPart();

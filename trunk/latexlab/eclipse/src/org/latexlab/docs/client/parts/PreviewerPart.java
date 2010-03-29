@@ -1,6 +1,7 @@
 package org.latexlab.docs.client.parts;
 
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -11,6 +12,7 @@ public class PreviewerPart extends Composite {
   public PreviewerPart() {
 	content = new VerticalPanel();
     content.setSize("100%", "100%");
+    content.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
     content.setStylePrimaryName("lab-Previewer");
 	initWidget(content);
   }
