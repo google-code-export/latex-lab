@@ -9,6 +9,7 @@ public interface CommandHandler extends EventHandler {
   
   /**
    * Fired whenever a command event is received.
+   * 
    * @param e The command event.
    */
   void onCommand(CommandEvent event);

@@ -1,5 +1,7 @@
 package org.latexlab.docs.client.dialogs;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -9,22 +11,53 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import org.latexlab.docs.client.events.AsyncInstantiationCallback;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.resources.icons.Icons;
 
 /**
- * A dialog window displaying details of the application.
+ * A dialog window displaying information about the application.
  */
 public class AboutDialog extends Dialog {
 
   protected static AboutDialog instance;
   
-  public static AboutDialog get(CommandHandler handler) {
-    if (instance == null) {
-      instance = new AboutDialog();
-      instance.addCommandHandler(handler);
-    }
-    return instance;
+  /**
+   * Retrieves the single instance of this class, using asynchronous instantiation.
+   * 
+   * @param handler the command handler.
+   * @param cb the asynchronous instantiation callback.
+   */
+  public static void get(final CommandHandler handler,
+	    final AsyncInstantiationCallback<AboutDialog> cb) {
+	GWT.runAsync(new RunAsyncCallback() {
+		@Override
+		public void onFailure(Throwable reason) {
+		  cb.onFailure(reason);
+		}
+		@Override
+		public void onSuccess() {
+	      if (instance == null) {
+	        instance = new AboutDialog();
+	        instance.addCommandHandler(handler);
+	      }
+		  cb.onSuccess(instance);
+		}
+	});
+  }
+  
+  /**
+   * Causes the code for this class to be loaded.
+   */
+  public static void prefetch() {
+	GWT.runAsync(new RunAsyncCallback() {
+		@Override
+		public void onFailure(Throwable reason) { }
+		@Override
+		public void onSuccess() {
+		  new AboutDialog();
+		}
+	});
   }
 
   /**

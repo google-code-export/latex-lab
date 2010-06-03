@@ -10,52 +10,14 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface DocumentService extends RemoteService {
   
   /**
-   * Retrieves a document by Id.
+   * Creates a new, saved, document.
    * 
-   * @param documentId the document Id
-   * @return the document reference
-   * @throws DocumentServiceException
-   */
-  DocumentServiceEntry getDocument(String documentId) throws DocumentServiceException;
-  
-  /**
-   * Retrieves a new, unsaved, document.
-   * 
+   * @param title the document's title
+   * @param contents the document's contents
    * @return the new document reference
-   */
-  DocumentServiceEntry getNewDocument();
-  
-  DocumentSignedLocation[] getDocumentContentUrls(String[] documentLinks) throws DocumentServiceException;
-  
-  /**
-   * Retrieves the contents of a document by resource Id.
-   * 
-   * @param resourceId the resource Id
-   * @return the document contents
    * @throws DocumentServiceException
    */
-  String getDocumentContents(String resourceId) throws DocumentServiceException;
-  
-  /**
-   * Updates the contents of a document.
-   * 
-   * @param documentId the document Id
-   * @param etag the document's version tag
-   * @param contents the document contents
-   * @return whether the update was successful
-   * @throws DocumentServiceException
-   */
-  boolean setDocumentContents(String documentId, String etag, String contents) throws DocumentServiceException;
-  
-  /**
-   * Renames a document.
-   * 
-   * @param documentId the document Id
-   * @param newTitle the new document title
-   * @return the updated document
-   * @throws DocumentServiceException
-   */
-  DocumentServiceEntry renameDocument(String documentId, String newTitle) throws DocumentServiceException;
+  DocumentServiceEntry createDocument(String title, String contents) throws DocumentServiceException;
   
   /**
    * Deletes a document.
@@ -68,24 +30,81 @@ public interface DocumentService extends RemoteService {
   boolean deleteDocument(String documentId, String etag) throws DocumentServiceException;
   
   /**
-   * Sets whether a document is starred.
+   * Retrieves the contents of a common document.
    * 
-   * @param document the document Id
-   * @param starred whether the document is starred
-   * @return whether the starring was successful
+   * @param name the name of the document whose documents to retrieve
+   * @return the document's contents
+   */
+  String getCommonContents(String name);
+
+  /**
+   * Retrieves a document by Id.
+   * 
+   * @param documentId the document Id
+   * @return the document reference
    * @throws DocumentServiceException
    */
-  boolean setDocumentStarred(String documentId, boolean starred) throws DocumentServiceException;
+  DocumentServiceEntry getDocument(String documentId) throws DocumentServiceException;
   
   /**
-   * Creates a new, saved, document.
+   * Retrieves the contents of a document by resource Id.
    * 
-   * @param title the document's title
-   * @param contents the document's contents
-   * @return the new document reference
+   * @param resourceId the resource Id
+   * @return the document contents
    * @throws DocumentServiceException
    */
-  DocumentServiceEntry createDocument(String title, String contents) throws DocumentServiceException;
+  String getDocumentContents(String resourceId) throws DocumentServiceException;
+  
+  /**
+   * Retrieves signed URLs for retrieving the contents of the specified documents.
+   * 
+   * @param documentLinks the document content links.
+   * @return the signed URLs for retrieving the contents of the specified documents.
+   * @throws DocumentServiceException
+   */
+  DocumentSignedLocation[] getDocumentContentUrls(String[] documentLinks) throws DocumentServiceException;
+  
+  /**
+   * Retrieves a list of a documents.
+   * 
+   * @param starredOnly whether to return only starred documents.
+   * @return the list of documents
+   * @throws DocumentServiceException
+   */
+  DocumentServiceEntry[] getDocuments(boolean starredOnly) throws DocumentServiceException;
+  
+  /**
+   * Retrieves a new, unsaved, document.
+   * 
+   * @return the new document reference
+   */
+  DocumentServiceEntry getNewDocument();
+  
+  /**
+   * Retrieves the currently signed on user.
+   * 
+   * @return the current user's name
+   */
+  DocumentUser getUser();
+  
+  /**
+   * Ends the current user's session
+   * 
+   * @return the URL to which the user should be redirected in order
+   * to complete the sign off process
+   * @throws DocumentServiceException
+   */
+  String logout() throws DocumentServiceException;
+  
+  /**
+   * Renames a document.
+   * 
+   * @param documentId the document Id
+   * @param newTitle the new document title
+   * @return the updated document
+   * @throws DocumentServiceException
+   */
+  DocumentServiceEntry renameDocument(String documentId, String newTitle) throws DocumentServiceException;
   
   /**
    * Updates or creates a new document. If a value for documentId is
@@ -102,29 +121,32 @@ public interface DocumentService extends RemoteService {
   DocumentServiceEntry saveDocument(String documentId, String etag, String title, String contents) throws DocumentServiceException;
   
   /**
-   * Retrieves a list of a documents.
+   * Updates the contents of a document.
    * 
-   * @param starredOnly whether to return only starred documents.
-   * @return the list of documents
+   * @param documentId the document Id
+   * @param etag the document's version tag
+   * @param contents the document contents
+   * @return the updated document
    * @throws DocumentServiceException
    */
-  DocumentServiceEntry[] getDocuments(boolean starredOnly) throws DocumentServiceException;
+  DocumentServiceEntry setDocumentContents(String documentId, String etag, String contents) throws DocumentServiceException;
   
   /**
-   * Retrieves the currently signed on user.
+   * Sets whether a document is starred.
    * 
-   * @return the current user's name
+   * @param document the document Id
+   * @param starred whether the document is starred
+   * @return whether the starring was successful
+   * @throws DocumentServiceException
    */
-  DocumentUser getUser();
+  boolean setDocumentStarred(String documentId, boolean starred) throws DocumentServiceException;
   
+  /**
+   * Sets the current user (for development purposes only).
+   * 
+   * @param email the user's email
+   * @param token the user's token
+   * @return the current user
+   */
   DocumentUser setUser(String email, String token);
-  
-  /**
-   * Ends the current user's session
-   * 
-   * @return the URL to which the user should be redirected in order
-   * to complete the sign off process
-   * @throws DocumentServiceException
-   */
-  String logout() throws DocumentServiceException;
 }

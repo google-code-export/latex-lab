@@ -18,11 +18,12 @@ import com.google.gwt.user.client.ui.Widget;
 import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.commands.CurrentDocumentCompileCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentSaveCommand;
-import org.latexlab.docs.client.commands.ExistingDocumentOpenCommand;
 import org.latexlab.docs.client.commands.SystemRedoCommand;
-import org.latexlab.docs.client.commands.SystemSelectResourcesCommand;
+import org.latexlab.docs.client.commands.SystemShowDialogCommand;
 import org.latexlab.docs.client.commands.SystemToggleToolbarCommand;
 import org.latexlab.docs.client.commands.SystemUndoCommand;
+import org.latexlab.docs.client.dialogs.FileListDialog;
+import org.latexlab.docs.client.dialogs.ResourcesDialog;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.events.HasCommandHandlers;
@@ -67,6 +68,13 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
     bar.add(buildToolBar());
     initWidget(bar);
   }
+
+  public void setButtonState(String title, boolean down) {
+	int i = getButtonIndex(title);
+	if (i >= 0) {
+	  setButtonState(i, down);
+	}
+  }
   
   public void setButtonState(int index, boolean down) {
     Widget btn = buttons.get(index);
@@ -74,6 +82,34 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
     	ToggleButton tbtn = (ToggleButton) btn;
     	tbtn.setDown(down);
     }
+  }
+
+  public void setButtonEnabled(String title, boolean down) {
+	int i = getButtonIndex(title);
+	if (i >= 0) {
+		setButtonEnabled(i, down);
+	}
+  }
+  
+  public void setButtonEnabled(int index, boolean enabled) {
+    Widget btn = buttons.get(index);
+    if (btn != null) {
+      if (enabled) {
+    	btn.removeStyleDependentName("Disabled");
+      } else {
+    	btn.addStyleDependentName("Disabled");
+      }
+    }
+  }
+  
+  private int getButtonIndex(String title) {
+	for (int i=0; i<buttons.size(); i++) {
+	  Widget w = buttons.get(i);
+	  if (w.getTitle().equals(title)) {
+		return i;
+	  }
+	}
+	return -1;
   }
   
   /**
@@ -85,13 +121,13 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
     HorizontalPanel toolbarPanel = new HorizontalPanel();
     toolbarPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
     toolbarPanel.setStyleName("lab-Toolbar");
-    toolbarPanel.add(buildButton(Icons.editorIcons.OpenDocument(), "Open Document", false, new ExistingDocumentOpenCommand()));
+    toolbarPanel.add(buildButton(Icons.editorIcons.OpenDocument(), "Open Document", false, new SystemShowDialogCommand(FileListDialog.class)));
     toolbarPanel.add(buildButton(Icons.editorIcons.Save(), "Save", false, new CurrentDocumentSaveCommand()));
     toolbarPanel.add(buildSeparator());
     toolbarPanel.add(buildButton(Icons.editorIcons.Undo(), "Undo", false, new SystemUndoCommand()));
     toolbarPanel.add(buildButton(Icons.editorIcons.Redo(), "Redo", false, new SystemRedoCommand()));
     toolbarPanel.add(buildSeparator());
-    toolbarPanel.add(buildButton(Icons.editorIcons.ItemList(), "Project resources", false, new SystemSelectResourcesCommand()));
+    toolbarPanel.add(buildButton(Icons.editorIcons.Resources(), "Project resources", false, new SystemShowDialogCommand(ResourcesDialog.class)));
     toolbarPanel.add(buildButton(Icons.editorIcons.Compile(), "Compile", false, new CurrentDocumentCompileCommand()));
     toolbarPanel.add(buildSeparator());
     toolbarPanel.add(buildButton(Icons.latexGroupsIcons.AboveAndBelow(), ToolbarWindowAboveAndBelow.TITLE, true, new SystemToggleToolbarCommand(ToolbarWindowAboveAndBelow.TITLE)));

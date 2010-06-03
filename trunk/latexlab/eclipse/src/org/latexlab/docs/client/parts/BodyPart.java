@@ -10,8 +10,8 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class BodyPart extends Composite {
 
-  private VerticalSplitPanel vContent;
   private HorizontalSplitPanel hContent;
+  private VerticalSplitPanel vContent;
   
   /**
    * Constructs a new Body part.
@@ -27,6 +27,24 @@ public class BodyPart extends Composite {
     hContent.setSplitPosition("100%");
     vContent.setTopWidget(hContent);
     initWidget(vContent);
+  }
+  
+  /**
+   * Sets the bottom widget.
+   * 
+   * @param w the widget to use on the bottom panel
+   */
+  public void setBottomWidget(Widget w){
+    vContent.setBottomWidget(w);
+  }
+  
+  /**
+   * Sets the horizontal split position.
+   * 
+   * @param pos the horizontal split position
+   */
+  public void setHorizontalSplitPosition(String pos) {
+    hContent.setSplitPosition(pos);
   }
   
   /**
@@ -48,18 +66,10 @@ public class BodyPart extends Composite {
   }
   
   /**
-   * Sets the bottom widget.
+   * Sets the vertical split position.
    * 
-   * @param w the widget to use on the bottom panel
+   * @param pos the vertical split position
    */
-  public void setBottomWidget(Widget w){
-    vContent.setBottomWidget(w);
-  }
-  
-  public void setHorizontalSplitPosition(String pos) {
-    hContent.setSplitPosition(pos);
-  }
-  
   public void setVerticalSplitPosition(String pos) {
     vContent.setSplitPosition(pos);
   }

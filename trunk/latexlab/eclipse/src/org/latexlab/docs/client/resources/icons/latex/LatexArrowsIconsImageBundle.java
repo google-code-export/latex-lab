@@ -3,9 +3,10 @@ package org.latexlab.docs.client.resources.icons.latex;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.ImageBundle;
 
+//TODO: eliminate the deprecated ImageBundle parent reference.
 /**
- * An image bundle storing GDBE icons and images.
- */
+* An image bundle storing LaTeX icons.
+*/
 @SuppressWarnings("deprecation")
 public interface LatexArrowsIconsImageBundle extends ImageBundle {
 

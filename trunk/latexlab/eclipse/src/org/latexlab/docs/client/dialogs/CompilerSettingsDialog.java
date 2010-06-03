@@ -2,70 +2,99 @@ package org.latexlab.docs.client.dialogs;
 
 import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.commands.SystemApplyCompilerSettingsCommand;
+import org.latexlab.docs.client.events.AsyncInstantiationCallback;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-
 
 /**
- * A dialog window displaying details of the application.
+ * A dialog window containing a form for specifying compiler settings.
  */
-public class CompilerSettingsDialog extends Dialog {
+public class CompilerSettingsDialog extends FormDialog {
 
   protected static CompilerSettingsDialog instance;
-  
-  public static CompilerSettingsDialog get(CommandHandler handler, Command continueCommand) {
-    if (instance == null) {
-      instance = new CompilerSettingsDialog();
-      instance.addCommandHandler(handler);
-    }
-    instance.setContinueCommand(continueCommand);
-    return instance;
-  }
 
-  private VerticalPanel content, warning;
-  private FlexTable settingsPanel;
-  private RadioButton useDefault, useMikTex, useTexLive, useCustom;
-  private TextBox clsiServiceUrl, clsiServiceToken, clsiAsyncPath, compilerName;
-  private Command continueCommand;
-  private Button ok, cancel;
+  /**
+   * Retrieves the single instance of this class, using asynchronous instantiation.
+   * 
+   * @param handler the command handler.
+   * @param continueCommand the command to execute once settings are applied.
+   * @param cb the asynchronous instantiation callback.
+   */
+  public static void get(final CommandHandler handler, final Command continueCommand,
+	    final AsyncInstantiationCallback<CompilerSettingsDialog> cb) {
+	GWT.runAsync(new RunAsyncCallback() {
+		@Override
+		public void onFailure(Throwable reason) {
+		  cb.onFailure(reason);
+		}
+		@Override
+		public void onSuccess() {
+	      if (instance == null) {
+	        instance = new CompilerSettingsDialog();
+	        instance.addCommandHandler(handler);
+	      }
+          instance.setContinueCommand(continueCommand);
+		  cb.onSuccess(instance);
+		}
+	});
+  }
   
   /**
-   * Constructs an About dialog window.
+   * Causes the code for this class to be loaded.
+   */
+  public static void prefetch() {
+	GWT.runAsync(new RunAsyncCallback() {
+		@Override
+		public void onFailure(Throwable reason) { }
+		@Override
+		public void onSuccess() {
+		  new CompilerSettingsDialog();
+		}
+	});
+  }
+
+  private TextBox clsiServiceUrl, clsiServiceToken, clsiAsyncPath, compilerName;
+  private Command continueCommand;
+  private RadioButton useDefault, useMikTex, useTexLive, useCustom;
+  private VerticalPanel warning;
+  
+  /**
+   * Constructs a dialog window containing a form for specifying compiler settings.
    */
   public CompilerSettingsDialog() {
     super("Compiler Settings", true);
-    ClickHandler cancelHandler = new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        hide();
-      }
-    };
+    addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          hide();
+        }
+    });
+    content.setWidth("650px");
+    buildForm();
+  }
+  
+  /**
+   * Builds the compiler settings form.
+   */
+  @Override
+  protected void buildForm() {
     ValueChangeHandler<Boolean> changeHandler = new ValueChangeHandler<Boolean>() {
 	  @Override
 	  public void onValueChange(ValueChangeEvent<Boolean> event) {
-		settingsPanel.setVisible(useCustom.getValue());
-		warning.setVisible(useDefault.getValue());
-		CompilerSettingsDialog.this.center();
+		setView(useDefault.getValue());
 	  }
     };
-    addClickHandler(cancelHandler);
-    content = new VerticalPanel();
-    content.setSpacing(10);
-    content.setWidth("650px");
     VerticalPanel usage = new VerticalPanel();
     useDefault = new RadioButton("usage", "Use the default LaTeX Lab compiler.");
     useDefault.setValue(true);
@@ -85,7 +114,7 @@ public class CompilerSettingsDialog extends Dialog {
     usage.add(useMikTex);
     usage.add(useTexLive);
     usage.add(useCustom);
-    content.add(usage);
+    addField(usage);
     warning = new VerticalPanel();
     warning.setStylePrimaryName("lab-Warning");
     warning.add(new HTML("The default LaTeX Lab compiler is a shared environment which may " +
@@ -95,25 +124,22 @@ public class CompilerSettingsDialog extends Dialog {
     		"and <a href=\"http://code.google.com/p/latex-lab\" target=\"_blank\">Terms and Conditions</a> pages." +
     		"<br /><br />By using the default LaTeX Lab compiler you agree to the " +
     		"<a href=\"http://code.google.com/p/latex-lab\" target=\"_blank\">Terms and Conditions</a>."));
-    content.add(warning);
-    settingsPanel = new FlexTable();
-    settingsPanel.setVisible(false);
+    addField(warning);
     clsiServiceUrl = new TextBox();
     clsiServiceUrl.setWidth("400px");
-    addSettingsField(clsiServiceUrl, "Service URL");
+    addField(clsiServiceUrl, "Service URL:");
     clsiServiceToken = new TextBox();
     clsiServiceToken.setWidth("200px");
-    addSettingsField(clsiServiceToken, "Service Token");
+    addField(clsiServiceToken, "Service token:");
     clsiAsyncPath = new TextBox();
     clsiAsyncPath.setWidth("400px");
-    addSettingsField(clsiAsyncPath, "Service output path");
+    addField(clsiAsyncPath, "Service output path:");
     compilerName = new TextBox();
     compilerName.setWidth("200px");
     compilerName.setValue("latex");
-    addSettingsField(compilerName, "Compiler Name");
-    content.add(settingsPanel);
-    ok = new Button("OK", new ClickHandler(){
-      public void onClick(ClickEvent event) {
+    addField(compilerName, "Compiler name:");
+    submit.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
     	SystemApplyCompilerSettingsCommand cmd;
     	if (useDefault.getValue()) {
     	  cmd = new SystemApplyCompilerSettingsCommand();
@@ -139,30 +165,53 @@ public class CompilerSettingsDialog extends Dialog {
     	}
       }
     });
-    cancel = new Button("Cancel", cancelHandler);
-    HorizontalPanel buttons = new HorizontalPanel();
-    buttons.setSpacing(10);
-    buttons.add(ok);
-    buttons.add(cancel);
-    content.add(buttons);
-    setContentWidget(content);
+    cancel.addClickHandler(new ClickHandler(){
+        public void onClick(ClickEvent event) {
+          hide();
+        }
+    });
+    setView(true);
+    super.buildForm();
   }
   
-  private void addSettingsField(Widget field, String name) {
-	int i = settingsPanel.getRowCount();
-    settingsPanel.insertRow(i);
-    settingsPanel.insertCell(i, 0);
-    settingsPanel.insertCell(i, 1);
-    settingsPanel.setWidget(i, 0, new Label(name + ":"));
-    settingsPanel.setWidget(i, 1, field);
-  }
-
+  /**
+   * Retrieves the command to execute once settings are applied.
+   * 
+   * @return the command to execute once settings are applied.
+   */
   public Command getContinueCommand() {
     return continueCommand;
   }
 
+  /**
+   * Resets the form.
+   */
+  @Override
+  public void resetForm() {
+	//TODO: implement, if appropriate.
+  }
+
+  /**
+   * Sets the command to execute once settings are applied.
+   * 
+   * @param continueCommand the command to execute once settings are applied.
+   */
   public void setContinueCommand(Command continueCommand) {
     this.continueCommand = continueCommand;
+  }
+
+  /**
+   * Updates the form view.
+   * 
+   * @param isDefault whether to display the default view
+   */
+  private void setView(boolean isDefault) {
+	content.getRowFormatter().setVisible(1, isDefault);
+	for (int i=2; i<6; i++) {
+	  content.getRowFormatter().setVisible(i, !isDefault);
+	}
+	warning.setVisible(useDefault.getValue());
+	CompilerSettingsDialog.this.center();
   }
 
 }

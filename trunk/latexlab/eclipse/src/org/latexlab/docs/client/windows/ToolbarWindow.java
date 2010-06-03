@@ -18,12 +18,20 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * The base implementation of a toolbar window.
+ */
 public abstract class ToolbarWindow extends Window implements HasCommandHandlers {
 
-  private HandlerManager manager;
-  protected FlowPanel panel;
   protected int buttonsPerRow = 10, buttonWidth = 27, buttonHeight = 27;
+  protected HandlerManager manager;
+  protected FlowPanel panel;
 	
+  /**
+   * Constructs a ToolbarWindow.
+   * 
+   * @param title the toolbar window's title
+   */
   public ToolbarWindow(String title) {
     super(title, new FlowPanel(), false);
 	mainPanel.getFlexCellFormatter().setStylePrimaryName(1, 0, "lab-Toolbar");
@@ -37,24 +45,21 @@ public abstract class ToolbarWindow extends Window implements HasCommandHandlers
 	});
   }
   
-  public void toggle() {
-    if (this.isVisible()) {
-      this.hide();
-    } else {
-      this.show();
-    }
-  }
-  
+  /**
+   * Adds a toolbar button.
+   * 
+   * @param icon the button's icon image
+   * @param title the button's title
+   * @param isToggle whether the button is a toggle button
+   * @param command the action command
+   */
   protected void addButton(AbstractImagePrototype icon, String title, boolean isToggle, final Command command) {
     panel.add(buildButton(icon, title, isToggle, command));
   }
   
-  protected void resize() {
-    int xcount = buttonsPerRow;
-    if (xcount > panel.getWidgetCount()) {
-      xcount = panel.getWidgetCount();
-    }
-    setContentSizeFinal();
+  @Override
+  public HandlerRegistration addCommandHandler(CommandHandler handler) {
+	return manager.addHandler(CommandEvent.getType(), handler);
   }
   
   /**
@@ -86,6 +91,22 @@ public abstract class ToolbarWindow extends Window implements HasCommandHandlers
       });
       return btn;
     }
+  }
+  
+  @Override
+  public void fireEvent(GwtEvent<?> event) {
+	manager.fireEvent(event);
+  }
+  
+  /**
+   * Resizes the toolbar window.
+   */
+  protected void resize() {
+    int xcount = buttonsPerRow;
+    if (xcount > panel.getWidgetCount()) {
+      xcount = panel.getWidgetCount();
+    }
+    setContentSizeFinal();
   }
   
   @Override
@@ -122,13 +143,14 @@ public abstract class ToolbarWindow extends Window implements HasCommandHandlers
 	super.setContentSize(width, height);
   }
   
-  @Override
-  public HandlerRegistration addCommandHandler(CommandHandler handler) {
-	return manager.addHandler(CommandEvent.getType(), handler);
-  }
-  
-  @Override
-  public void fireEvent(GwtEvent<?> event) {
-	manager.fireEvent(event);
+  /**
+   * Toggle the toolbar window's visibility.
+   */
+  public void toggle() {
+    if (this.isVisible()) {
+      this.hide();
+    } else {
+      this.show();
+    }
   }
 }

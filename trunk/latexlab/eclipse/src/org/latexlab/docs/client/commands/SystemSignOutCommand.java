@@ -1,24 +1,27 @@
 package org.latexlab.docs.client.commands;
 
+/**
+ * A command for signing out.
+ */
 public class SystemSignOutCommand extends Command {
 
+  /**
+   * The command's unique id.
+   */
   public final static int serialUid = 24;
-  
-  private String returnUrl;
-	  
-  public SystemSignOutCommand(String returnUrl) {
+	
+  /**
+   * Constructs a command for signing out.
+   */
+  public SystemSignOutCommand() {
 	super("Sign out.");
-	this.returnUrl = returnUrl;
-  }
-
-  public String getReturnUrl() {
-    return returnUrl;
-  }
-
-  public void setReturnUrl(String returnUrl) {
-    this.returnUrl = returnUrl;
   }
   
+  /**
+   * Retrieves the command's unique id.
+   * 
+   * @return the command's unique id.
+   */
   @Override
   public int getCommandId() {
     return serialUid;

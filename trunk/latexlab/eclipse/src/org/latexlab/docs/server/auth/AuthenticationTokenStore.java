@@ -5,6 +5,10 @@ import com.google.appengine.api.users.UserServiceFactory;
 
 public class AuthenticationTokenStore {
 
+	public void clearUserToken(String email) {
+	  AuthenticationToken.clearUserToken(email);
+	}
+	
 	public AuthenticationToken getUserToken() {
       UserService userService = UserServiceFactory.getUserService();
       if (userService.getCurrentUser() != null) {

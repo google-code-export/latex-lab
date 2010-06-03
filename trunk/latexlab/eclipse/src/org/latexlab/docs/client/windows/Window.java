@@ -18,8 +18,14 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * The base implementation of a floating window.
+ */
 public abstract class Window extends Composite {
 
+  /**
+   * Defines the eight possible directions.
+   */
   public static enum Direction {
     NORTH(0x0001, "windowTopCenter", 1, 0),
     EAST(0x0002, "windowMiddleRight", 2, 1),
@@ -37,6 +43,14 @@ public abstract class Window extends Composite {
     private int bits, x, y;
     private String style;
     
+    /**
+     * Constructs a Direction option.
+     * 
+     * @param bits the direction bits
+     * @param style the direction's style
+     * @param x the x cell index
+     * @param y the y cell index
+     */
     private Direction(int bits, String style, int x, int y) {
       this.bits = bits;
       this.style = style;
@@ -44,44 +58,76 @@ public abstract class Window extends Composite {
       this.y = y;
     }
     
+    /**
+     * Retrieves the direction bits
+     * 
+     * @return the direction bits
+     */
     public int getBits() {
       return bits;
     }
     
+    /**
+     * Retrieves the direction's style.
+     * 
+     * @return the direction's style
+     */
     public String getStyle() {
       return style;
     }
     
+    /**
+     * Retrieves the x cell index.
+     * 
+     * @return the x cell index
+     */
     public int getX(){
       return x;
     }
     
+    /**
+     * Retrieves the the y cell index.
+     * 
+     * @return the y cell index
+     */
     public int getY() {
       return y;
     }
   }
 
   protected static final int WINDOW_ZINDEX = 3;
-  protected HandlerManager manager;
-  public PickupDragController registeredDragController;
+  protected boolean acceptsDrops = false, initialLoad = false;
+  protected int BORDER_THICKNESS = 6;
+  protected HorizontalPanel buttons;
+  protected PushButton closeButton;
   protected int contentHeight, contentWidth,
       minContentHeight = 0, minContentWidth = 0;
+  protected Widget contentWidget;
   protected Widget eastWidget,
       northWidget, southWidget, westWidget;
   protected Grid grid = new Grid(3, 3);
-  protected FlexTable mainPanel;
-  protected Label titleLabel;
-  protected HorizontalPanel buttons;
-  protected PushButton closeButton;
-  protected Widget contentWidget;
-  protected boolean acceptsDrops = false, initialLoad = false;
-  protected int BORDER_THICKNESS = 6;
   protected String id;
+  protected FlexTable mainPanel;
+  protected HandlerManager manager;
+  protected PickupDragController registeredDragController;
+  protected Label titleLabel;
   
+  /**
+   * Constructs a Window.
+   * 
+   * @param title the window's title
+   */
   public Window(String title) {
     this(title, new VerticalPanel(), false);
   }
   
+  /**
+   * Constructs a window.
+   * 
+   * @param title the window's title
+   * @param content the window's content widget
+   * @param allowDropping whether the window accepts dropping
+   */
   public Window(String title, Widget content, boolean allowDropping) {
 	manager = new HandlerManager(this);
 	acceptsDrops = allowDropping;
@@ -145,59 +191,111 @@ public abstract class Window extends Composite {
 	this.getElement().getStyle().setZIndex(WINDOW_ZINDEX);
   }
   
+  /**
+   * Adds a click handler to the window's close button.
+   * 
+   * @param handler the click handler
+   */
   public void addClickHandler(ClickHandler handler) {
     closeButton.addClickHandler(handler);
   }
   
-  public String getId() {
-    return id;
+  @Override
+  public void fireEvent(GwtEvent<?> event) {
+	  manager.fireEvent(event);
   }
 
-  public void setId(String id) {
-    this.id = id;
+  /**
+   * Retrieves the window's boundary widget.
+   * 
+   * @param direction the boundary widget's direction
+   * @return the boundary widget
+   */
+  public Widget getBoundaryWidget(Direction direction) {
+    return grid.getWidget(direction.getY(), direction.getX());
   }
 
+  /**
+   * Retrieves the window's content height.
+   * 
+   * @return the window's content height.
+   */
   public int getContentHeight() {
     return contentHeight;
   }
 
-  public int getContentWidth() {
-    return contentWidth;
-  }
-  
-  public Widget getHeaderWidget() {
-    return titleLabel;
-  }
-  
-  public Widget getBoundaryWidget(Direction direction) {
-    return grid.getWidget(direction.getY(), direction.getX());
-  }
-  
+  /**
+   * Retrieves the window's content widget.
+   * 
+   * @return the window's content widget
+   */
   public Widget getContentWidget() {
     return contentWidget;
   }
   
-  public void setContentWidget(Widget w) {
-    contentWidget = w;
-    mainPanel.setWidget(1, 0, w);
+  /**
+   * Retrieves the window's content width.
+   * 
+   * @return the window's content width
+   */
+  public int getContentWidth() {
+    return contentWidth;
   }
   
+  /**
+   * Retrieves the window's header widget.
+   * 
+   * @return the window's header widget
+   */
+  public Widget getHeaderWidget() {
+    return titleLabel;
+  }
+  
+  /**
+   * Retrieves the window's id.
+   * 
+   * @return the window's id
+   */
+  public String getId() {
+    return id;
+  }
+  
+  /**
+   * Retrieves the window's title.
+   */
   public String getTitle() {
     return titleLabel.getText();
   }
   
-  public void setTitle(String title) {
-    titleLabel.setTitle(title);
-  }
-  
+  /**
+   * Hides the window.
+   */
   public void hide() {
     grid.setVisible(false);
   }
   
-  public void show() {
-    grid.setVisible(true);
+  @Override
+  protected void onLoad() {
+    super.onLoad();
+    final Widget content = contentWidget;
+    if (!initialLoad && content.getOffsetHeight() != 0) {
+      initialLoad = true;
+      setContentSize(content.getOffsetWidth(),
+          content.getOffsetHeight());
+    }
+  }
+  
+  @Override
+  protected void onUnload() {
+    super.onUnload();
   }
 
+  /**
+   * Sets the window's content size.
+   * 
+   * @param width the window's content width
+   * @param height the window's content height
+   */
   public void setContentSize(int width, int height) {
     if (width < minContentWidth) return;
     if (height < minContentHeight) return;
@@ -215,13 +313,48 @@ public abstract class Window extends Composite {
     titleLabel.getElement().getStyle().setWidth(width - 20, Unit.PX);
     contentWidget.setPixelSize(contentWidth, contentHeight);
   }
-  
+
+  /**
+   * Signals that the current content size is final.
+   */
   public void setContentSizeFinal() {
 	int width = contentWidget.getOffsetWidth();
 	int height = contentWidget.getOffsetHeight();
 	setContentSize(width, height);
   }
+  
+  /**
+   * Sets the window's content widget.
+   * 
+   * @param w the window's content widget
+   */
+  public void setContentWidget(Widget w) {
+    contentWidget = w;
+    mainPanel.setWidget(1, 0, w);
+  }
 
+  /**
+   * Sets the window's id.
+   * 
+   * @param id the window's id.
+   */
+  public void setId(String id) {
+    this.id = id;
+  }
+  
+  /**
+   * Sets the window's title.
+   */
+  public void setTitle(String title) {
+    titleLabel.setTitle(title);
+  }
+
+  /**
+   * Sets up a boundary cell.
+   * 
+   * @param direction the boundary cell's direction
+   * @return the boundary cell
+   */
   private Widget setupCell(Direction direction) {
     final FocusPanel widget = new FocusPanel();
     widget.setPixelSize(BORDER_THICKNESS, BORDER_THICKNESS);
@@ -230,26 +363,12 @@ public abstract class Window extends Composite {
         direction.getStyle());
     return widget;
   }
-  
-  @Override
-  public void fireEvent(GwtEvent<?> event) {
-	  manager.fireEvent(event);
-  }
 
-  @Override
-  protected void onLoad() {
-    super.onLoad();
-    final Widget content = contentWidget;
-    if (!initialLoad && content.getOffsetHeight() != 0) {
-      initialLoad = true;
-      setContentSize(content.getOffsetWidth(),
-          content.getOffsetHeight());
-    }
-  }
-
-  @Override
-  protected void onUnload() {
-    super.onUnload();
+  /**
+   * Shows the window.
+   */
+  public void show() {
+    grid.setVisible(true);
   }
 
 }

@@ -16,7 +16,7 @@ public class OutputPart extends Composite {
   private Widget output;
   
   /**
-   * Constructs a new Body part.
+   * Constructs an Output part.
    */
   public OutputPart() {
     content = new VerticalPanel();

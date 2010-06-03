@@ -2,10 +2,25 @@ package org.latexlab.docs.client.widgets;
 
 import com.google.gwt.user.client.ui.RootPanel;
 
+/**
+ * A shared glass panel widget.
+ */
 public class GlassPanel {
 
   protected static
     com.google.gwt.widgetideas.client.GlassPanel glassPanel;
+  
+  /**
+   * Retrieves the glass panel's visibility.
+   * 
+   * @return the glass panel's visibility
+   */
+  public static boolean getGlassPanelVisibility() {
+	if (glassPanel == null) {
+	  return false;
+	}
+	return glassPanel.isVisible();
+  }
   
   /**
    * Sets the shared glass panel's visibility.
@@ -23,4 +38,5 @@ public class GlassPanel {
     }
     glassPanel.setVisible(visible);
   }
+  
 }

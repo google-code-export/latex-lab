@@ -5,24 +5,24 @@ package org.latexlab.docs.client.commands;
  */
 public abstract class Command {
 
+  /**
+   * The command's unique id.
+   */
   public final static int serialUid = 0;
 	  
-  protected String description;
   protected int attemptCount;
+  protected String description;
   
+  /**
+   * Constructs a new command.
+   * 
+   * @param description the command description.
+   */
   public Command(String description) {
     this.description = description;
     this.attemptCount = 0;
   }
   
-  /**
-   * Retrieves the Command description.
-   * @return the command description
-   */
-  public String getDescription() {
-    return this.description;
-  }
-
   /** 
    * Retrieves the number of times this command has been attempted.
    * 
@@ -33,11 +33,25 @@ public abstract class Command {
   }
 
   /**
+   * Retrieves the command's unique id.
+   * 
+   * @return
+   */
+  public abstract int getCommandId();
+
+  /**
+   * Retrieves the Command description.
+   * 
+   * @return the command description
+   */
+  public String getDescription() {
+    return this.description;
+  }
+
+  /**
    * Increments the number of times this command has been attempted.
    */
   public void newAttempt() {
     this.attemptCount++;
   }
-
-  public abstract int getCommandId();
 }

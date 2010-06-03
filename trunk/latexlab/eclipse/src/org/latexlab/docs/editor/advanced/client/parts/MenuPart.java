@@ -11,27 +11,32 @@ import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import org.latexlab.docs.client.commands.Command;
+import org.latexlab.docs.client.commands.CurrentDocumentCompileCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentCopyCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentDeleteCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentExportCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentRenameCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentRevisionHistoryCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentSaveCommand;
-import org.latexlab.docs.client.commands.ExistingDocumentOpenCommand;
 import org.latexlab.docs.client.commands.NewDocumentStartCommand;
-import org.latexlab.docs.client.commands.SystemAboutCommand;
 import org.latexlab.docs.client.commands.SystemOpenPageCommand;
 import org.latexlab.docs.client.commands.SystemRedoCommand;
-import org.latexlab.docs.client.commands.SystemReuseToolbarWindowsCommand;
-import org.latexlab.docs.client.commands.SystemSelectResourcesCommand;
-import org.latexlab.docs.client.commands.SystemSpecifyCompilerSettingsCommand;
+import org.latexlab.docs.client.commands.SystemRefreshResourcesCommand;
+import org.latexlab.docs.client.commands.SystemToggleReuseToolbarWindowsCommand;
+import org.latexlab.docs.client.commands.SystemShowDialogCommand;
 import org.latexlab.docs.client.commands.SystemToggleColorSyntaxCommand;
 import org.latexlab.docs.client.commands.SystemToggleFullScreenCommand;
 import org.latexlab.docs.client.commands.SystemToggleLineNumbersCommand;
+import org.latexlab.docs.client.commands.SystemToggleSpellcheckCommand;
 import org.latexlab.docs.client.commands.SystemToggleToolbarCommand;
 import org.latexlab.docs.client.commands.SystemUndoCommand;
 import org.latexlab.docs.client.commands.SystemUploadDocumentsCommand;
 import org.latexlab.docs.client.commands.SystemToggleWrapTextCommand;
+import org.latexlab.docs.client.dialogs.AboutDialog;
+import org.latexlab.docs.client.dialogs.CompilerSettingsDialog;
+import org.latexlab.docs.client.dialogs.FileListDialog;
+import org.latexlab.docs.client.dialogs.PreferencesDialog;
+import org.latexlab.docs.client.dialogs.ResourcesDialog;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.events.HasCommandHandlers;
@@ -104,7 +109,20 @@ public class MenuPart extends Composite implements HasCommandHandlers {
    */
   public void setMenuItemIcon(String title, AbstractImagePrototype icon) {
     MenuItem item = getMenuItem(title);
-    item.setHTML(icon.getHTML() + " " + title);
+    if (item != null) {
+      item.setHTML(icon.getHTML() + " " + title);
+    }
+  }
+  
+  public void setMenuItemEnabled(String title, boolean enabled) {
+    MenuItem item = getMenuItem(title);
+    if (item != null) {
+      if (enabled){
+    	item.removeStyleDependentName("Disabled");
+      } else {
+    	item.addStyleDependentName("Disabled");
+      }
+    }
   }
   
   /**
@@ -117,7 +135,7 @@ public class MenuPart extends Composite implements HasCommandHandlers {
     MenuBarExt fileMenu = new MenuBarExt(true);
     addMenuItem(fileMenu, Icons.editorIcons.Blank(), "New", new NewDocumentStartCommand());
     fileMenu.addSeparator();
-    addMenuItem(fileMenu, Icons.editorIcons.Blank(), "Open", new ExistingDocumentOpenCommand());
+    addMenuItem(fileMenu, Icons.editorIcons.Blank(), "Open", new SystemShowDialogCommand(FileListDialog.class));
     addMenuItem(fileMenu, Icons.editorIcons.Save(), "Save", new CurrentDocumentSaveCommand());
     addMenuItem(fileMenu, Icons.editorIcons.Blank(), "Save as new copy", new CurrentDocumentCopyCommand());
     addMenuItem(fileMenu, Icons.editorIcons.Blank(), "Rename...", new CurrentDocumentRenameCommand());
@@ -129,13 +147,16 @@ public class MenuPart extends Composite implements HasCommandHandlers {
     MenuBarExt editMenu = new MenuBarExt(true);
     addMenuItem(editMenu, Icons.editorIcons.Undo(), "Undo", new SystemUndoCommand());
     addMenuItem(editMenu, Icons.editorIcons.Redo(), "Redo", new SystemRedoCommand());
+    editMenu.addSeparator();
+    addMenuItem(editMenu, Icons.editorIcons.Blank(), "Preferences...", new SystemShowDialogCommand(PreferencesDialog.class));
     this.menu.addItem("Edit", editMenu);
     MenuBarExt viewMenu = new MenuBarExt(true);
+    addMenuItem(viewMenu, Icons.editorIcons.Blank(), "Check Spelling", new SystemToggleSpellcheckCommand());
     addMenuItem(viewMenu, Icons.editorIcons.CheckBlack(), "Highlight Syntax", new SystemToggleColorSyntaxCommand());
     addMenuItem(viewMenu, Icons.editorIcons.CheckBlack(), "Wrap Text", new SystemToggleWrapTextCommand());
     addMenuItem(viewMenu, Icons.editorIcons.CheckBlack(), "Show Line Numbers", new SystemToggleLineNumbersCommand());
     viewMenu.addSeparator();
-    addMenuItem(viewMenu, Icons.editorIcons.CheckBlack(), "Reuse toolbar windows", new SystemReuseToolbarWindowsCommand());
+    addMenuItem(viewMenu, Icons.editorIcons.CheckBlack(), "Reuse toolbar windows", new SystemToggleReuseToolbarWindowsCommand());
     viewMenu.addSeparator();
     addMenuItem(viewMenu, Icons.editorIcons.Blank(), "Full-screen mode", new SystemToggleFullScreenCommand());
     this.menu.addItem("View", viewMenu);
@@ -164,17 +185,20 @@ public class MenuPart extends Composite implements HasCommandHandlers {
     addMenuItem(toolbarMenu, Icons.latexGroupsIcons.WhiteSpacesAndDots(), ToolbarWindowWhiteSpacesAndDots.TITLE, new SystemToggleToolbarCommand(ToolbarWindowWhiteSpacesAndDots.TITLE));
     this.menu.addItem("Toolbars", toolbarMenu);
     MenuBarExt compilerMenu = new MenuBarExt(true);
-    addMenuItem(compilerMenu, Icons.editorIcons.ItemList(), "Project Resources", new SystemSelectResourcesCommand());
+    addMenuItem(compilerMenu, Icons.editorIcons.Compile(), "Compile...", new CurrentDocumentCompileCommand());
     compilerMenu.addSeparator();
-    addMenuItem(compilerMenu, Icons.editorIcons.Blank(), "Settings...", new SystemSpecifyCompilerSettingsCommand());
+    addMenuItem(compilerMenu, Icons.editorIcons.Resources(), "Project Resources", new SystemShowDialogCommand(ResourcesDialog.class));
+    addMenuItem(compilerMenu, Icons.editorIcons.Blank(), "Refresh Project Resources", new SystemRefreshResourcesCommand());
+    compilerMenu.addSeparator();
+    addMenuItem(compilerMenu, Icons.editorIcons.Blank(), "Settings...", new SystemShowDialogCommand(CompilerSettingsDialog.class));
     this.menu.addItem("Compiler", compilerMenu);
     MenuBarExt helpMenu = new MenuBarExt(true);
-    addMenuItem(helpMenu, Icons.editorIcons.Blank(), "Using LaTeX Lab", new SystemOpenPageCommand("Help",  "http://code.google.com/p/latex-lab/wiki/UsingLaTeXLab"));
-    addMenuItem(helpMenu, Icons.editorIcons.Blank(), "Using a custom CLSI server", new SystemOpenPageCommand("Help", "http://code.google.com/p/latex-lab/wiki/UsingPrivateCompiler"));
+    addMenuItem(helpMenu, Icons.editorIcons.Blank(), "Using LaTeX Lab", new SystemOpenPageCommand("Help",  "http://code.google.com/p/latex-lab/wiki/UsingLaTeXLab", false));
+    addMenuItem(helpMenu, Icons.editorIcons.Blank(), "Using a custom CLSI server", new SystemOpenPageCommand("Help", "http://code.google.com/p/latex-lab/wiki/UsingPrivateCompiler", false));
     helpMenu.addSeparator();
-    addMenuItem(helpMenu, Icons.editorIcons.Blank(), "Submit bug or feature request", new SystemOpenPageCommand("IssueTracker", "http://code.google.com/p/latex-lab/issues/entry"));
+    addMenuItem(helpMenu, Icons.editorIcons.Blank(), "Submit bug or feature request", new SystemOpenPageCommand("IssueTracker", "http://code.google.com/p/latex-lab/issues/entry", false));
     helpMenu.addSeparator();
-    addMenuItem(helpMenu, Icons.editorIcons.Blank(), "About", new SystemAboutCommand());
+    addMenuItem(helpMenu, Icons.editorIcons.Blank(), "About", new SystemShowDialogCommand(AboutDialog.class));
     this.menu.addItem("Help", helpMenu);
     return menu;
   }

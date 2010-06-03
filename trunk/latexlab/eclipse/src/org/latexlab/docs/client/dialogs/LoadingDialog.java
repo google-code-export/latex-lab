@@ -1,7 +1,5 @@
 package org.latexlab.docs.client.dialogs;
 
-import org.latexlab.docs.client.events.CommandHandler;
-
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -11,11 +9,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class LoadingDialog extends Dialog {
 
   protected static LoadingDialog instance;
-  
-  public static LoadingDialog get(CommandHandler handler) {
+
+  /**
+   * Retrieves the single instance of this class.
+   * 
+   * @return the single instance of this class.
+   */
+  public static LoadingDialog get() {
     if (instance == null) {
       instance = new LoadingDialog();
-      instance.addCommandHandler(handler);
     }
     return instance;
   }
@@ -36,6 +38,16 @@ public class LoadingDialog extends Dialog {
   }
   
   /**
+   * Centers and displays the dialog window and sets the dialog window's message.
+   * 
+   * @param msg the dialog window's message.
+   */
+  public void center(String msg) {
+    super.center();
+    setMessage(msg);
+  }
+  
+  /**
    * Retrieves the dialog window's message.
    * 
    * @return the dialog window's message
@@ -47,19 +59,9 @@ public class LoadingDialog extends Dialog {
   /**
    * Sets the dialog window's message.
    * 
-   * @param msg
+   * @param msg the dialog window's message.
    */
   public void setMessage(String msg) {
     message.setText(msg);
-  }
-  
-  /**
-   * Centers and displays the dialog window and sets the dialog window's message.
-   * 
-   * @param msg
-   */
-  public void center(String msg) {
-    super.center();
-    setMessage(msg);
   }
 }

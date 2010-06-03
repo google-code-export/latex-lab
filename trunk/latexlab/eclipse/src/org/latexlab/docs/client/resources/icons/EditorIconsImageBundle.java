@@ -3,8 +3,9 @@ package org.latexlab.docs.client.resources.icons;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.ImageBundle;
 
+//TODO: eliminate the deprecated ImageBundle parent reference.
 /**
- * An image bundle storing GDBE icons and images.
+ * An image bundle storing standard icons.
  */
 @SuppressWarnings("deprecation")
 public interface EditorIconsImageBundle extends ImageBundle {
@@ -44,6 +45,11 @@ public interface EditorIconsImageBundle extends ImageBundle {
 	public AbstractImagePrototype OpenDocument();
 	public AbstractImagePrototype OrederedList();
 	public AbstractImagePrototype PageBreak();
+	public AbstractImagePrototype PageIndex();
+	public AbstractImagePrototype PageNext();
+	public AbstractImagePrototype PagePrevious();
+	public AbstractImagePrototype PageZoomIn();
+	public AbstractImagePrototype PageZoomOut();
 	public AbstractImagePrototype Paste();
 	public AbstractImagePrototype PickColor();
 	public AbstractImagePrototype Picture();
@@ -53,6 +59,8 @@ public interface EditorIconsImageBundle extends ImageBundle {
 	public AbstractImagePrototype QuoteClose();
 	public AbstractImagePrototype QuoteOpen();
 	public AbstractImagePrototype Redo();
+	public AbstractImagePrototype Refresh();
+	public AbstractImagePrototype Resources();
 	public AbstractImagePrototype Save();
 	public AbstractImagePrototype Separator();
 	public AbstractImagePrototype Service();

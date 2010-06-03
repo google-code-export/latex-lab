@@ -5,7 +5,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.Map;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -78,7 +80,29 @@ public class AuthenticationManager extends HttpServlet {
     if (userService.getCurrentUser() != null) {
       String userEmail = userService.getCurrentUser().getEmail();
       AuthenticationToken authToken = store.getUserToken(userEmail);
+      //check token age and clear if token is too old
+      if (authToken != null && authToken.isExpired()) {
+    	try {
+    	  AuthSubUtil.revokeToken(authToken.getToken(), key);
+    	} catch (Exception x) { }
+    	store.clearUserToken(authToken.getEmail());
+    	authToken = null;
+      }
+      //check token validity to ensure that the token is still valid
       if (authToken != null) {
+    	try {
+    	  Map<String, String> info = AuthSubUtil.getTokenInfo(authToken.getToken(), key);
+    	  if (info == null || info.size() == 0) {
+	    	store.clearUserToken(authToken.getEmail());
+	    	authToken = null;
+    	  }
+    	} catch (Exception x) {
+	      store.clearUserToken(authToken.getEmail());
+	      authToken = null;
+    	}
+      }
+      if (authToken != null) {
+    	authToken.setActivity(new Date());
         return authToken;
       } else {
         String token = null, qs = req.getQueryString();
@@ -90,10 +114,12 @@ public class AuthenticationManager extends HttpServlet {
           store.setUserToken(req.getUserPrincipal().getName(), token);
           resp.sendRedirect(getFullUrl(req));
         } else {
-          String authUrl = AuthSubUtil.getRequestUrl(
-              getFullUrl(req),
-              DocumentServiceImpl.AUTH_SCOPES, true, true);
-          resp.sendRedirect(authUrl);
+          if (!passive) {
+            String authUrl = AuthSubUtil.getRequestUrl(
+                getFullUrl(req),
+                DocumentServiceImpl.AUTH_SCOPES, true, true);
+            resp.sendRedirect(authUrl);
+          }
         }
       }
     } else {

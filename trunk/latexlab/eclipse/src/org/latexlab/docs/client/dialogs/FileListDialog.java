@@ -1,5 +1,7 @@
 package org.latexlab.docs.client.dialogs;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -17,9 +19,10 @@ import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-import org.latexlab.docs.client.commands.FileDialogListDocumentsCommand;
-import org.latexlab.docs.client.commands.FileDialogStarDocumentCommand;
-import org.latexlab.docs.client.commands.FileDialogUnstarDocumentCommand;
+import org.latexlab.docs.client.commands.SystemListDocumentsCommand;
+import org.latexlab.docs.client.commands.SystemStarDocumentCommand;
+import org.latexlab.docs.client.commands.SystemUnstarDocumentCommand;
+import org.latexlab.docs.client.events.AsyncInstantiationCallback;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
@@ -33,13 +36,43 @@ import org.latexlab.docs.client.widgets.ExplorerTree.StarHandler;
 public class FileListDialog extends Dialog {
 
   protected static FileListDialog instance;
+
+  /**
+   * Retrieves the single instance of this class, using asynchronous instantiation.
+   * 
+   * @param handler the command handler.
+   * @param cb the asynchronous instantiation callback.
+   */
+  public static void get(final CommandHandler handler,
+	    final AsyncInstantiationCallback<FileListDialog> cb) {
+	GWT.runAsync(new RunAsyncCallback() {
+		@Override
+		public void onFailure(Throwable reason) {
+		  cb.onFailure(reason);
+		}
+		@Override
+		public void onSuccess() {
+	      if (instance == null) {
+	        instance = new FileListDialog();
+	        instance.addCommandHandler(handler);
+	      }
+		  cb.onSuccess(instance);
+		}
+	});
+  }
   
-  public static FileListDialog get(CommandHandler handler) {
-    if (instance == null) {
-      instance = new FileListDialog();
-      instance.addCommandHandler(handler);
-    }
-    return instance;
+  /**
+   * Causes the code for this class to be loaded.
+   */
+  public static void prefetch() {
+	GWT.runAsync(new RunAsyncCallback() {
+		@Override
+		public void onFailure(Throwable reason) { }
+		@Override
+		public void onSuccess() {
+		  new AboutDialog();
+		}
+	});
   }
   
   private DocumentServiceEntry[] entries;
@@ -48,7 +81,7 @@ public class FileListDialog extends Dialog {
   private TabBar tabs;
   
   /**
-   * Constructs a File List dialog window.
+   * Constructs a dialog window displaying the user's documents.
    */
   protected FileListDialog() {
     super("Your Documents", true);
@@ -85,25 +118,32 @@ public class FileListDialog extends Dialog {
   
 
   /**
-   * Makes the dialog window visible. Resets the tab selection to
-   * display the default documents view and triggers a refresh.
+   * Builds the dialog's link panel.
    */
-  @Override
-  public void show() {
-    super.show();
-    resize();
-    if (entries == null) {
-      loadEntries();
-    }
-  }
-  
-  /**
-   * Requests a document list refresh by firing the appropriate command event.
-   */
-  private void loadEntries() {
-    documentsPanel.clear();
-    documentsPanel.add(new Label("Loading..."));
-    CommandEvent.fire(this, new FileDialogListDocumentsCommand(true));
+  private void buildLinks() {
+    VerticalPanel panel = new VerticalPanel();
+    panel.setStylePrimaryName("lab-Explorer-Links");
+    mainPanel.getFlexCellFormatter().setStyleName(1, 0, ""); //cancel default style
+    Anchor refreshLink = new Anchor("Refresh");
+    refreshLink.addClickHandler(new ClickHandler() {
+		@Override
+		public void onClick(ClickEvent event) {
+		  event.preventDefault();
+		  event.stopPropagation();
+		  loadEntries(false);
+		}
+    });
+    Anchor newDocumentLink = new Anchor("New Document", "/docs", "_blank");
+    Anchor acLink = new Anchor("Google Access Control", "https://www.google.com/accounts/IssuedAuthSubTokens", "_blank");
+    Anchor docsLink = new Anchor("Google Documents", "http://docs.google.com/", "_blank");
+    panel.add(new HTML("<br /><b>Actions</b>"));
+    panel.add(refreshLink);
+    panel.add(newDocumentLink);
+    panel.add(new HTML("<br /><b>Links</b>"));
+    panel.add(acLink);
+    panel.add(docsLink);
+    linksPanel = new ScrollPanel(panel);
+    leftPanel.add(linksPanel);
   }
   
   /**
@@ -124,33 +164,14 @@ public class FileListDialog extends Dialog {
   }
   
   /**
-   * Builds the dialog's link panel.
+   * Requests a document list refresh by firing the appropriate command event.
+   * 
+   * @param useCache whether to use a document cache, when available.
    */
-  private void buildLinks() {
-    VerticalPanel panel = new VerticalPanel();
-    panel.setStylePrimaryName("lab-Explorer-Links");
-    mainPanel.getFlexCellFormatter().setStyleName(1, 0, ""); //cancel default style
-    Anchor refreshLink = new Anchor("Refresh");
-    refreshLink.addClickHandler(new ClickHandler() {
-		@Override
-		public void onClick(ClickEvent event) {
-		  rightPanel.clear();
-		  CommandEvent.fire(FileListDialog.this, new FileDialogListDocumentsCommand(false));
-		  event.preventDefault();
-		  event.stopPropagation();
-		}
-    });
-    Anchor newDocumentLink = new Anchor("New Document", "/docs", "_blank");
-    Anchor acLink = new Anchor("Google Access Control", "https://www.google.com/accounts/IssuedAuthSubTokens", "_blank");
-    Anchor docsLink = new Anchor("Google Documents", "http://docs.google.com/", "_blank");
-    panel.add(new HTML("<br /><b>Actions</b>"));
-    panel.add(refreshLink);
-    panel.add(newDocumentLink);
-    panel.add(new HTML("<br /><b>Links</b>"));
-    panel.add(acLink);
-    panel.add(docsLink);
-    linksPanel = new ScrollPanel(panel);
-    leftPanel.add(linksPanel);
+  private void loadEntries(boolean useCache) {
+    documentsPanel.clear();
+    rightPanel.setStylePrimaryName("lab-Loading");
+    CommandEvent.fire(this, new SystemListDocumentsCommand(useCache));
   }
   
   /**
@@ -172,7 +193,25 @@ public class FileListDialog extends Dialog {
     this.entries = entries;
   }
   
+  /**
+   * Makes the dialog window visible. Resets the tab selection to
+   * display the default documents view and triggers a refresh.
+   */
+  @Override
+  public void show() {
+    super.show();
+    resize();
+    if (entries == null) {
+      loadEntries(true);
+    }
+  }
+  
+  /**
+   * Displays entries according to the selected view.
+   */
   public void showEntries() {
+	rightPanel.clear();
+	rightPanel.setStyleName("");
 	switch(tabs.getSelectedTab()) {
 	  case 0:
 		showQuickView();
@@ -183,8 +222,36 @@ public class FileListDialog extends Dialog {
 	}
   }
   
+  /**
+   * Displays an explorer view of all entries.
+   */
+  private void showExplorerView() {
+	if (entries == null) {
+	  return;
+	}
+    ExplorerTree tree = new ExplorerTree(false, false, new StarHandler(){
+		@Override
+		public void onStar(String id) {
+		  CommandEvent.fire(FileListDialog.this, new SystemStarDocumentCommand(id));
+		}
+		@Override
+		public void onUnstar(String id) {
+		  CommandEvent.fire(FileListDialog.this, new SystemUnstarDocumentCommand(id));
+		}
+    });
+    tree.setEntries(entries);
+    documentsPanel = new ScrollPanel(tree);
+    rightPanel.add(documentsPanel);
+    resize();
+  }
+  
+  /**
+   * Displays a quick view of starred entries.
+   */
   private void showQuickView() {
-	rightPanel.clear();
+    if (entries == null) {
+	  return;
+	}
     VerticalPanel panel = new VerticalPanel();
     panel.setStylePrimaryName("lab-Explorer-Documents");
     int totalEntries = 0;
@@ -210,7 +277,9 @@ public class FileListDialog extends Dialog {
       Anchor link = new Anchor();
       link.setText(entry.getTitle());
       link.setTarget("_blank");
-      link.setHref("/docs?docid=" + entry.getDocumentId());
+      if (entry.getType().equalsIgnoreCase("document")) {
+        link.setHref("/docs?docid=" + entry.getDocumentId());
+      }
       ToggleButton star = new ToggleButton(
           Icons.editorIcons.StarEmpty().createImage(),
           Icons.editorIcons.StarFull().createImage());
@@ -219,9 +288,9 @@ public class FileListDialog extends Dialog {
         public void onClick(ClickEvent event) {
           ToggleButton btn = (ToggleButton)event.getSource();
           if (btn.isDown()) {
-            CommandEvent.fire(FileListDialog.this, new FileDialogStarDocumentCommand(id));
+            CommandEvent.fire(FileListDialog.this, new SystemStarDocumentCommand(id));
           } else {
-            CommandEvent.fire(FileListDialog.this, new FileDialogUnstarDocumentCommand(id));
+            CommandEvent.fire(FileListDialog.this, new SystemUnstarDocumentCommand(id));
           }
         }
       });
@@ -245,24 +314,6 @@ public class FileListDialog extends Dialog {
       panel.add(new Label("You have no starred documents."));
     }
     documentsPanel = new ScrollPanel(panel);
-    rightPanel.add(documentsPanel);
-    resize();
-  }
-  
-  private void showExplorerView() {
-    rightPanel.clear();
-    ExplorerTree tree = new ExplorerTree(false, new StarHandler(){
-		@Override
-		public void onStar(String id) {
-		  CommandEvent.fire(FileListDialog.this, new FileDialogStarDocumentCommand(id));
-		}
-		@Override
-		public void onUnstar(String id) {
-		  CommandEvent.fire(FileListDialog.this, new FileDialogUnstarDocumentCommand(id));
-		}
-    });
-    tree.setEntries(entries);
-    documentsPanel = new ScrollPanel(tree);
     rightPanel.add(documentsPanel);
     resize();
   }

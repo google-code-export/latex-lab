@@ -29,6 +29,19 @@ public class CommandEvent extends GwtEvent<CommandHandler> {
       source.fireEvent(event);
     }
   }
+  
+  /**
+   * Flows a source-less command event to a specific handler.
+   * @param handler the command handler
+   * @param command the command
+   */
+  public static void flow(CommandHandler handler,
+      Command command) {
+    if (TYPE != null) {
+      CommandEvent event = new CommandEvent(command);
+      handler.onCommand(event);
+    }
+  }
 
   /**
    * Ensures the existence of the handler hook and then returns it.
@@ -55,9 +68,14 @@ public class CommandEvent extends GwtEvent<CommandHandler> {
   }
 
   @Override
+  protected void dispatch(CommandHandler handler) {
+    handler.onCommand(this);
+  }
+  @Override
   public final Type<CommandHandler> getAssociatedType() {
     return TYPE;
   }
+
   /**
    * Retrieves the command type.
    * 
@@ -71,10 +89,5 @@ public class CommandEvent extends GwtEvent<CommandHandler> {
   public String toDebugString() {
     assertLive();
     return super.toDebugString() + " command = " + command;
-  }
-
-  @Override
-  protected void dispatch(CommandHandler handler) {
-    handler.onCommand(this);
   }
 }

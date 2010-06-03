@@ -1,6 +1,9 @@
 package org.latexlab.docs.server.auth;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManager;
@@ -22,9 +25,15 @@ public class AuthenticationToken {
 
     @Persistent
     private String token;
+    
+    @Persistent
+    private String publicToken;
 
     @Persistent
     private Date obtained;
+
+    @Persistent
+    private Date activity;
 
     /**
      * Constructs a new Authentication Token.
@@ -33,10 +42,26 @@ public class AuthenticationToken {
      * @param token the AuthSub token
      * @param obtained the date the token was assigned
      */
-    private AuthenticationToken(String email, String token, Date obtained) {
+    private AuthenticationToken(String email, String token, String publicToken, Date obtained, Date activity) {
         this.email = email;
         this.token = token;
+        this.publicToken = publicToken;
         this.obtained = obtained;
+        this.activity = activity;
+    }
+    
+    /**
+     * Determines if the token's age exceeds the set limit.
+     * 
+     * @return whether the token's age exceeds the age limit
+     */
+    public boolean isExpired() {
+      Calendar cal = Calendar.getInstance();
+      cal.add(Calendar.MONTH, -2);
+      if (this.obtained.before(cal.getTime())) {
+    	return true;
+      }
+      return false;
     }
 
     /**
@@ -56,6 +81,15 @@ public class AuthenticationToken {
     public String getToken() {
         return token;
     }
+
+    /**
+     * Retrieves the public token.
+     * 
+     * @return the public token
+     */
+    public String getPublicToken() {
+        return publicToken;
+    }
     
     /**
      * Retrieves the date the token was assigned.
@@ -64,6 +98,31 @@ public class AuthenticationToken {
      */
     public Date getObtained() {
       return obtained;
+    }
+    
+    /**
+     * Retrieves the date the token was last used.
+     * 
+     * @return the date the token was last used
+     */
+    public Date getActivity() {
+      return activity;
+    }
+    
+    /**
+     * Sets the token's last activity date.
+     * 
+     * @param activity the token's last activity
+     */
+    public void setActivity(Date activity) {
+      this.activity = activity;
+      PersistenceManager pm = PMF.get().getPersistenceManager();
+      try {
+    	pm.makePersistent(this);
+      } catch (JDOObjectNotFoundException e) {
+      } finally {
+        pm.close();
+      }
     }
     
     /**
@@ -87,8 +146,7 @@ public class AuthenticationToken {
       AuthenticationToken token = null;
       try {
         token = pm.getObjectById(AuthenticationToken.class, email);
-      } 
-      catch (JDOObjectNotFoundException e) { }
+      } catch (JDOObjectNotFoundException e) { }
       finally {
         pm.close();
       }
@@ -112,7 +170,16 @@ public class AuthenticationToken {
           at.setToken(token);
         } 
         catch (JDOObjectNotFoundException e) {
-          at = new AuthenticationToken(email, token, new Date());
+          Cryptoid enc;
+          String publicToken = token;
+    	  try {
+    	    enc = new Cryptoid();
+            publicToken = enc.hash(email).replace("+", "_").replace("/", "-").replace("=", "_");
+    	  } catch (Exception x) {
+    	    Logger.getLogger(AuthenticationToken.class.getName()).log(Level.SEVERE, "Token encryption error: "  + x.getMessage(), x);
+    	    x.printStackTrace();
+    	  }
+          at = new AuthenticationToken(email, token, publicToken, new Date(), new Date());
           pm.makePersistent(at);
         }
       } finally {

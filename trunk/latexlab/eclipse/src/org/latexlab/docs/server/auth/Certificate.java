@@ -70,5 +70,14 @@ public class Certificate {
       }
       return cert;
     }
+	
+	public static void putCertificate(String purpose, String key) {
+	  try {
+	    PersistenceManager pm = PMF.get().getPersistenceManager();
+        Certificate cert = new Certificate(purpose, key);
+        pm.makePersistent(cert);
+	  } catch(Exception x) {
+	  }
+	}
 
 }

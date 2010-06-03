@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
@@ -37,13 +38,23 @@ import java.util.Date;
  */
 public class HeaderPart extends Composite implements HasCommandHandlers, ClickHandler {
 
-  private HandlerManager manager;
-  private VerticalPanel content;
-  private FlexTable main;
+  /**
+   * Defines the allows save states.
+   */
+  public enum SaveState {
+	  SAVED,
+	  SAVING
+  }
+  
   private Label author;
-  private HorizontalPanel leftLinks, rightLinks, status;
-  private Anchor title, signoutLink;
+  private VerticalPanel content;
   private HTML info;
+  private HorizontalPanel leftLinks, rightLinks, status;
+  private FlexTable main;
+  private HandlerManager manager;
+  private MenuItem saveMenuItem, saveAndCloseMenuItem;
+  private Timer timer;
+  private Anchor title, signoutLink;
   
   /**
    * Constructs a new Header part.
@@ -76,55 +87,32 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
     initWidget(content);
   }
   
+  @Override
+  public HandlerRegistration addCommandHandler(CommandHandler handler) {
+	return manager.addHandler(CommandEvent.getType(), handler);
+  }
+  
   /**
-   * Builds the upper part of the editor.
-   * The upper region contains the Google Docs links, status and logo.
+   * Adds a menu item to a menu bar.
    * 
-   * @return a table containing the upper controls
+   * @param menuBar the menu bar to which to add the item
+   * @param icon the menu item's icon, if any
+   * @param title the menu item's title
+   * @param command the menu items associated command type
    */
-  private void buildUpper() {
-	FlexTable table = new FlexTable();
-	table.setWidth("100%");
-	table.setCellSpacing(0);
-	table.setCellPadding(0);
-	table.insertRow(0);
-	table.insertCell(0, 0);
-	table.insertCell(0, 1);
-	table.getFlexCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
-    table.getFlexCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_LEFT);
-	table.getFlexCellFormatter().setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
-    table.getFlexCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT);
-    table.getFlexCellFormatter().setStylePrimaryName(0, 0, "lab-Header-Links");
-    table.getFlexCellFormatter().setStylePrimaryName(0, 1, "lab-Header-Links");
-    /* Upper Header Panel */
-    leftLinks = new HorizontalPanel();
-    Anchor projectLink = new Anchor("Project", "http://code.google.com/p/latex-lab", "_blank");
-    Anchor wikiLink = new Anchor("Wiki", "http://code.google.com/p/latex-lab/w/list", "_blank");
-    Anchor issuesLink = new Anchor("Issues", "http://code.google.com/p/latex-lab/issues/list", "_blank");
-    Anchor contLink = new Anchor("Contribute", "http://code.google.com/p/", "_blank");
-    leftLinks.add(projectLink);
-    leftLinks.add(wikiLink);
-    leftLinks.add(issuesLink);
-    leftLinks.add(contLink);
-    rightLinks = new HorizontalPanel();
-    author = new Label();
-    Anchor docsLink = new Anchor("Docs Home", "http://docs.google.com/", "_blank");
-    Anchor helpLink = new Anchor("Help", "http://code.google.com/p/latex-lab/wiki/UsingLaTeXLab", "_blank");
-    Anchor acLink = new Anchor("Google Access Control", "https://www.google.com/accounts/IssuedAuthSubTokens", "_blank");
-    signoutLink = new Anchor("Sign Out");
-    signoutLink.addClickHandler(new ClickHandler(){
-      public void onClick(ClickEvent event) {
-        CommandEvent.fire(HeaderPart.this, new SystemSignOutCommand("/splash.html"));
+  private MenuItem addMenuItem(final MenuBar menuBar, AbstractImagePrototype icon, String title, final Command command) {
+    MenuItem mi;
+    if (icon == null) {
+      mi = menuBar.addItem(title, true, (com.google.gwt.user.client.Command)null);
+    } else {
+      mi = menuBar.addItem(icon.getHTML() + " " + title, true, (com.google.gwt.user.client.Command)null);
+    }
+    mi.setCommand(new com.google.gwt.user.client.Command() {
+      public void execute() {
+      	CommandEvent.fire(HeaderPart.this, command);
       }
     });
-    rightLinks.add(author);
-    rightLinks.add(docsLink);
-    rightLinks.add(acLink);
-    rightLinks.add(helpLink);
-    rightLinks.add(signoutLink);
-    table.setWidget(0, 0, leftLinks);
-    table.setWidget(0, 1, rightLinks);
-    main.setWidget(0, 0, table);
+    return mi;
   }
   
   /**
@@ -164,9 +152,10 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
     actionsPanel.setHeight("30px");
     actionsPanel.setStylePrimaryName("lab-Header-Actions");
     MenuBar menu = new MenuBar(false);
-    addMenuItem(menu, null, "Save", new CurrentDocumentSaveCommand());
+    saveMenuItem = addMenuItem(menu, null, "Save Now", new CurrentDocumentSaveCommand());
     menu.addSeparator();
-    addMenuItem(menu, null, "Save & Close", new CurrentDocumentSaveAndCloseCommand()).setStylePrimaryName("lab-HighlightedMenuItem");
+    saveAndCloseMenuItem = addMenuItem(menu, null, "Save & Close", new CurrentDocumentSaveAndCloseCommand());
+    saveAndCloseMenuItem.setStylePrimaryName("lab-HighlightedMenuItem");
     actionsPanel.add(menu);
     table.setWidget(0, 0, titlePanel);
     table.setWidget(0, 1, actionsPanel);
@@ -174,28 +163,61 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
   }
   
   /**
-   * Adds a menu item to a menu bar.
+   * Builds the upper part of the editor.
+   * The upper region contains the Google Docs links, status and logo.
    * 
-   * @param menuBar the menu bar to which to add the item
-   * @param icon the menu item's icon, if any
-   * @param title the menu item's title
-   * @param command the menu items associated command type
+   * @return a table containing the upper controls
    */
-  private MenuItem addMenuItem(final MenuBar menuBar, AbstractImagePrototype icon, String title, final Command command) {
-    MenuItem mi;
-    if (icon == null) {
-      mi = menuBar.addItem(title, true, (com.google.gwt.user.client.Command)null);
-    } else {
-      mi = menuBar.addItem(icon.getHTML() + " " + title, true, (com.google.gwt.user.client.Command)null);
-    }
-    mi.setCommand(new com.google.gwt.user.client.Command() {
-      public void execute() {
-      	CommandEvent.fire(HeaderPart.this, command);
+  private void buildUpper() {
+	FlexTable table = new FlexTable();
+	table.setWidth("100%");
+	table.setCellSpacing(0);
+	table.setCellPadding(0);
+	table.insertRow(0);
+	table.insertCell(0, 0);
+	table.insertCell(0, 1);
+	table.getFlexCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
+    table.getFlexCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_LEFT);
+	table.getFlexCellFormatter().setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_TOP);
+    table.getFlexCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT);
+    table.getFlexCellFormatter().setStylePrimaryName(0, 0, "lab-Header-Links");
+    table.getFlexCellFormatter().setStylePrimaryName(0, 1, "lab-Header-Links");
+    /* Upper Header Panel */
+    leftLinks = new HorizontalPanel();
+    Anchor projectLink = new Anchor("Project", "http://code.google.com/p/latex-lab", "_blank");
+    Anchor wikiLink = new Anchor("Wiki", "http://code.google.com/p/latex-lab/w/list", "_blank");
+    Anchor issuesLink = new Anchor("Issues", "http://code.google.com/p/latex-lab/issues/list", "_blank");
+    Anchor devLink = new Anchor("Development Version", "http://dev.latexlab.org/docs", "_blank");
+    leftLinks.add(projectLink);
+    leftLinks.add(wikiLink);
+    leftLinks.add(issuesLink);
+    leftLinks.add(devLink);
+    rightLinks = new HorizontalPanel();
+    author = new Label();
+    Anchor docsLink = new Anchor("Docs Home", "http://docs.google.com/", "_blank");
+    Anchor helpLink = new Anchor("Help", "http://code.google.com/p/latex-lab/wiki/UsingLaTeXLab", "_blank");
+    Anchor acLink = new Anchor("Access Control", "https://www.google.com/accounts/IssuedAuthSubTokens", "_blank");
+    signoutLink = new Anchor("Sign Out");
+    signoutLink.addClickHandler(new ClickHandler(){
+      public void onClick(ClickEvent event) {
+        CommandEvent.fire(HeaderPart.this, new SystemSignOutCommand());
       }
     });
-    return mi;
+    rightLinks.add(author);
+    rightLinks.add(docsLink);
+    rightLinks.add(acLink);
+    rightLinks.add(helpLink);
+    rightLinks.add(signoutLink);
+    table.setWidget(0, 0, leftLinks);
+    table.setWidget(0, 1, rightLinks);
+    main.setWidget(0, 0, table);
   }
   
+  @Override
+  public void fireEvent(GwtEvent<?> event) {
+	manager.fireEvent(event);
+  }
+
   /**
    * Handles a click event. Listens to click events on the title region and prompts
    * for a rename by firing a rename command event.
@@ -204,6 +226,88 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
     if (event.getSource() == title) {
       CommandEvent.fire(HeaderPart.this, new CurrentDocumentRenameCommand());
       event.preventDefault();
+    }
+  }
+
+  /**
+   * Sets the displayed author.
+   * 
+   * @param author the author which to display
+   */
+  public void setAuthor(String author) {
+    this.author.setText(author);
+  }
+  
+  /**
+   * Sets the displayed document info.
+   * 
+   * @param documentId the document id which to display
+   * @param edited the date of last edit which to display
+   * @param editor the editor which to display
+   */
+  @SuppressWarnings("deprecation")
+  public void setInfo(final String documentId, final Date edited, final String editor) {
+	long timeDiff = new Date().getTime() - edited.getTime();
+	String dateLabel;
+	if (timer != null) {
+	  timer.cancel();
+	}
+	timer = new Timer() {
+		@Override
+		public void run() {
+		  setInfo(documentId, edited, editor);
+		}
+	};
+	if (timeDiff < 60000) {
+	  dateLabel = "seconds ago";
+	  timer.schedule(30000);
+	} else if (timeDiff < 3600000){
+	  int mins = (int) (timeDiff / 60000);
+	  dateLabel = mins + " minute" + (mins == 1 ? "" : "s") + " ago";
+	  timer.schedule(30000);
+	} else {
+	  dateLabel = edited.toLocaleString();
+	  int gmt = dateLabel.indexOf(" GMT");
+	  if (gmt > 0) {
+		dateLabel = dateLabel.substring(0, gmt);
+	  }
+	}
+    info.setHTML(" saved <a href=\"http://docs.google.com/Revs?id=" + documentId + "&tab=revlist\" target=\"_blank\">" +
+        dateLabel + "</a> by " + editor);
+  }
+  
+  /**
+   * Updates the save state. If the save state corresponds to an ongoing save,
+   * then the corresponding interface elements are disabled.
+   * 
+   * @param state the new save state
+   */
+  public void setSaveState(SaveState state) {
+	switch (state) {
+	case SAVED:
+	  saveMenuItem.setText("Save Now");
+	  saveMenuItem.removeStyleDependentName("Disabled");
+	  saveAndCloseMenuItem.removeStyleDependentName("Disabled");
+	  break;
+	case SAVING:
+	  saveMenuItem.setText("Saving...");
+	  saveMenuItem.addStyleDependentName("Disabled");
+	  saveAndCloseMenuItem.addStyleDependentName("Disabled");
+	  break;
+	}
+  }
+
+  /**
+   * Sets the contents of the status region.
+   * 
+   * @param status the status which to display
+   */
+  public void setStatus(String status) {
+    this.status.clear();
+    if (status != null & !status.equals("")) {
+      Label lbl = new Label(status);
+      lbl.setStylePrimaryName("lab-Header-StatusLabel");
+      this.status.add(lbl);
     }
   }
   
@@ -218,48 +322,5 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
       title = title.substring(0, 30) + "...";
     }
     this.title.setText(title);
-  }
-
-  /**
-   * Sets the displayed author.
-   * 
-   * @param author the author which to display
-   */
-  public void setAuthor(String author) {
-    this.author.setText(author);
-  }
-
-  /**
-   * Sets the contents of the status region.
-   * 
-   * @param status the status which to display
-   */
-  public void setStatus(String status) {
-    this.status.clear();
-    if (status != null & !status.equals("")) {
-      this.status.add(new Label(status));
-    }
-  }
-  
-  /**
-   * Sets the displayed document info.
-   * 
-   * @param documentId the document id which to display
-   * @param edited the date of last edit which to display
-   * @param editor the editor which to display
-   */
-  public void setInfo(String documentId, Date edited, String editor) {
-    info.setHTML(" saved on <a href=\"http://docs.google.com/Revs?id=" + documentId + "&tab=revlist\" target=\"_blank\">" +
-        edited + "</a> by " + editor);
-  }
-
-  @Override
-  public HandlerRegistration addCommandHandler(CommandHandler handler) {
-	return manager.addHandler(CommandEvent.getType(), handler);
-  }
-  
-  @Override
-  public void fireEvent(GwtEvent<?> event) {
-	manager.fireEvent(event);
   }
 }

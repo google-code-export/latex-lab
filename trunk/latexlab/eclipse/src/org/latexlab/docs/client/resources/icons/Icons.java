@@ -21,6 +21,9 @@ import org.latexlab.docs.client.resources.icons.latex.LatexWhiteSpacesAndDotsIco
 
 import com.google.gwt.core.client.GWT;
 
+/**
+ * A collection of all icon image bundles.
+ */
 public class Icons {
 	
 	public static final EditorIconsImageBundle editorIcons = (EditorIconsImageBundle) GWT.create(EditorIconsImageBundle.class);

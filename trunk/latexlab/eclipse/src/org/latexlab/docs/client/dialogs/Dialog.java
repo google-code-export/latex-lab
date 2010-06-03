@@ -22,11 +22,17 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public abstract class Dialog extends DialogBox implements HasCommandHandlers {
 
-  protected final int DIALOG_ZINDEX = 5;
-  protected HandlerManager manager;
-  protected FlexTable mainPanel;
-  protected Label titleLabel;
+  /**
+   * Defines the number of visible modal windows.
+   */
+  public static int VISIBLE_MODEL_DIALOGS = 0;
+	
   protected PushButton closeButton;
+  protected final int DIALOG_ZINDEX = 6;
+  protected boolean isRaised;
+  protected FlexTable mainPanel;
+  protected HandlerManager manager;
+  protected Label titleLabel;
   
   /**
    * Constructs a base dialog window.
@@ -37,8 +43,7 @@ public abstract class Dialog extends DialogBox implements HasCommandHandlers {
   protected Dialog(String title, boolean modal) {
 	manager = new HandlerManager(this);
     setModal(modal);
-    this.getElement().getStyle().setZIndex(5);
-    GlassPanel.setGlassPanelVisibility(false, DIALOG_ZINDEX - 1);
+    this.getElement().getStyle().setZIndex(DIALOG_ZINDEX);
     titleLabel = new Label();
     titleLabel.setText(title);
     closeButton = new PushButton(Icons.editorIcons.CloseBlue().createImage());
@@ -58,69 +63,60 @@ public abstract class Dialog extends DialogBox implements HasCommandHandlers {
     mainPanel.getCellFormatter().setHorizontalAlignment(0, 1, HorizontalPanel.ALIGN_RIGHT);
     mainPanel.getCellFormatter().setWidth(0, 1, "16px");
     mainPanel.getCellFormatter().setStylePrimaryName(0, 0, "Title");
-    mainPanel.getCellFormatter().setStylePrimaryName(1, 0, "Tabs");
+    mainPanel.getCellFormatter().setStylePrimaryName(1, 0, "SubHeader");
+    mainPanel.getCellFormatter().setVisible(1, 0, false);
     mainPanel.getCellFormatter().setStylePrimaryName(2, 0, "Content");
     mainPanel.getFlexCellFormatter().setColSpan(1, 0, 2);
-    mainPanel.getFlexCellFormatter().setStylePrimaryName(1, 0, "SubHeader");
     mainPanel.getFlexCellFormatter().setColSpan(2, 0, 2);
     mainPanel.setWidget(0, 0, titleLabel);
     mainPanel.setWidget(0, 1, closeButton);
     setWidget(mainPanel);
   }
   
+  
   /**
-   * Makes the dialog window visible. If window is set to modal then
-   * a glass panel is displayed.
+   * Register a click handler with the dialog's close button.
+   * 
+   * @param closeIconClickHandler the click handler to add
    */
-  @Override
-  public void show() {
-    if (this.isModal()) {
-      GlassPanel.setGlassPanelVisibility(true, DIALOG_ZINDEX-1);
-    }
-    super.show();
+  public void addClickHandler(ClickHandler closeIconClickHandler) {
+    closeButton.addClickHandler(closeIconClickHandler);
   }
   
   /**
-   * Hides the dialog window.
+   * Register a command handler.
+   * 
+   * @param handler the command handler
    */
   @Override
-  public void hide() {
-    if (this.isShowing() && this.isModal()) {
-      GlassPanel.setGlassPanelVisibility(false, DIALOG_ZINDEX-1);
-    }
-    super.hide();
+  public HandlerRegistration addCommandHandler(CommandHandler handler) {
+	return manager.addHandler(CommandEvent.getType(), handler);
   }
   
   /**
-   * Retrieves the dialog contents widget.
+   * Shows and centers the dialog window on the page.
+   */
+  @Override
+  public void center() {
+	super.center();
+	show();
+  }
+  
+  /**
+   * Fires a GWT event.
+   * 
+   * @param event the GWT event
+   */
+  @Override
+  public void fireEvent(GwtEvent<?> event) {
+	manager.fireEvent(event);
+  }
+  
+  /**
+   * Retrieves the dialog's content widget.
    */
   public void getContentWidget() {
     mainPanel.getWidget(2, 0);
-  }
-  
-  /**
-   * Sets the dialog contents widget.
-   * 
-   * @param w the widget to set as the dialog's contents
-   */
-  public void setContentWidget(Widget w) {
-    mainPanel.setWidget(2, 0, w);
-  }
-  
-  /**
-   * Retrieves the dialog's top widget.
-   */
-  public void getTopWidget() {
-    mainPanel.getWidget(1, 0);
-  }
-  
-  /**
-   * Sets the dialog's top widget.
-   * 
-   * @param w the widget to set as the dialog's top widget
-   */
-  public void setTopWidget(Widget w) {
-    mainPanel.setWidget(1, 0, w);
   }
   
   /**
@@ -131,6 +127,58 @@ public abstract class Dialog extends DialogBox implements HasCommandHandlers {
   }
   
   /**
+   * Retrieves the dialog's top widget.
+   */
+  public void getTopWidget() {
+    mainPanel.getWidget(1, 0);
+  }
+  
+  /**
+   * Retrieves the z-index for this dialog window.
+   * 
+   * @return the z-index for this dialog window.
+   */
+  private int getZIndex() {
+	try {
+	  String z = this.getElement().getStyle().getZIndex();
+	  if (z != null && !z.equals("")) {
+	    return Integer.parseInt(z);
+	  }
+	} catch (Exception x) { }
+	return DIALOG_ZINDEX;
+  }
+  
+  /**
+   * Hides the dialog window. If a glass panel is visible then it is hidden,
+   * unless another modal window is also visible.
+   */
+  @Override
+  public void hide() {
+    if (this.isShowing() && this.isModal()) {
+      if (isRaised) {
+  	    isRaised = false;
+  	    int z = getZIndex();
+        this.getElement().getStyle().setZIndex(z - 2);
+        if (VISIBLE_MODEL_DIALOGS > 0) {
+          GlassPanel.setGlassPanelVisibility(true, z - 3);
+        }
+      } else {
+        GlassPanel.setGlassPanelVisibility(false, getZIndex()-1);
+      }
+    }
+    super.hide();
+  }
+  
+  /**
+   * Sets the dialog's content widget.
+   * 
+   * @param w the widget to set as the dialog's contents
+   */
+  public void setContentWidget(Widget w) {
+    mainPanel.setWidget(2, 0, w);
+  }
+
+  /**
    * Sets the dialog's title.
    * 
    * @param title the dialog's title
@@ -140,22 +188,33 @@ public abstract class Dialog extends DialogBox implements HasCommandHandlers {
   }
   
   /**
-   * Register a click handler with the dialog's close button.
+   * Sets the dialog's top widget.
    * 
-   * @param closeIconClickHandler the click handler to add
+   * @param w the widget to set as the dialog's top widget
    */
-  public void addClickHandler(ClickHandler closeIconClickHandler) {
-    closeButton.addClickHandler(closeIconClickHandler);
-  }
-
-  @Override
-  public HandlerRegistration addCommandHandler(CommandHandler handler) {
-	return manager.addHandler(CommandEvent.getType(), handler);
+  public void setTopWidget(Widget w) {
+	mainPanel.getCellFormatter().setVisible(1, 0, true);
+    mainPanel.setWidget(1, 0, w);
   }
   
+  /**
+   * Makes the dialog window visible. If the window is set to modal then
+   * a glass panel is displayed.
+   */
   @Override
-  public void fireEvent(GwtEvent<?> event) {
-	manager.fireEvent(event);
+  public void show() {
+    if (!this.isShowing() && this.isModal()) {
+      VISIBLE_MODEL_DIALOGS++;
+      if (GlassPanel.getGlassPanelVisibility()) {
+      	isRaised = true;
+      	int z = getZIndex();
+        this.getElement().getStyle().setZIndex(z + 2);
+      	GlassPanel.setGlassPanelVisibility(true, z + 1);
+      } else {
+      	GlassPanel.setGlassPanelVisibility(true, getZIndex()-1);
+      }
+    }
+    super.show();
   }
   
 }
