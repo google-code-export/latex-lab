@@ -1,0 +1,217 @@
+package org.latexlab.docs.client.dialogs;
+
+import org.latexlab.docs.client.commands.Command;
+import org.latexlab.docs.client.commands.SystemApplyCompilerSettingsCommand;
+import org.latexlab.docs.client.events.AsyncInstantiationCallback;
+import org.latexlab.docs.client.events.CommandEvent;
+import org.latexlab.docs.client.events.CommandHandler;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+/**
+ * A dialog window containing a form for specifying compiler settings.
+ */
+public class CompilerSettingsDialog extends FormDialog {
+
+  protected static CompilerSettingsDialog instance;
+
+  /**
+   * Retrieves the single instance of this class, using asynchronous instantiation.
+   * 
+   * @param handler the command handler.
+   * @param continueCommand the command to execute once settings are applied.
+   * @param cb the asynchronous instantiation callback.
+   */
+  public static void get(final CommandHandler handler, final Command continueCommand,
+	    final AsyncInstantiationCallback<CompilerSettingsDialog> cb) {
+	GWT.runAsync(new RunAsyncCallback() {
+		@Override
+		public void onFailure(Throwable reason) {
+		  cb.onFailure(reason);
+		}
+		@Override
+		public void onSuccess() {
+	      if (instance == null) {
+	        instance = new CompilerSettingsDialog();
+	        instance.addCommandHandler(handler);
+	      }
+          instance.setContinueCommand(continueCommand);
+		  cb.onSuccess(instance);
+		}
+	});
+  }
+  
+  /**
+   * Causes the code for this class to be loaded.
+   */
+  public static void prefetch() {
+	GWT.runAsync(new RunAsyncCallback() {
+		@Override
+		public void onFailure(Throwable reason) { }
+		@Override
+		public void onSuccess() {
+		  new CompilerSettingsDialog();
+		}
+	});
+  }
+
+  private TextBox clsiServiceUrl, clsiServiceToken, clsiAsyncPath, compilerName;
+  private Command continueCommand;
+  private RadioButton useDefault, useMikTex, useTexLive, useCustom;
+  private VerticalPanel warning;
+  
+  /**
+   * Constructs a dialog window containing a form for specifying compiler settings.
+   */
+  public CompilerSettingsDialog() {
+    super("Compiler Settings", true);
+    addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          hide();
+        }
+    });
+    content.setWidth("650px");
+    buildForm();
+  }
+  
+  /**
+   * Builds the compiler settings form.
+   */
+  @Override
+  protected void buildForm() {
+    ValueChangeHandler<Boolean> changeHandler = new ValueChangeHandler<Boolean>() {
+	  @Override
+	  public void onValueChange(ValueChangeEvent<Boolean> event) {
+		setView(useDefault.getValue());
+	  }
+    };
+    VerticalPanel usage = new VerticalPanel();
+    useDefault = new RadioButton("usage", "Use the default LaTeX Lab compiler.");
+    useDefault.setValue(true);
+    useDefault.addValueChangeHandler(changeHandler);
+    useCustom = new RadioButton("usage");
+    useCustom.setHTML("Use a third party <a href=\"http://code.google.com/p/common-latex-service-interface/\" target=\"_blank\">CLSI</a> provider.");
+    useCustom.addValueChangeHandler(changeHandler);
+    useMikTex = new RadioButton("usage");
+    useMikTex.setHTML("Use a local <a href=\"http://miktex.org/\" target=\"_blank\">MikTeX</a> installation.");
+    useMikTex.addValueChangeHandler(changeHandler);
+    useMikTex.setEnabled(false);
+    useTexLive = new RadioButton("usage");
+    useTexLive.setHTML("Use a local <a href=\"http://www.tug.org/texlive/\" target=\"_blank\">TeX Live</a> installation.");
+    useTexLive.addValueChangeHandler(changeHandler);
+    useTexLive.setEnabled(false);
+    usage.add(useDefault);
+    usage.add(useMikTex);
+    usage.add(useTexLive);
+    usage.add(useCustom);
+    addField(usage);
+    warning = new VerticalPanel();
+    warning.setStylePrimaryName("lab-Warning");
+    warning.add(new HTML("The default LaTeX Lab compiler is a shared environment which may " +
+    		"temporarily cache document contents for performance. For sensitive documents " +
+    		"you are encouraged to use LaTeX Lab with a local MikTeX/TeX Live installation or a private CLSI environment. " +
+    		"<br /><br />For more information visit the <a href=\"http://code.google.com/p/latex-lab\" target=\"_blank\">Privacy</a> " +
+    		"and <a href=\"http://code.google.com/p/latex-lab\" target=\"_blank\">Terms and Conditions</a> pages." +
+    		"<br /><br />By using the default LaTeX Lab compiler you agree to the " +
+    		"<a href=\"http://code.google.com/p/latex-lab\" target=\"_blank\">Terms and Conditions</a>."));
+    addField(warning);
+    clsiServiceUrl = new TextBox();
+    clsiServiceUrl.setWidth("400px");
+    addField(clsiServiceUrl, "Service URL:");
+    clsiServiceToken = new TextBox();
+    clsiServiceToken.setWidth("200px");
+    addField(clsiServiceToken, "Service token:");
+    clsiAsyncPath = new TextBox();
+    clsiAsyncPath.setWidth("400px");
+    addField(clsiAsyncPath, "Service output path:");
+    compilerName = new TextBox();
+    compilerName.setWidth("200px");
+    compilerName.setValue("latex");
+    addField(compilerName, "Compiler name:");
+    submit.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+    	SystemApplyCompilerSettingsCommand cmd;
+    	if (useDefault.getValue()) {
+    	  cmd = new SystemApplyCompilerSettingsCommand();
+    	} else {
+    	  if (clsiServiceUrl.getValue().equals("") ||
+    	      clsiServiceToken.getValue().equals("") ||
+    	      clsiAsyncPath.getValue().equals("") ||
+    	      compilerName.getValue().equals("")) {
+    	    Window.alert("All fields are required.");
+    	    return;
+    	  } else {
+    	    cmd = new SystemApplyCompilerSettingsCommand(false,
+    	        clsiServiceUrl.getValue(),
+    	        clsiServiceToken.getValue(),
+    	        clsiAsyncPath.getValue(),
+    	        compilerName.getValue());
+    	  }
+    	}
+        hide();
+    	CommandEvent.fire(CompilerSettingsDialog.this, cmd);
+    	if (continueCommand != null) {
+    	  CommandEvent.fire(CompilerSettingsDialog.this, continueCommand);
+    	}
+      }
+    });
+    cancel.addClickHandler(new ClickHandler(){
+        public void onClick(ClickEvent event) {
+          hide();
+        }
+    });
+    setView(true);
+    super.buildForm();
+  }
+  
+  /**
+   * Retrieves the command to execute once settings are applied.
+   * 
+   * @return the command to execute once settings are applied.
+   */
+  public Command getContinueCommand() {
+    return continueCommand;
+  }
+
+  /**
+   * Resets the form.
+   */
+  @Override
+  public void resetForm() {
+	//TODO: implement, if appropriate.
+  }
+
+  /**
+   * Sets the command to execute once settings are applied.
+   * 
+   * @param continueCommand the command to execute once settings are applied.
+   */
+  public void setContinueCommand(Command continueCommand) {
+    this.continueCommand = continueCommand;
+  }
+
+  /**
+   * Updates the form view.
+   * 
+   * @param isDefault whether to display the default view
+   */
+  private void setView(boolean isDefault) {
+	content.getRowFormatter().setVisible(1, isDefault);
+	for (int i=2; i<6; i++) {
+	  content.getRowFormatter().setVisible(i, !isDefault);
+	}
+	warning.setVisible(useDefault.getValue());
+	CompilerSettingsDialog.this.center();
+  }
+
+}
