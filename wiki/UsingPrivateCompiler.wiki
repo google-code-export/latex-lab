@@ -13,5 +13,5 @@ For example, if your CLSI instance's root url is {{{http://myclsi.org/clsi/}}}, 
   * Select _Use a third party CLSI provider_.
   * *Service URL*: {{{http://myclsi.org/clsi/service.php}}}
   * *Service Token*: {{{any alphanumeric 10 character value will do}}}
-  * *Service Output Path*: {{{http://myclsi.org/clsi/out/<id>}}}
+  * *Service Output Path*: {{{http://myclsi.org/clsi/out/<id>/}}}
   * *Compiler Name*: {{{latex}}}
