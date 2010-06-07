@@ -4,7 +4,7 @@ Using LaTeX Lab with a private CLSI compiler.
 
 === Setting up your own CLSI server ===
 
-Follow the instructions on CLSI project's <a href="http://code.google.com/p/common-latex-service-interface/wiki/InstallAndConfig">Installation and Configuration</a> page to bring up a CLSI instance.
+Follow the instructions on the CLSI project's <a href="http://code.google.com/p/common-latex-service-interface/wiki/InstallAndConfig">Installation and Configuration</a> page to bring up a CLSI instance.
 
 === Configuring LaTeX Lab ===
 You can configure LaTeX Lab to use a custom CLSI instance by specifying the necessary values in the Compiler -> Settings.
