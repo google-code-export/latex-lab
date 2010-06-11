@@ -1,0 +1,16 @@
+body {
+  padding: 0;	
+}
+
+.editbox {
+  font-family: monospace;
+  font-size: 13px;
+  padding-top: 2px;
+  margin: 0;
+  background-color: #FFFFFF;
+}
+
+.editbox p {
+  margin: 0;
+  padding: 0;
+}
