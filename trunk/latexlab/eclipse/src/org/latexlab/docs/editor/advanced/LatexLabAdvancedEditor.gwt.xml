@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<module rename-to="editor_advanced">
+	<!-- Inherit the core Web Toolkit stuff.                        -->
+	<inherits name="com.google.gwt.user.User"/>
+	
+	<!-- Other module inherits                                      -->
+	<inherits name='org.latexlab.docs.LatexLabEditor' />
+	<!-- Specify the app entry point class.                         -->
+	<entry-point class="org.latexlab.docs.editor.advanced.client.DocsAdvancedEditor"/>
+</module>

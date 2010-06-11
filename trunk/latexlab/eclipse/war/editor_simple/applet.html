@@ -1,0 +1,23 @@
+<html>
+	<head>
+		<script type="text/javascript">
+		window.getClsiEngine = function() {
+			if (window.top.clsiEngine !== undefined) {
+				return window.top.clsiEngine;
+			}
+			else return null;
+		}
+		</script>
+	</head>
+	<body>
+		<APPLET ID="ClsiPlugin"
+			ARCHIVE="clsi.plugin.0.11.jar"
+			CODE="org.latexlab.clsi.plugin.LatexEngine.class"
+			WIDTH="100px"
+			HEIGHT="100px"
+			MAYSCRIPT>
+			<PARAM NAME="MAYSCRIPT" VALUE="true">
+			<PARAM NAME="ARCHIVE" VALUE="clsi.plugin.0.11.jar">
+		</APPLET>
+	</body>
+</html>
