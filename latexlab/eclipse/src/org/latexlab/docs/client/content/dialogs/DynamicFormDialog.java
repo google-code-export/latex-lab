@@ -1,5 +1,7 @@
 package org.latexlab.docs.client.content.dialogs;
 
+import org.latexlab.docs.client.widgets.DynamicDialog;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;

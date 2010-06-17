@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -35,8 +36,9 @@ public class ExplorerTree extends Tree {
 	 * @param value the item's value
 	 * @param checkable whether the item is checkable
 	 */
-	public ExplorerTreeDocumentItem(String label, String value, boolean checkable) {
-	  this(label, null, value, null, false, checkable, null);
+	public ExplorerTreeDocumentItem(String label, String value,
+	    boolean checkable, boolean uniqueSelection) {
+	  this(label, null, value, null, false, checkable, uniqueSelection, null);
 	}
 	
 	/**
@@ -51,8 +53,8 @@ public class ExplorerTree extends Tree {
 	 * @param starHandler the star event handler
 	 */
 	public ExplorerTreeDocumentItem(String label, String identifier, String value, String href, boolean starred,
-	    boolean checkable, StarHandler starHandler) {
-	  super(label, identifier, value, href, starred, checkable, starHandler);
+	    boolean checkable, boolean uniqueSelection, StarHandler starHandler) {
+	  super(label, identifier, value, href, starred, checkable, uniqueSelection, starHandler);
 	  this.setIcon(Icons.editorIcons.Document());
 	}
 	
@@ -69,8 +71,9 @@ public class ExplorerTree extends Tree {
 	 * @param value the item's value
 	 * @param checkable whether the item is checkable
 	 */
-	public ExplorerTreeFileItem(String label, String value, boolean checkable) {
-	  this(label, null, value, false, checkable, null);
+	public ExplorerTreeFileItem(String label, String value,
+	    boolean checkable, boolean uniqueSelection) {
+	  this(label, null, value, false, checkable, uniqueSelection, null);
 	}
 	
 	/**
@@ -83,9 +86,10 @@ public class ExplorerTree extends Tree {
 	 * @param checkable whether the item is checkable
 	 * @param starHandler the star event handler
 	 */
-	public ExplorerTreeFileItem(String label, String identifier, String value, boolean starred,
+	public ExplorerTreeFileItem(String label, String identifier, String value,
+		boolean starred, boolean uniqueSelection,
 	    boolean checkable, StarHandler starHandler) {
-	  super(label, identifier, value, null, starred, checkable, starHandler);
+	  super(label, identifier, value, null, starred, checkable,uniqueSelection, starHandler);
 	  this.setIcon(Icons.editorIcons.File());
 	}
 	
@@ -102,8 +106,9 @@ public class ExplorerTree extends Tree {
 	 * @param value the item's value
 	 * @param checkable whether the item is checkable
 	 */
-	public ExplorerTreeFolderItem(String label, String value, boolean checkable) {
-	  this(label, value, null, checkable);
+	public ExplorerTreeFolderItem(String label, String value,
+	    boolean checkable, boolean uniqueSelection) {
+	  this(label, value, null, checkable, uniqueSelection);
 	}
 	
 	/**
@@ -114,8 +119,9 @@ public class ExplorerTree extends Tree {
 	 * @param href the item's link
 	 * @param checkable whether the item is checkable
 	 */
-	public ExplorerTreeFolderItem(String label, String value, String href, boolean checkable) {
-	  super(label, null, value, href, checkable, false, null);
+	public ExplorerTreeFolderItem(String label, String value, String href,
+	    boolean checkable, boolean uniqueSelection) {
+	  super(label, null, value, href, checkable, uniqueSelection, false, null);
 	  this.setIcon(Icons.editorIcons.Folder());
 	}
 	
@@ -141,14 +147,19 @@ public class ExplorerTree extends Tree {
 	 * @param starHandler the star event handler
 	 */
 	public ExplorerTreeItem(String label, String identifier, String value, String href,
-		boolean starred, boolean checkable, final StarHandler starHandler) {
+		boolean starred, boolean checkable, boolean uniqueSelection,
+		final StarHandler starHandler) {
 	  this.label = label;
       this.identifier = identifier;
       this.value = value;
 	  this.panel = new HorizontalPanel();
 	  this.panel.setSpacing(4);
 	  if (checkable) {
-		this.checkBox = new CheckBox(label);
+		if (uniqueSelection) {
+		  this.checkBox = new RadioButton("et", label);
+		} else {
+		  this.checkBox = new CheckBox(label);
+		}
 		this.panel.add(this.checkBox);
 	  } else {
 		if (starHandler != null) {
@@ -245,7 +256,7 @@ public class ExplorerTree extends Tree {
 	
   }
   
-  private boolean allowSelection, showIdentifiers;
+  private boolean allowSelection, uniqueSelection, showIdentifiers;
   
   private HashMap<ExplorerTreeItem, DocumentServiceEntry> entries;
   
@@ -260,9 +271,10 @@ public class ExplorerTree extends Tree {
    * @param showIdentifiers whether to show file identifiers
    * @param starHandler the star event handler
    */
-  public ExplorerTree(boolean allowSelection, boolean showIdentifiers,
-	    StarHandler starHandler) {
+  public ExplorerTree(boolean allowSelection, boolean uniqueSelection,
+		boolean showIdentifiers, StarHandler starHandler) {
 	this.allowSelection = allowSelection;
+	this.uniqueSelection = uniqueSelection;
 	this.starHandler = starHandler;
 	this.showIdentifiers = showIdentifiers;
 	this.entries = new HashMap<ExplorerTreeItem, DocumentServiceEntry>();
@@ -307,7 +319,7 @@ public class ExplorerTree extends Tree {
 	ExplorerTreeItem item;
 
 	if (type.equalsIgnoreCase("folder")) {
-	  item = new ExplorerTreeFolderItem(entry.getTitle(), entry.getDocumentId(), false);
+	  item = new ExplorerTreeFolderItem(entry.getTitle(), entry.getDocumentId(), false, false);
 	} else {
 	  String identifier = null;
 	  if (showIdentifiers && entry.getIdentifier() != null && !entry.getIdentifier().equals("")) {
@@ -315,10 +327,11 @@ public class ExplorerTree extends Tree {
 	  }
 	  if (type.equalsIgnoreCase("document")) {
 	    item = new ExplorerTreeDocumentItem(entry.getTitle(), identifier, entry.getDocumentId(),
-	      "/docs?docid=" + entry.getDocumentId(), entry.isStarred(), this.allowSelection, starHandler);
+	      "/docs?docid=" + entry.getDocumentId(), entry.isStarred(),
+	      this.allowSelection, this.uniqueSelection, starHandler);
 	  } else {
 	    item = new ExplorerTreeFileItem(entry.getTitle(), identifier, entry.getDocumentId(),
-	      entry.isStarred(), this.allowSelection, starHandler);
+	      entry.isStarred(), this.allowSelection, this.uniqueSelection, starHandler);
 	  };
 	}
 	if (type.equalsIgnoreCase("folder")) {

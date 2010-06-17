@@ -62,6 +62,7 @@ import org.latexlab.docs.client.content.dialogs.DynamicCompilerSettingsDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicDevelopmentInfoDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicFileListDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicInsertHeaderDialog;
+import org.latexlab.docs.client.content.dialogs.DynamicInsertImageDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicInsertTableDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicPreferencesDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicResourcesDialog;
@@ -149,7 +150,6 @@ public class DocsAdvancedEditorController implements CommandHandler {
    * Initialize by first checking authentication and retrieving the
    * logged on user.
    */
-  
   public void initialize() {
     showStatus("Authenticating...", true);
 	docService.getUser(new AsyncCallback<DocumentUser>() {
@@ -754,6 +754,8 @@ public class DocsAdvancedEditorController implements CommandHandler {
 	  DynamicInsertHeaderDialog.get(this).center();
 	} else if (type == DynamicInsertTableDialog.class) {
 	  DynamicInsertTableDialog.get(this).center();
+	} else if (type == DynamicInsertImageDialog.class) {
+	  DynamicInsertImageDialog.get(this).center();
 	} else if (type == DynamicDevelopmentInfoDialog.class) {
 	  DynamicDevelopmentInfoDialog.get(this).center();
 	}
@@ -817,11 +819,12 @@ public class DocsAdvancedEditorController implements CommandHandler {
     });
   }
   private void execute(final SystemToggleReuseToolbarWindowsCommand cmd) {
+	String[] path = new String[] { "View", "Reuse toolbar windows" };
 	settings.setReuseToolbarWindows(!settings.isReuseToolbarWindows());
 	if (settings.isReuseToolbarWindows()) {
-	  app.getMenu().setMenuItemIcon("Reuse toolbar windows", Icons.editorIcons.CheckBlack());
+	  app.getMenu().setMenuItemIcon(path, Icons.editorIcons.CheckBlack());
 	} else {
-  	  app.getMenu().setMenuItemIcon("Reuse toolbar windows", Icons.editorIcons.Blank());
+  	  app.getMenu().setMenuItemIcon(path, Icons.editorIcons.Blank());
 	}
   }
   private void execute(final SystemApplyCompilerSettingsCommand cmd) {
@@ -860,44 +863,48 @@ public class DocsAdvancedEditorController implements CommandHandler {
 	app.toggleToolbar(cmd.getName(), settings.isReuseToolbarWindows());
   }
   private void execute(final SystemToggleColorSyntaxCommand cmd) {
+	String[] path = new String[] { "View", "Highlight Syntax" };
 	if (app.getEditor().getColorSyntax()) {
-	  app.getMenu().setMenuItemIcon("Highlight Syntax", Icons.editorIcons.Blank());
+	  app.getMenu().setMenuItemIcon(path, Icons.editorIcons.Blank());
 	  app.getEditor().setColorSyntax(false);
 	  settings.setColorSyntax(false);
 	} else {
-	  app.getMenu().setMenuItemIcon("Highlight Syntax", Icons.editorIcons.CheckBlack());
+	  app.getMenu().setMenuItemIcon(path, Icons.editorIcons.CheckBlack());
 	  app.getEditor().setColorSyntax(true);
 	  settings.setColorSyntax(true);
 	}
   }
   private void execute(final SystemToggleLineNumbersCommand cmd) {
+	String[] path = new String[] { "View", "Show Line Numbers" };
   	if (app.getEditor().getShowLineNumbers()) {
-  	  app.getMenu().setMenuItemIcon("Show Line Numbers", Icons.editorIcons.Blank());
+  	  app.getMenu().setMenuItemIcon(path, Icons.editorIcons.Blank());
   	  app.getEditor().setShowLineNumbers(false);
   	  settings.setShowLineNumbers(false);
   	} else {
-  	  app.getMenu().setMenuItemIcon("Show Line Numbers", Icons.editorIcons.CheckBlack());
+  	  app.getMenu().setMenuItemIcon(path, Icons.editorIcons.CheckBlack());
   	  app.getEditor().setShowLineNumbers(true);
   	  settings.setShowLineNumbers(true);
   	}
   }
   private void execute(final SystemToggleWrapTextCommand cmd) {
+	String[] path = new String[] { "View", "Wrap Text" };
 	if (app.getEditor().getWrapText()) {
-	  app.getMenu().setMenuItemIcon("Wrap Text", Icons.editorIcons.Blank());
+	  app.getMenu().setMenuItemIcon(path, Icons.editorIcons.Blank());
 	  app.getEditor().setWrapText(false);
 	  settings.setWrapText(false);
 	} else {
-	  app.getMenu().setMenuItemIcon("Wrap Text", Icons.editorIcons.CheckBlack());
+	  app.getMenu().setMenuItemIcon(path, Icons.editorIcons.CheckBlack());
 	  app.getEditor().setWrapText(true);
 	  settings.setWrapText(true);
 	}
   }
   private void execute(final SystemToggleSpellcheckCommand cmd) {
+	String[] path = new String[] { "View", "Check Spelling" };
 	if (app.getEditor().getUseSpellChecker()) {
-	  app.getMenu().setMenuItemIcon("Check Spelling", Icons.editorIcons.Blank());
+	  app.getMenu().setMenuItemIcon(path, Icons.editorIcons.Blank());
 	  app.getEditor().setUseSpellChecker(false);
 	} else {
-	  app.getMenu().setMenuItemIcon("Check Spelling", Icons.editorIcons.CheckBlack());
+	  app.getMenu().setMenuItemIcon(path, Icons.editorIcons.CheckBlack());
 	  app.getEditor().setUseSpellChecker(true);
 	}
   }

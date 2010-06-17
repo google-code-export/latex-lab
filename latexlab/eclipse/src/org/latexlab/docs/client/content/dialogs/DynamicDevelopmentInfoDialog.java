@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.latexlab.docs.client.events.CommandHandler;
+import org.latexlab.docs.client.widgets.DynamicDialog;
 
 /**
  * A dialog window displaying development information.
@@ -60,7 +61,7 @@ public class DynamicDevelopmentInfoDialog extends DynamicDialog {
   		"This is where we deploy and test new features that are not yet ready for production use.<br /><br />" +
   		"<a href=\"https://wave.google.com/wave/waveref/googlewave.com/w+tziZnYNzA\" target=\"_blank\">LaTeX Lab Development Wave</a><br /><br />" +
   		"<b>Currently Deployed</b>:<ul><li>Editor Preferences Dialog (Edit -> Preferences)</li>" +
-  		"<li>Code Splitting (on-demand loading of components)</li><li>Insert Menu</li></ul>"));
+  		"<li>Code Splitting (on-demand loading of components)</li><li>Insert, Math and Format menus</li></ul>"));
 	  Button ok = new Button("OK", new ClickHandler() {
 		@Override
 		public void onClick(ClickEvent event) {

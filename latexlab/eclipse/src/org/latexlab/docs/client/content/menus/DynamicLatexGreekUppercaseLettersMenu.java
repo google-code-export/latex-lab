@@ -10,7 +10,6 @@ import org.latexlab.docs.client.widgets.DynamicMenuBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.MenuItem;
 
 /**
  * Contains a LaTeX Greek Uppercase Letters menu with on-demand loading.
@@ -46,7 +45,7 @@ public class DynamicLatexGreekUppercaseLettersMenu extends DynamicMenuBar {
    * @param callback the callback carrying the sub items
    */
   @Override
-  protected void getSubMenu(final AsyncCallback<MenuItem[]> callback) {
+  protected void getSubMenu(final AsyncCallback<ExtendedMenuItem[]> callback) {
     GWT.runAsync(new RunAsyncCallback() {
 		@Override
 		public void onFailure(Throwable reason) {
@@ -56,10 +55,10 @@ public class DynamicLatexGreekUppercaseLettersMenu extends DynamicMenuBar {
 		public void onSuccess() {
 		  LatexCommandSet set = SetGreekUppercase.get();
 		  LatexCommand[] cmds = set.getCommands();
-		  MenuItem[] items = new MenuItem[cmds.length];
+		  ExtendedMenuItem[] items = new ExtendedMenuItem[cmds.length];
 		  for (int i=0; i<cmds.length; i++) {
 			LatexCommand cmd = cmds[i];
-			items[i] = DynamicLatexGreekUppercaseLettersMenu.this.createItem(cmd.getIcon(), cmd.getTitle(), new SystemPasteCommand(cmd.getText()));
+			items[i] = new ExtendedMenuItem(cmd.getIcon(), cmd.getTitle(), new SystemPasteCommand(cmd.getText()));
 		  }
 		  callback.onSuccess(items);
 		}

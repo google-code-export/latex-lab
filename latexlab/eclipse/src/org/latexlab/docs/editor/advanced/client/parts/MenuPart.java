@@ -6,31 +6,28 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import org.latexlab.docs.client.content.menus.DynamicCompilerMenu;
 import org.latexlab.docs.client.content.menus.DynamicEditMenu;
-import org.latexlab.docs.client.content.menus.DynamicExportMenu;
 import org.latexlab.docs.client.content.menus.DynamicFileMenu;
 import org.latexlab.docs.client.content.menus.DynamicFormatMenu;
 import org.latexlab.docs.client.content.menus.DynamicHelpMenu;
 import org.latexlab.docs.client.content.menus.DynamicInsertMenu;
 import org.latexlab.docs.client.content.menus.DynamicMathMenu;
+import org.latexlab.docs.client.content.menus.DynamicProjectMenu;
 import org.latexlab.docs.client.content.menus.DynamicViewMenu;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.ExtendedMenuBar;
-
-import java.util.HashMap;
+import org.latexlab.docs.client.widgets.ExtendedMenuBar.ExtendedMenuItem;
 
 /**
  * A specialized, non-reusable widget containing the main menu bar.
  */
 public class MenuPart extends Composite implements HasCommandHandlers {
 	
-  private HashMap<String, MenuItem> itemIndex;
   private HandlerManager manager;
   private ExtendedMenuBar menu;
   
@@ -39,7 +36,6 @@ public class MenuPart extends Composite implements HasCommandHandlers {
    */
   public MenuPart() {
     manager = new HandlerManager(this);
-    itemIndex = new HashMap<String, MenuItem>();
     VerticalPanel menuPanel = new VerticalPanel();
     menuPanel.setWidth("100%");
     menuPanel.setHeight("30px");
@@ -63,10 +59,10 @@ public class MenuPart extends Composite implements HasCommandHandlers {
     this.menu.addItem("File", DynamicFileMenu.get(this));
     this.menu.addItem("Edit", DynamicEditMenu.get(this));
     this.menu.addItem("View", DynamicViewMenu.get(this));
-    this.menu.addItem("Export", DynamicExportMenu.get(this));
     this.menu.addItem("Insert", DynamicInsertMenu.get(this));
     this.menu.addItem("Math", DynamicMathMenu.get(this));
     this.menu.addItem("Format", DynamicFormatMenu.get(this));
+    this.menu.addItem("Project", DynamicProjectMenu.get(this));
     this.menu.addItem("Compiler", DynamicCompilerMenu.get(this));
     this.menu.addItem("Help", DynamicHelpMenu.get(this));
     return menu;
@@ -93,13 +89,28 @@ public class MenuPart extends Composite implements HasCommandHandlers {
   }
   
   /**
-   * Retrieves a menu item by title.
+   * Retrieves a menu item by title path.
    * 
-   * @param title the title of the menu item which to retrieve
+   * @param path the title path of the menu item which to retrieve
    * @return the menu item with the specified title
    */
-  public MenuItem getMenuItem(String title) {
-    return itemIndex.get(title);
+  public ExtendedMenuItem getMenuItem(String[] path) {
+	ExtendedMenuBar curMenu = menu;
+	int l = path.length - 1;
+	for (int i=0; i<path.length; i++) {
+	  String title = path[i];
+	  ExtendedMenuItem item = curMenu.getItem(title);
+	  if (i == l || item == null) {
+		return item;
+	  } else {
+		if (item.getSubMenu() != null) {
+		  curMenu = (ExtendedMenuBar) item.getSubMenu();
+		} else {
+		  return null;
+		}
+	  }
+	}
+	return null;
   }
 
   /**
@@ -108,8 +119,8 @@ public class MenuPart extends Composite implements HasCommandHandlers {
    * @param title the menu item's title
    * @param enabled whether the item is enabled
    */
-  public void setMenuItemEnabled(String title, boolean enabled) {
-    MenuItem item = getMenuItem(title);
+  public void setMenuItemEnabled(String[] title, boolean enabled) {
+	ExtendedMenuItem item = getMenuItem(title);
     if (item != null) {
       if (enabled){
     	item.removeStyleDependentName("Disabled");
@@ -118,16 +129,34 @@ public class MenuPart extends Composite implements HasCommandHandlers {
       }
     }
   }
+
+  /**
+   * Sets the highlight state of a menu item, by title.
+   * 
+   * @param title the menu item's title
+   * @param highlighted whether the item is highlighted
+   */
+  public void setMenuItemHighlighted(String[] title, boolean highlighted) {
+	ExtendedMenuItem item = getMenuItem(title);
+    if (item != null) {
+      if (highlighted){
+    	item.addStyleDependentName("Highlighted");
+      } else {
+    	item.removeStyleDependentName("Highlighted");
+      }
+    }
+  }
   
   /**
    * Sets the icon for a menu item, by title.
+   * 
    * @param title the title of the menu item for which to set the icon image
    * @param icon the icon image
    */
-  public void setMenuItemIcon(String title, AbstractImagePrototype icon) {
-    MenuItem item = getMenuItem(title);
+  public void setMenuItemIcon(String[] title, AbstractImagePrototype icon) {
+	ExtendedMenuItem item = getMenuItem(title);
     if (item != null) {
-      item.setHTML(icon.getHTML() + " " + title);
+      item.setIcon(icon);
     }
   }
   

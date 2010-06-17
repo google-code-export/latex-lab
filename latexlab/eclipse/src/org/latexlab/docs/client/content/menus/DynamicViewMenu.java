@@ -13,7 +13,6 @@ import org.latexlab.docs.client.widgets.DynamicMenuBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.MenuItem;
 
 /**
  * Contains a View menu with on-demand loading.
@@ -49,7 +48,7 @@ public class DynamicViewMenu extends DynamicMenuBar {
    * @param callback the callback carrying the sub items
    */
   @Override
-  protected void getSubMenu(final AsyncCallback<MenuItem[]> callback) {
+  protected void getSubMenu(final AsyncCallback<ExtendedMenuItem[]> callback) {
     GWT.runAsync(new RunAsyncCallback() {
 		@Override
 		public void onFailure(Throwable reason) {
@@ -57,17 +56,17 @@ public class DynamicViewMenu extends DynamicMenuBar {
 		}
 		@Override
 		public void onSuccess() {
-		  callback.onSuccess(new MenuItem[] {
-		    DynamicViewMenu.this.createItem(Icons.editorIcons.Blank(), "Toolbars", DynamicToolbarsMenu.get(commandSource)),
+		  callback.onSuccess(new ExtendedMenuItem[] {
+		    new ExtendedMenuItem(Icons.editorIcons.Blank(), "Toolbars", DynamicToolbarsMenu.get(commandSource)),
 		    null,
-			DynamicViewMenu.this.createItem(Icons.editorIcons.Blank(), "Check Spelling", new SystemToggleSpellcheckCommand()),
-			DynamicViewMenu.this.createItem(Icons.editorIcons.CheckBlack(), "Highlight Syntax", new SystemToggleColorSyntaxCommand()),
-			DynamicViewMenu.this.createItem(Icons.editorIcons.CheckBlack(), "Wrap Text", new SystemToggleWrapTextCommand()),
-			DynamicViewMenu.this.createItem(Icons.editorIcons.CheckBlack(), "Show Line Numbers", new SystemToggleLineNumbersCommand()),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Check Spelling", new SystemToggleSpellcheckCommand()),
+			new ExtendedMenuItem(Icons.editorIcons.CheckBlack(), "Highlight Syntax", new SystemToggleColorSyntaxCommand()),
+			new ExtendedMenuItem(Icons.editorIcons.CheckBlack(), "Wrap Text", new SystemToggleWrapTextCommand()),
+			new ExtendedMenuItem(Icons.editorIcons.CheckBlack(), "Show Line Numbers", new SystemToggleLineNumbersCommand()),
 			null,
-			DynamicViewMenu.this.createItem(Icons.editorIcons.CheckBlack(), "Reuse toolbar windows", new SystemToggleReuseToolbarWindowsCommand()),
+			new ExtendedMenuItem(Icons.editorIcons.CheckBlack(), "Reuse toolbar windows", new SystemToggleReuseToolbarWindowsCommand()),
 			null,
-			DynamicViewMenu.this.createItem(Icons.editorIcons.Blank(), "Full-screen mode", new SystemToggleFullScreenCommand())
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Full-screen mode", new SystemToggleFullScreenCommand())
 		  });
 		}
     });

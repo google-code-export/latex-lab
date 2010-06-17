@@ -10,7 +10,6 @@ import org.latexlab.docs.client.widgets.DynamicMenuBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.MenuItem;
 
 /**
  * Contains an Help menu with on-demand loading.
@@ -46,7 +45,7 @@ public class DynamicHelpMenu extends DynamicMenuBar {
    * @param callback the callback carrying the sub items
    */
   @Override
-  protected void getSubMenu(final AsyncCallback<MenuItem[]> callback) {
+  protected void getSubMenu(final AsyncCallback<ExtendedMenuItem[]> callback) {
     GWT.runAsync(new RunAsyncCallback() {
 		@Override
 		public void onFailure(Throwable reason) {
@@ -54,13 +53,13 @@ public class DynamicHelpMenu extends DynamicMenuBar {
 		}
 		@Override
 		public void onSuccess() {
-		  callback.onSuccess(new MenuItem[] {
-			DynamicHelpMenu.this.createItem(Icons.editorIcons.Blank(), "Using LaTeX Lab", new SystemOpenPageCommand("Help",  "http://code.google.com/p/latex-lab/wiki/UsingLaTeXLab", false)),
-			DynamicHelpMenu.this.createItem(Icons.editorIcons.Blank(), "Using a custom CLSI server", new SystemOpenPageCommand("Help", "http://code.google.com/p/latex-lab/wiki/UsingPrivateCompiler", false)),
+		  callback.onSuccess(new ExtendedMenuItem[] {
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Using LaTeX Lab", new SystemOpenPageCommand("Help",  "http://code.google.com/p/latex-lab/wiki/UsingLaTeXLab", false)),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Using a custom CLSI server", new SystemOpenPageCommand("Help", "http://code.google.com/p/latex-lab/wiki/UsingPrivateCompiler", false)),
 			null,
-			DynamicHelpMenu.this.createItem(Icons.editorIcons.Blank(), "Submit bug or feature request", new SystemOpenPageCommand("IssueTracker", "http://code.google.com/p/latex-lab/issues/entry", false)),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Submit bug or feature request", new SystemOpenPageCommand("IssueTracker", "http://code.google.com/p/latex-lab/issues/entry", false)),
 			null,
-			DynamicHelpMenu.this.createItem(Icons.editorIcons.Blank(), "About", new SystemShowDialogCommand(DynamicAboutDialog.class))
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "About", new SystemShowDialogCommand(DynamicAboutDialog.class))
 		  });
 		}
     });

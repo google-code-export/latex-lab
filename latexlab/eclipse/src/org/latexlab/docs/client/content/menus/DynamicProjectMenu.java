@@ -1,6 +1,8 @@
 package org.latexlab.docs.client.content.menus;
 
-import org.latexlab.docs.client.commands.SystemPasteCommand;
+import org.latexlab.docs.client.commands.SystemRefreshResourcesCommand;
+import org.latexlab.docs.client.commands.SystemShowDialogCommand;
+import org.latexlab.docs.client.content.dialogs.DynamicResourcesDialog;
 import org.latexlab.docs.client.content.icons.Icons;
 import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
@@ -10,30 +12,30 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * Contains a Formulas menu with on-demand loading.
+ * Contains a Project menu with on-demand loading.
  */
-public class DynamicFormulasMenu extends DynamicMenuBar {
+public class DynamicProjectMenu extends DynamicMenuBar {
 
-  protected static DynamicFormulasMenu instance;
+  protected static DynamicProjectMenu instance;
 	
   /**
    * Retrieves the single instance of this class.
    * 
    * @param commandSource the command source.
    */
-  public static DynamicFormulasMenu get(HasCommandHandlers commandSource) {
+  public static DynamicProjectMenu get(HasCommandHandlers commandSource) {
     if (instance == null) {
-      instance = new DynamicFormulasMenu(commandSource);
+      instance = new DynamicProjectMenu(commandSource);
     }
     return instance;
   }
   
   /**
-   * Constructs a formulas menu.
+   * Constructs a project menu.
    * 
    * @param commandSource the command source
    */
-  protected DynamicFormulasMenu(HasCommandHandlers commandSource) {
+  protected DynamicProjectMenu(HasCommandHandlers commandSource) {
     super(true, commandSource);
   }
 
@@ -52,10 +54,9 @@ public class DynamicFormulasMenu extends DynamicMenuBar {
 		@Override
 		public void onSuccess() {
 		  callback.onSuccess(new ExtendedMenuItem[] {
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Embedded Formula", new SystemPasteCommand("$$")),
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Formula", new SystemPasteCommand("\\[\n\\]")),
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Enumerated Equation", new SystemPasteCommand("\\begin{equation}\n  \\end{equation}")),
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Equation Array", new SystemPasteCommand("\\begin{align}\n  \\end{align}"))
+			new ExtendedMenuItem(Icons.editorIcons.Resources(), "Project Resources", new SystemShowDialogCommand(DynamicResourcesDialog.class)),
+			null,
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Refresh Project Resources", new SystemRefreshResourcesCommand()),
 		  });
 		}
     });
