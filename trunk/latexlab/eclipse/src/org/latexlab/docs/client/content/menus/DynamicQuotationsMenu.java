@@ -8,7 +8,6 @@ import org.latexlab.docs.client.widgets.DynamicMenuBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.MenuItem;
 
 /**
  * Contains a Quotations menu with on-demand loading.
@@ -44,7 +43,7 @@ public class DynamicQuotationsMenu extends DynamicMenuBar {
    * @param callback the callback carrying the sub items
    */
   @Override
-  protected void getSubMenu(final AsyncCallback<MenuItem[]> callback) {
+  protected void getSubMenu(final AsyncCallback<ExtendedMenuItem[]> callback) {
     GWT.runAsync(new RunAsyncCallback() {
 		@Override
 		public void onFailure(Throwable reason) {
@@ -52,10 +51,10 @@ public class DynamicQuotationsMenu extends DynamicMenuBar {
 		}
 		@Override
 		public void onSuccess() {
-		  callback.onSuccess(new MenuItem[] {
-			DynamicQuotationsMenu.this.createItem(Icons.editorIcons.Blank(), "Short Quotation", new SystemPasteCommand("\\begin{quote}\n  \n\\end{quote}")),
-			DynamicQuotationsMenu.this.createItem(Icons.editorIcons.Blank(), "Quotation", new SystemPasteCommand("\\begin{quotation}\n  \n\\end{quotation}")),
-			DynamicQuotationsMenu.this.createItem(Icons.editorIcons.Blank(), "Verse", new SystemPasteCommand("\\begin{verse}\n  \n\\end{verse}")),
+		  callback.onSuccess(new ExtendedMenuItem[] {
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Short Quotation", new SystemPasteCommand("\\begin{quote}\n  \n\\end{quote}")),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Quotation", new SystemPasteCommand("\\begin{quotation}\n  \n\\end{quotation}")),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Verse", new SystemPasteCommand("\\begin{verse}\n  \n\\end{verse}")),
 		  });
 		}
     });

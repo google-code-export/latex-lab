@@ -8,7 +8,6 @@ import org.latexlab.docs.client.widgets.DynamicMenuBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.MenuItem;
 
 /**
  * Contains an Enumeration menu with on-demand loading.
@@ -44,7 +43,7 @@ public class DynamicEnumerationMenu extends DynamicMenuBar {
    * @param callback the callback carrying the sub items
    */
   @Override
-  protected void getSubMenu(final AsyncCallback<MenuItem[]> callback) {
+  protected void getSubMenu(final AsyncCallback<ExtendedMenuItem[]> callback) {
     GWT.runAsync(new RunAsyncCallback() {
 		@Override
 		public void onFailure(Throwable reason) {
@@ -52,13 +51,13 @@ public class DynamicEnumerationMenu extends DynamicMenuBar {
 		}
 		@Override
 		public void onSuccess() {
-		  callback.onSuccess(new MenuItem[] {
-			DynamicEnumerationMenu.this.createItem(Icons.editorIcons.Blank(), "Itemization", new SystemPasteCommand("\\begin{itemize}\n  \\item \n\\end{itemize}")),
-			DynamicEnumerationMenu.this.createItem(Icons.editorIcons.Blank(), "Enumeration", new SystemPasteCommand("\\begin{enumerate}\n  \\item \n\\end{enumerate}")),
-			DynamicEnumerationMenu.this.createItem(Icons.editorIcons.Blank(), "Description", new SystemPasteCommand("\\begin{description}\n  \\item[] \n\\end{description}")),
+		  callback.onSuccess(new ExtendedMenuItem[] {
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Itemization", new SystemPasteCommand("\\begin{itemize}\n  \\item \n\\end{itemize}")),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Enumeration", new SystemPasteCommand("\\begin{enumerate}\n  \\item \n\\end{enumerate}")),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Description", new SystemPasteCommand("\\begin{description}\n  \\item[] \n\\end{description}")),
 			null,
-			DynamicEnumerationMenu.this.createItem(Icons.editorIcons.Blank(), "Enumeration Entry", new SystemPasteCommand("\\item ")),
-			DynamicEnumerationMenu.this.createItem(Icons.editorIcons.Blank(), "Description Entry", new SystemPasteCommand("\\item[] ")),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Enumeration Entry", new SystemPasteCommand("\\item ")),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Description Entry", new SystemPasteCommand("\\item[] ")),
 		  });
 		}
     });

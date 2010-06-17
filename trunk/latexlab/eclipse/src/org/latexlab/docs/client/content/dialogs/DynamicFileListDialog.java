@@ -29,6 +29,7 @@ import org.latexlab.docs.client.content.icons.Icons;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
+import org.latexlab.docs.client.widgets.DynamicDialog;
 import org.latexlab.docs.client.widgets.ExplorerTree;
 import org.latexlab.docs.client.widgets.ExplorerTree.StarHandler;
 
@@ -200,7 +201,7 @@ public class DynamicFileListDialog extends DynamicDialog {
 	  if (entries == null) {
 	    return;
 	  }
-      ExplorerTree tree = new ExplorerTree(false, false, new StarHandler(){
+      ExplorerTree tree = new ExplorerTree(false, false, false, new StarHandler(){
 		  @Override
 		  public void onStar(String id) {
 		    CommandEvent.fire(DynamicFileListDialog.this, new SystemStarDocumentCommand(id));

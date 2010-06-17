@@ -42,8 +42,8 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
    * Defines the allows save states.
    */
   public enum SaveState {
-	  SAVED,
-	  SAVING
+	SAVED,
+	SAVING
   }
   
   private Label author;
@@ -188,10 +188,12 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
     Anchor wikiLink = new Anchor("Wiki", "http://code.google.com/p/latex-lab/w/list", "_blank");
     Anchor issuesLink = new Anchor("Issues", "http://code.google.com/p/latex-lab/issues/list", "_blank");
     Anchor devLink = new Anchor("Development Version", "http://dev.latexlab.org/docs", "_blank");
+    Anchor texLink = new Anchor("TeXnicCenter", "http://www.texniccenter.org/", "_blank");
     leftLinks.add(projectLink);
     leftLinks.add(wikiLink);
     leftLinks.add(issuesLink);
     leftLinks.add(devLink);
+    leftLinks.add(texLink);
     rightLinks = new HorizontalPanel();
     author = new Label();
     Anchor docsLink = new Anchor("Docs Home", "http://docs.google.com/", "_blank");

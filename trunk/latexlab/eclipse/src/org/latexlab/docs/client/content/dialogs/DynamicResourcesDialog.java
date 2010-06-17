@@ -30,6 +30,7 @@ import org.latexlab.docs.client.commands.SystemSetResourcesCommand;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
+import org.latexlab.docs.client.widgets.DynamicDialog;
 import org.latexlab.docs.client.widgets.ExplorerTree;
 import org.latexlab.docs.client.widgets.ExplorerTree.ExplorerTreeItem;
 
@@ -101,7 +102,7 @@ public class DynamicResourcesDialog extends DynamicDialog {
 	 */
 	private void buildForm() {
       scroll = new ScrollPanel();
-	  tree = new ExplorerTree(true, true, null);
+	  tree = new ExplorerTree(true, false, true, null);
 	  tree.setSize("100%", "100%");
 	  tree.setExcludedOpen(true);
 	  tree.addSelectionHandler(new SelectionHandler<TreeItem>() {

@@ -1,11 +1,11 @@
 package org.latexlab.docs.client.widgets;
 
+import org.latexlab.docs.client.content.icons.Icons;
 import org.latexlab.docs.client.events.HasCommandHandlers;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.MenuItem;
 
 /**
  * Implements a MenuBar with on-demand loading.
@@ -21,7 +21,7 @@ public abstract class DynamicMenuBar extends ExtendedMenuBar {
    */
   public DynamicMenuBar(boolean vertical, HasCommandHandlers commandSource) {
     super(vertical, commandSource);
-    this.addItem("<span class=\"lab-Menu-Loading\">Loading...<span>", true, (Command) null);
+    this.addItem(Icons.editorIcons.Blank(), "Loading...", (Command) null);
   }
 
   /**
@@ -32,17 +32,17 @@ public abstract class DynamicMenuBar extends ExtendedMenuBar {
   public void onLoad() {
 	if (!hasContents) {
       hasContents = true;
-      getSubMenu(new AsyncCallback<MenuItem[]>() {
+      getSubMenu(new AsyncCallback<ExtendedMenuItem[]>() {
 		@Override
 		public void onFailure(Throwable caught) {
 	      hasContents = false;
 		  Window.alert("A required component failed to load.");
 		}
 		@Override
-		public void onSuccess(MenuItem[] result) {
+		public void onSuccess(ExtendedMenuItem[] result) {
 	      hasContents = true;
 	      DynamicMenuBar.this.clearItems();
-	      for (MenuItem item : result) {
+	      for (ExtendedMenuItem item : result) {
 	    	if (item == null) {
 	    	  DynamicMenuBar.this.addSeparator();
 	    	} else {
@@ -59,6 +59,6 @@ public abstract class DynamicMenuBar extends ExtendedMenuBar {
    * 
    * @param callback the callback carrying the sub items
    */
-  protected abstract void getSubMenu(AsyncCallback<MenuItem[]> callback);
+  protected abstract void getSubMenu(AsyncCallback<ExtendedMenuItem[]> callback);
   
 }

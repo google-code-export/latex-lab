@@ -8,7 +8,6 @@ import org.latexlab.docs.client.widgets.DynamicMenuBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.MenuItem;
 
 /**
  * Contains an Export menu with on-demand loading.
@@ -44,7 +43,7 @@ public class DynamicExportMenu extends DynamicMenuBar {
    * @param callback the callback carrying the sub items
    */
   @Override
-  protected void getSubMenu(final AsyncCallback<MenuItem[]> callback) {
+  protected void getSubMenu(final AsyncCallback<ExtendedMenuItem[]> callback) {
     GWT.runAsync(new RunAsyncCallback() {
 		@Override
 		public void onFailure(Throwable reason) {
@@ -52,10 +51,10 @@ public class DynamicExportMenu extends DynamicMenuBar {
 		}
 		@Override
 		public void onSuccess() {
-		  callback.onSuccess(new MenuItem[] {
-			DynamicExportMenu.this.createItem(Icons.editorIcons.Blank(), "Portable Document Format (PDF)", new CurrentDocumentExportCommand("pdf")),
-			DynamicExportMenu.this.createItem(Icons.editorIcons.Blank(), "PostScript Document (PS)", new CurrentDocumentExportCommand("ps")),
-			DynamicExportMenu.this.createItem(Icons.editorIcons.Blank(), "Device Independent Format (DVI)", new CurrentDocumentExportCommand("dvi"))
+		  callback.onSuccess(new ExtendedMenuItem[] {
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Portable Document Format (PDF)", new CurrentDocumentExportCommand("pdf")),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "PostScript Document (PS)", new CurrentDocumentExportCommand("ps")),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Device Independent Format (DVI)", new CurrentDocumentExportCommand("dvi"))
 		  });
 		}
     });

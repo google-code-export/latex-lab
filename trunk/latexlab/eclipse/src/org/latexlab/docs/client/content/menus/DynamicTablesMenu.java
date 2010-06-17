@@ -8,7 +8,6 @@ import org.latexlab.docs.client.widgets.DynamicMenuBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.MenuItem;
 
 /**
  * Contains a Tables menu with on-demand loading.
@@ -44,7 +43,7 @@ public class DynamicTablesMenu extends DynamicMenuBar {
    * @param callback the callback carrying the sub items
    */
   @Override
-  protected void getSubMenu(final AsyncCallback<MenuItem[]> callback) {
+  protected void getSubMenu(final AsyncCallback<ExtendedMenuItem[]> callback) {
     GWT.runAsync(new RunAsyncCallback() {
 		@Override
 		public void onFailure(Throwable reason) {
@@ -52,13 +51,13 @@ public class DynamicTablesMenu extends DynamicMenuBar {
 		}
 		@Override
 		public void onSuccess() {
-		  callback.onSuccess(new MenuItem[] {
-			DynamicTablesMenu.this.createItem(Icons.editorIcons.Blank(), "Table of Contents", new SystemPasteCommand("\\tableofcontents")),
-			DynamicTablesMenu.this.createItem(Icons.editorIcons.Blank(), "Table of Figures", new SystemPasteCommand("\\listoffigures")),
-			DynamicTablesMenu.this.createItem(Icons.editorIcons.Blank(), "Table of Tables", new SystemPasteCommand("\\listoftables")),
-			DynamicTablesMenu.this.createItem(Icons.editorIcons.Blank(), "Bibliography", new SystemPasteCommand("\\begin{thebibliography}{label}\n  \n\\end{thebibliography}")),
-			DynamicTablesMenu.this.createItem(Icons.editorIcons.Blank(), "Glossary", new SystemPasteCommand("\\makeglossary")),
-			DynamicTablesMenu.this.createItem(Icons.editorIcons.Blank(), "Index", new SystemPasteCommand("\\makeindex")),
+		  callback.onSuccess(new ExtendedMenuItem[] {
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Table of Contents", new SystemPasteCommand("\\tableofcontents")),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Table of Figures", new SystemPasteCommand("\\listoffigures")),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Table of Tables", new SystemPasteCommand("\\listoftables")),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Bibliography", new SystemPasteCommand("\\begin{thebibliography}{label}\n  \n\\end{thebibliography}")),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Glossary", new SystemPasteCommand("\\makeglossary")),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Index", new SystemPasteCommand("\\makeindex")),
 		  });
 		}
     });

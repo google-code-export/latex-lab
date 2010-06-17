@@ -1,9 +1,17 @@
 package org.latexlab.docs.client.widgets;
 
+import java.util.HashMap;
+
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.HasCommandHandlers;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.GWT.UncaughtExceptionHandler;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.AttachDetachException;
 import com.google.gwt.user.client.ui.MenuBar;
@@ -14,9 +22,117 @@ import com.google.gwt.user.client.ui.MenuItem;
  */
 public class ExtendedMenuBar extends MenuBar { 
 	
-  private boolean sim = false;
-  protected HasCommandHandlers commandSource;
+  /**
+   * Extends the GWT MenuItem to contain an icon.
+   */
+  public class ExtendedMenuItem extends MenuItem {
 
+    private AbstractImagePrototype icon;
+    private String text;
+	  
+    /**
+     * Constructs a menu item.
+     * 
+     * @param icon the menu item's icon
+     * @param text the menu item's text
+     * @param cmd the command to execute when the item is selected
+     */
+	public ExtendedMenuItem(AbstractImagePrototype icon, String text, Command cmd) {
+	  super("<span>" + icon.getHTML() + "</span> " + text, true, cmd);
+	  this.text = text;
+	  this.icon = icon;
+	}
+	
+	/**
+	 * Constructs a menu item.
+	 * 
+	 * @param icon the menu item's icon
+	 * @param text the menu item's text
+	 * @param submenu the child menu
+	 */
+	public ExtendedMenuItem(AbstractImagePrototype icon, String text, ExtendedMenuBar submenu) {
+	  super("<span>" + icon.getHTML() + "</span> " + text, true, submenu);
+	  this.text = text;
+	  this.icon = icon;
+	}
+
+	/**
+	 * Constructs a menu item.
+	 * 
+	 * @param icon the menu item's icon
+	 * @param text the menu item's text
+	 * @param cmd the command to trigger when the item is selected
+	 */
+	public ExtendedMenuItem(AbstractImagePrototype icon, String text,
+	    final org.latexlab.docs.client.commands.Command cmd) {
+	  super("<span>" + icon.getHTML() + "</span> " + text, true, new Command() {
+		@Override
+		public void execute() {
+          CommandEvent.fire(commandSource, cmd);
+		} 
+	  });
+	  this.text = text;
+	  this.icon = icon;
+	}
+
+	/**
+	 * Constructs a menu item.
+	 * 
+	 * @param icon the menu item's icon
+	 * @param text the menu item's text
+	 * @param submenu the child menu
+	 */
+	public ExtendedMenuItem(String text, ExtendedMenuBar submenu) {
+	  super(text, true, submenu);
+	  this.text = text;
+	}
+	
+	/**
+	 * Retrieves the menu item's icon.
+	 * 
+	 * @return the menu item's icon
+	 */
+	public AbstractImagePrototype getIcon() {
+	  return icon;
+	}
+
+	/**
+	 * Retrieves the menu item's text.
+	 * 
+	 * @return the menu item's text
+	 */
+	@Override
+	public String getText() {
+	  return text;
+	}
+
+	/**
+	 * Sets the menu item's icon.
+	 * 
+	 * @param icon the menu item's icon.
+	 */
+	public void setIcon(AbstractImagePrototype icon) {
+	  this.icon = icon;
+	  super.setHTML("<span>" + icon.getHTML() + "</span> " + this.text);
+	}
+
+	/**
+	 * Sets the menu item's text.
+	 * 
+	 * @param text the menu item's text
+	 */
+	@Override
+	public void setText(String text) {
+	  this.text = text;
+	  super.setHTML("<span>" + icon.getHTML() + "</span> " + this.text);
+	}
+	
+  }
+  protected HasCommandHandlers commandSource;
+  protected HashMap<String, ExtendedMenuItem> itemIndex;
+
+  protected boolean sim = false, vertical;
+  
   /**
    * Constructs an extended MenuBar.
    * 
@@ -25,6 +141,8 @@ public class ExtendedMenuBar extends MenuBar {
    */
   public ExtendedMenuBar(boolean vertical, HasCommandHandlers commandSource) {
     super(vertical);
+    this.itemIndex = new HashMap<String, ExtendedMenuItem>();
+    this.vertical = vertical;
     this.commandSource = commandSource;
   }
   
@@ -32,28 +150,13 @@ public class ExtendedMenuBar extends MenuBar {
    * Adds a new menu item.
    * 
    * @param icon the icon image to use in the menu item
-   * @param title the title of the new menu item
+   * @param text the text of the new menu item
    * @param command the command type for the new menu item
    * @return the new menu item
    */
-  public MenuItem addItem(AbstractImagePrototype icon, String title,
+  public ExtendedMenuItem addItem(AbstractImagePrototype icon, String text,
 	  Command command) {
-	MenuItem item = createItem(icon, title, command);
-    addItem(item);
-    return item;
-  }
-
-  /**
-   * Adds a new menu item.
-   * 
-   * @param icon the icon image to use in the menu item
-   * @param title the title of the new menu item
-   * @param command the command type for the new menu item
-   * @return the new menu item
-   */
-  public MenuItem addItem(AbstractImagePrototype icon, String title,
-      org.latexlab.docs.client.commands.Command command) {
-	MenuItem item = createItem(icon, title, command);
+	ExtendedMenuItem item = new ExtendedMenuItem(icon, text, command);
     addItem(item);
     return item;
   }
@@ -62,13 +165,56 @@ public class ExtendedMenuBar extends MenuBar {
    * Adds a new menu item.
    * 
    * @param icon the icon image to use in the menu item
-   * @param title the title of the new menu item
+   * @param text the text of the new menu item
    * @param popupMenu the item's sub menu
    * @return the new menu item
    */
-  public MenuItem addItem(AbstractImagePrototype icon, String title,
-	  MenuBar popupMenu) {
-	MenuItem item = createItem(icon, title, popupMenu);
+  public ExtendedMenuItem addItem(AbstractImagePrototype icon, String text,
+	  ExtendedMenuBar popupMenu) {
+	ExtendedMenuItem item = new ExtendedMenuItem(icon, text, popupMenu);
+	addItem(item);
+    return item;
+  }
+  
+  /**
+   * Adds a new menu item.
+   * 
+   * @param icon the icon image to use in the menu item
+   * @param text the text of the new menu item
+   * @param command the command type for the new menu item
+   * @return the new menu item
+   */
+  public ExtendedMenuItem addItem(AbstractImagePrototype icon, String text,
+      org.latexlab.docs.client.commands.Command command) {
+	ExtendedMenuItem item = new ExtendedMenuItem(icon, text, command);
+    addItem(item);
+    return item;
+  }
+  
+  /**
+   * Adds a new menu item.
+   * 
+   * @param text the text of the new menu item
+   * @param item the menu item to add
+   * @return the new menu item
+   */
+  public ExtendedMenuItem addItem(ExtendedMenuItem item) {
+	itemIndex.put(item.getText(), item);
+	super.addItem(item);
+	return item;
+  }
+  
+  /**
+   * Adds a new menu item.
+   * 
+   * @param icon the icon image to use in the menu item
+   * @param text the text of the new menu item
+   * @param popupMenu the item's sub menu
+   * @return the new menu item
+   */
+  public ExtendedMenuItem addItem(String text,
+	  ExtendedMenuBar popupMenu) {
+	ExtendedMenuItem item = new ExtendedMenuItem(text, popupMenu);
 	addItem(item);
     return item;
   }
@@ -86,49 +232,32 @@ public class ExtendedMenuBar extends MenuBar {
   }
   
   /**
-   * Creates a menu item.
+   * Computes the absolute y coordinate for a given element
+   * by iterating through its offset parents.
    * 
-   * @param icon the icon image to use in the menu item
-   * @param title the title of the new menu item
-   * @param command the command to execute when new menu item is selected
-   * @return the menu item
+   * @param el the element for which to compute the absolute y coordinate
+   * @return the absolute y coordinate for the specified element
    */
-  protected MenuItem createItem(AbstractImagePrototype icon, String title,
-	  Command command) {
-    MenuItem item = new MenuItem(icon.getHTML() + " " + title, true, command);
-    return item;
+  protected int getAbsoluteTop(Element el) {
+	int top = el.getOffsetTop();
+	com.google.gwt.dom.client.Element par = el;
+	while ((par = par.getOffsetParent()) != null) {
+	  top += par.getOffsetTop();
+	}
+	return top;
   }
   
   /**
-   * Creates a menu item.
+   * Retrieves a menu item, by text.
    * 
-   * @param icon the icon image to use in the menu item
-   * @param title the title of the new menu item
-   * @param command the command type for the new menu item
-   * @return the menu item
+   * @param text the text of the menu item to retrieve
+   * @return the menu item with the specified text
    */
-  protected MenuItem createItem(AbstractImagePrototype icon, String title,
-	  final org.latexlab.docs.client.commands.Command command) {
-    MenuItem item = new MenuItem(icon.getHTML() + " " + title, true, new Command() {
-        public void execute() {
-        	CommandEvent.fire(commandSource, command);
-          }
-        });
-    return item;
-  }
-  
-  /**
-   * Creates a menu item.
-   * 
-   * @param icon the icon image to use in the menu item
-   * @param title the title of the new menu item
-   * @param popupMenu the item's sub menu
-   * @return the menu item
-   */
-  protected MenuItem createItem(AbstractImagePrototype icon, String title,
-	  MenuBar popupMenu) {
-    MenuItem item = new MenuItem(icon.getHTML() + " " + title, true, popupMenu);
-    return item;
+  public ExtendedMenuItem getItem(String text) {
+	if (itemIndex.containsKey(text)) {
+	  return itemIndex.get(text);
+	}
+	return null;
   }
 
   /**
@@ -142,4 +271,48 @@ public class ExtendedMenuBar extends MenuBar {
     return super.isAttached();
   }
 
+  /**
+   * On attach (i.e. on-open) check that the menu bar is fully visible. If not, move
+   * menu bar up.
+   */
+  @Override
+  public void onAttach() {
+	super.onAttach();
+	new Timer() {
+		@Override
+		public void run() {
+		  try {
+			if (ExtendedMenuBar.this.vertical) {
+			  if (ExtendedMenuBar.this.getItems().size() > 0) {
+				Element popup = ExtendedMenuBar.this.getParent().getElement();
+				int winHeight = com.google.gwt.user.client.Window.getClientHeight();
+				int popupTop = getAbsoluteTop(popup);
+				int popupHeight = popup.getOffsetHeight();
+				if (popupHeight >= winHeight) {
+			      popup.getStyle().setPosition(Position.RELATIVE);
+			      popup.getStyle().setTop(-popupTop, Unit.PX);
+			    } else {
+			      int totalHeight = popupTop + popupHeight;
+			      if (totalHeight > winHeight) {
+			        int diff = totalHeight - winHeight;
+			        popup.getStyle().setPosition(Position.RELATIVE);
+			        popup.getStyle().setTop(-diff, Unit.PX);
+			      } else {
+			        popup.getStyle().setPosition(Position.RELATIVE);
+			        popup.getStyle().setTop(0, Unit.PX);
+			      }
+			    }
+			  }
+			}
+		  } catch (Exception e) {
+		    UncaughtExceptionHandler handler = GWT.getUncaughtExceptionHandler();
+		    if (handler != null) {
+		      e.printStackTrace();
+		      handler.onUncaughtException(e);
+		    }
+		  }
+		}
+	}.schedule(10);
+  }
+  
 }

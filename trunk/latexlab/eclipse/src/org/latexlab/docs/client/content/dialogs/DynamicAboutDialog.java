@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import org.latexlab.docs.client.content.icons.Icons;
 import org.latexlab.docs.client.events.CommandHandler;
+import org.latexlab.docs.client.widgets.DynamicDialog;
 
 /**
  * A dialog window displaying information about the application.

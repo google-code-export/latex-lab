@@ -11,7 +11,6 @@ import org.latexlab.docs.client.widgets.DynamicMenuBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.MenuItem;
 
 /**
  * Contains an Edit menu with on-demand loading.
@@ -47,7 +46,7 @@ public class DynamicEditMenu extends DynamicMenuBar {
    * @param callback the callback carrying the sub items
    */
   @Override
-  protected void getSubMenu(final AsyncCallback<MenuItem[]> callback) {
+  protected void getSubMenu(final AsyncCallback<ExtendedMenuItem[]> callback) {
     GWT.runAsync(new RunAsyncCallback() {
 		@Override
 		public void onFailure(Throwable reason) {
@@ -55,11 +54,11 @@ public class DynamicEditMenu extends DynamicMenuBar {
 		}
 		@Override
 		public void onSuccess() {
-		  callback.onSuccess(new MenuItem[] {
-			DynamicEditMenu.this.createItem(Icons.editorIcons.Undo(), "Undo", new SystemUndoCommand()),
-			DynamicEditMenu.this.createItem(Icons.editorIcons.Redo(), "Redo", new SystemRedoCommand()),
+		  callback.onSuccess(new ExtendedMenuItem[] {
+			new ExtendedMenuItem(Icons.editorIcons.Undo(), "Undo", new SystemUndoCommand()),
+			new ExtendedMenuItem(Icons.editorIcons.Redo(), "Redo", new SystemRedoCommand()),
 			null,
-			DynamicEditMenu.this.createItem(Icons.editorIcons.Blank(), "Preferences...", new SystemShowDialogCommand(DynamicPreferencesDialog.class)),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Preferences...", new SystemShowDialogCommand(DynamicPreferencesDialog.class)),
 		  });
 		}
     });

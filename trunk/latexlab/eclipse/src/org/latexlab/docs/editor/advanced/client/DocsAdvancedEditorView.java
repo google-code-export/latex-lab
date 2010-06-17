@@ -305,24 +305,25 @@ public class DocsAdvancedEditorView {
 	case SAVE:
 	  header.setSaveState(locked ? SaveState.SAVING : SaveState.SAVED);
 	  tools.setButtonEnabled(1, !locked);
-	  menu.setMenuItemEnabled("Save", !locked);
+	  menu.setMenuItemEnabled(new String[] { "File", "Save" }, !locked);
 	  break;
 	case COMPILE:
 	  tools.setButtonEnabled(5, !locked);
-	  menu.setMenuItemEnabled("Compile...", !locked);
+	  menu.setMenuItemEnabled(new String[] { "Compiler", "Compile..." }, !locked);
 	  break;
 	}
   }
   
   public void toggleFullScreen() {
 	boolean isFullScreen = !header.isVisible();
+	String[] path = new String[] { "View", "Full-screen mode" };
     if (isFullScreen) {
-      menu.setMenuItemIcon("Full-screen mode", Icons.editorIcons.Blank());
+      menu.setMenuItemIcon(path, Icons.editorIcons.Blank());
       header.setVisible(true);
       contentPane.getFlexCellFormatter().setHeight(0, 0, "120px");
 	    body.setVerticalSplitPosition("100%");
     } else {
-      menu.setMenuItemIcon("Full-screen mode", Icons.editorIcons.CheckBlack());
+      menu.setMenuItemIcon(path, Icons.editorIcons.CheckBlack());
       header.setVisible(false);
       contentPane.getFlexCellFormatter().setHeight(0, 0, "40px");
 	    body.setVerticalSplitPosition("100%");
@@ -350,15 +351,18 @@ public class DocsAdvancedEditorView {
 		        tb.hide();
 		        setToolbarPosition(target, left, top);
 		        tools.setButtonState(entry.getKey(), false);
+		        menu.setMenuItemHighlighted(new String[] { "View", "Toolbars", entry.getKey() }, false);
 		      }
 			}
 		  } else {
 		    target.hide();
 		    tools.setButtonState(name, false);
+	        menu.setMenuItemHighlighted(new String[] { "View", "Toolbars", name }, false);
 		  }
 		  if (toVisible) {
 		    target.show();
 		    tools.setButtonState(name, true);
+	        menu.setMenuItemHighlighted(new String[] { "View", "Toolbars", name }, true);
 		  }
 		}
 	});

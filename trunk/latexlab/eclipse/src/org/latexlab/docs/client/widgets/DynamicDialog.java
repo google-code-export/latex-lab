@@ -1,11 +1,9 @@
-package org.latexlab.docs.client.content.dialogs;
-
-import org.latexlab.docs.client.widgets.Dialog;
+package org.latexlab.docs.client.widgets;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -33,7 +31,9 @@ public abstract class DynamicDialog extends Dialog {
     if (targetHeight != null) {
       contents.setHeight(targetHeight);
     }
-    contents.add(new Label("Loading..."));
+    HTML loading = new HTML("&nbsp;");
+    loading.setStylePrimaryName("lab-Loading");
+    contents.add(loading);
     setContentWidget(contents);
   }
   

@@ -8,7 +8,6 @@ import org.latexlab.docs.client.widgets.DynamicMenuBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.MenuItem;
 
 /**
  * Contains a Floating Environment menu with on-demand loading.
@@ -44,7 +43,7 @@ public class DynamicFloatingEnvironmentMenu extends DynamicMenuBar {
    * @param callback the callback carrying the sub items
    */
   @Override
-  protected void getSubMenu(final AsyncCallback<MenuItem[]> callback) {
+  protected void getSubMenu(final AsyncCallback<ExtendedMenuItem[]> callback) {
     GWT.runAsync(new RunAsyncCallback() {
 		@Override
 		public void onFailure(Throwable reason) {
@@ -52,9 +51,9 @@ public class DynamicFloatingEnvironmentMenu extends DynamicMenuBar {
 		}
 		@Override
 		public void onSuccess() {
-		  callback.onSuccess(new MenuItem[] {
-			DynamicFloatingEnvironmentMenu.this.createItem(Icons.editorIcons.Blank(), "Figure...", new SystemNotImplementedCommand()),
-			DynamicFloatingEnvironmentMenu.this.createItem(Icons.editorIcons.Blank(), "Table...", new SystemNotImplementedCommand()),
+		  callback.onSuccess(new ExtendedMenuItem[] {
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Figure...", new SystemNotImplementedCommand()),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Table...", new SystemNotImplementedCommand()),
 		  });
 		}
     });

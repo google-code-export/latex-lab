@@ -3,6 +3,7 @@ package org.latexlab.docs.client.content.dialogs;
 import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
+import org.latexlab.docs.client.widgets.FileBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -10,6 +11,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -18,35 +20,28 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 
 /**
- * A dialog window containing a form for inserting a LaTeX table.
+ * A dialog window containing a form for inserting an image.
  */
-public class DynamicInsertTableDialog extends DynamicFormDialog {
+public class DynamicInsertImageDialog extends DynamicFormDialog {
 
   /**
-   * Contains form fields for specifying a LaTeX table.
+   * Contains form fields for specifying image settings .
    */
-  protected class InsertTableFormContents extends FormContents {
-	  
-	protected RadioButton alignTop, alignCenter, alignBottom;
+  protected class InsertHeaderFormContents extends FormContents {
+
+    protected FileBox image;
 	protected TextBox caption, label;
 	protected CheckBox centerHorizontal, insertAsFloat;
 	protected CheckBox herePosition, topPosition, bottomPosition, floatPosition;
 	protected RadioButton oneColumn, twoColumns;
-	  
+  
     /**
-     * Builds the Insert LaTeX Header form.
+     * Builds the Insert Image form.
      */
 	@Override
 	protected void buildForm() {
 	  content.setWidth("500px");
-	  alignTop = new RadioButton("alignment", "Align at top line");
-	  alignCenter = new RadioButton("alignment", "Align at center of table");
-	  alignCenter.setValue(true);
-	  alignBottom = new RadioButton("alignment", "Align at bottom line");
-	  HorizontalPanel alignment = new HorizontalPanel();
-	  alignment.add(alignTop);
-	  alignment.add(alignCenter);
-	  alignment.add(alignBottom);
+	  image = new FileBox();
 	  centerHorizontal = new CheckBox("Center horizontal");
       centerHorizontal.setValue(true);
 	  insertAsFloat = new CheckBox("Insert as float");
@@ -90,11 +85,10 @@ public class DynamicInsertTableDialog extends DynamicFormDialog {
 	  HorizontalPanel expansion = new HorizontalPanel();
 	  expansion.add(oneColumn);
 	  expansion.add(twoColumns);
+      addField(image, "Image:");
 	  addHeader("Caption");
       addField(caption, "Caption:");
       addField(label, "Label:");
-	  addHeader("Alignment");
-      addField(alignment);
       addField(centerHorizontal);
       addField(insertAsFloat);
       addHeader("Position");
@@ -103,12 +97,11 @@ public class DynamicInsertTableDialog extends DynamicFormDialog {
       addField(expansion);
       submit.addClickHandler(new ClickHandler() {
           public void onClick(ClickEvent event) {
-            String align = "", center = "", cap = "", lab = "", pos = "", two = "";
-            if (alignTop.getValue()) {
-        	  align = "[t]";
-            } else if (alignTop.getValue()) {
-        	  align = "[b]";
-            }
+        	if (image.getValue() == null) {
+        	  Window.alert("Image is a required field.");
+        	  return;
+        	}
+            String center = "", cap = "", lab = "", pos = "", two = "";
             if (centerHorizontal.getValue()) {
         	  center = "\\centering\n";
             }
@@ -141,18 +134,18 @@ public class DynamicInsertTableDialog extends DynamicFormDialog {
         	    two = "*";
               }
             }
-            String latex = "\\begin{table" + two + "}" + pos + "\n" + center + "\\begin{tabular}\n" + align + "\n  \n\\end{tabular}" + cap + lab + "\n\\end{table" + two + "}";
-  		    CommandEvent.fire(DynamicInsertTableDialog.this, 
+            String latex = "\\begin{figure" + two + "}" + pos + "\n" + center + "\\includegraphics{" + image.getValue().getIdentifier() + "}" + cap + lab + "\n\\end{figure" + two + "}";
+  		    CommandEvent.fire(DynamicInsertImageDialog.this, 
   			      new SystemPasteCommand(latex));
             hide();
             resetForm();
           }
       });
       cancel.addClickHandler(new ClickHandler(){
-          public void onClick(ClickEvent event) {
-            hide();
-            resetForm();
-          }
+        public void onClick(ClickEvent event) {
+          hide();
+          resetForm();
+        }
       });
 	}
 
@@ -161,9 +154,7 @@ public class DynamicInsertTableDialog extends DynamicFormDialog {
      */
 	@Override
 	public void resetForm() {
-	  alignTop.setValue(false);
-	  alignCenter.setValue(true);
-      alignBottom.setValue(false);
+	  image.setValue(null);
       oneColumn.setValue(true);
       twoColumns.setValue(false);
       centerHorizontal.setValue(true);
@@ -175,29 +166,30 @@ public class DynamicInsertTableDialog extends DynamicFormDialog {
       caption.setValue("");
       label.setValue("");
 	}
-	  
+	
   }
 
-  protected static DynamicInsertTableDialog instance;
+  protected static DynamicInsertImageDialog instance;
   
   /**
    * Retrieves the single instance of this class.
    * 
    * @param handler the command handler.
    */
-  public static DynamicInsertTableDialog get(final CommandHandler handler) {
+  public static DynamicInsertImageDialog get(final CommandHandler handler) {
     if (instance == null) {
-      instance = new DynamicInsertTableDialog();
+      instance = new DynamicInsertImageDialog();
       instance.addCommandHandler(handler);
+      DynamicFileSelectionDialog.get(handler, null);
     }
     return instance;
   }
-
+  
   /**
    * Constructs a dialog window containing a form for specifying preferences.
    */
-  public DynamicInsertTableDialog() {
-    super("Insert Table", true, "500px", null);
+  public DynamicInsertImageDialog() {
+    super("Insert Image", true, "500px", null);
   }
 
   /**
@@ -207,16 +199,16 @@ public class DynamicInsertTableDialog extends DynamicFormDialog {
    */
   @Override
   protected void getFormContents(final AsyncCallback<FormContents> callback) {
-    GWT.runAsync(new RunAsyncCallback() {
+	GWT.runAsync(new RunAsyncCallback() {
 		@Override
 		public void onFailure(Throwable reason) {
-	      callback.onFailure(reason);
+		  callback.onFailure(reason);
 		}
 		@Override
 		public void onSuccess() {
-		  callback.onSuccess(new InsertTableFormContents());
+		  callback.onSuccess(new InsertHeaderFormContents());
 		}
-    });
+	});
   }
   
 }
