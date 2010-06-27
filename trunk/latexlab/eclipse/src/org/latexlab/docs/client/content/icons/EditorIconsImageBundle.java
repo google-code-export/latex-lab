@@ -33,6 +33,7 @@ public interface EditorIconsImageBundle extends ImageBundle {
 	public AbstractImagePrototype File();
 	public AbstractImagePrototype Folder();
 	public AbstractImagePrototype Font();
+	public AbstractImagePrototype FontColor();
 	public AbstractImagePrototype Footnote();
 	public AbstractImagePrototype HorizontalLine();
 	public AbstractImagePrototype Hyperlink();

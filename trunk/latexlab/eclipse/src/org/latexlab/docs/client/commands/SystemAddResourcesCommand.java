@@ -5,29 +5,26 @@ import java.util.ArrayList;
 import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
 
 /**
- * A command for specifying the compile resources.
+ * A command for adding compile resources.
  */
-public class SystemSetResourcesCommand extends Command {
+public class SystemAddResourcesCommand extends Command {
 
   /**
    * The command's unique id.
    */
-  public final static int serialUid = 91;
+  public final static int serialUid = 201;
   
-  protected DocumentServiceEntry primaryResource;
   protected ArrayList<DocumentServiceEntry> resources;
   
   /**
-   * Constructs a command for specifying the compile resources.
+   * Constructs a command for adding compile resources.
    * 
-   * @param resources the compile resources.
+   * @param resources the compile resources to add.
    * @param primaryResource the primary resource.
    */
-  public SystemSetResourcesCommand(ArrayList<DocumentServiceEntry> resources,
-		  DocumentServiceEntry primaryResource) {
-    super("Set resources.");
+  public SystemAddResourcesCommand(ArrayList<DocumentServiceEntry> resources) {
+    super("Add resources.");
     this.resources = resources;
-    this.primaryResource = primaryResource;
   }
   
   /**
@@ -41,30 +38,12 @@ public class SystemSetResourcesCommand extends Command {
   }
 
   /**
-   * Retrieves the primary resource.
-   * 
-   * @return the primary resource.
-   */
-  public DocumentServiceEntry getPrimaryResource() {
-    return primaryResource;
-  }
-
-  /**
    * Retrieves the compile resources.
    * 
    * @return the compile resources.
    */
   public ArrayList<DocumentServiceEntry> getResources() {
     return resources;
-  }
-
-  /**
-   * Sets the primary resource.
-   * 
-   * @param primaryResource the primary resource.
-   */
-  public void setPrimaryResource(DocumentServiceEntry primaryResource) {
-    this.primaryResource = primaryResource;
   }
 
   /**

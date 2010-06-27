@@ -3,9 +3,10 @@ package org.latexlab.docs.editor.advanced.client;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.latexlab.clsi.client.AppletUnavailableException;
 import org.latexlab.clsi.client.async.CompileCallback;
 import org.latexlab.clsi.client.async.ReadyCallback;
-import org.latexlab.clsi.client.local.ClsiLocalService;
+import org.latexlab.clsi.client.local.ClsiLocalEngine;
 import org.latexlab.clsi.client.protocol.ClsiOutputError;
 import org.latexlab.clsi.client.protocol.ClsiResourceReference;
 import org.latexlab.clsi.client.protocol.ClsiServiceCompileResponse;
@@ -15,7 +16,6 @@ import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.commands.CurrentDocumentChangedCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentCloseCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentCompileCommand;
-import org.latexlab.docs.client.commands.CurrentDocumentCompileLocalCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentCopyCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentDeleteCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentExportCommand;
@@ -27,6 +27,7 @@ import org.latexlab.docs.client.commands.CurrentDocumentRenameCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentRevisionHistoryCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentSaveAndCloseCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentSaveCommand;
+import org.latexlab.docs.client.commands.SystemAddResourcesCommand;
 import org.latexlab.docs.client.commands.SystemLoadDocumentCommand;
 import org.latexlab.docs.client.commands.SystemListDocumentsCommand;
 import org.latexlab.docs.client.commands.SystemOpenDocumentCommand;
@@ -82,6 +83,7 @@ import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
 import org.latexlab.docs.client.gdocs.DocumentSignedLocation;
 import org.latexlab.docs.client.gdocs.DocumentUser;
 import org.latexlab.docs.editor.advanced.client.DocsAdvancedEditorView.LockFunction;
+import org.latexlab.docs.editor.advanced.client.DocsAdvancedEditorView.Quadrant;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -163,7 +165,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
   		  if (result == null) {
   		    if (!GWT.isScript()) {
   			  //if running in dev mode, auto-authenticate with a test account
-  			  docService.setUser("non.gwt.gdata@gmail.com", "CIuortn_DxDZ-_vN-P____8BGKDV2d4E", new AsyncCallback<DocumentUser>() {
+  			  docService.setUser("non.gwt.gdata@gmail.com", "CIuortn_DxDe7azIBhiAlqucBw", new AsyncCallback<DocumentUser>() {
   				  @Override
   				  public void onFailure(Throwable caught) {
   					Window.alert("No login detected.");
@@ -226,7 +228,6 @@ public class DocsAdvancedEditorController implements CommandHandler {
 	);
   }
   
-  
   /**
    * Extracts the "docid" parameter from the URL querystring and loads the
    * respective document - the document details are loaded first, followed by
@@ -250,7 +251,6 @@ public class DocsAdvancedEditorController implements CommandHandler {
     }
   }
   
-  
   /**
    * Closes the current window.
    * 
@@ -262,7 +262,6 @@ public class DocsAdvancedEditorController implements CommandHandler {
     $wnd.close();
   }-*/;
 
-  
   /**
    * Sets the currently open document and updates the header info and window title
    * with the respective document information.
@@ -299,8 +298,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
       }
     }
   }
-  
-  
+   
   /**
    * Shows a status message. If modal, a loading dialog is displayed, otherwise
    * the header status area is used.
@@ -331,7 +329,6 @@ public class DocsAdvancedEditorController implements CommandHandler {
 	}
   }
   
-
   /**
    * Handles a command error by displaying an error dialog.
    * 
@@ -434,7 +431,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
 			    "A " + cmd.getExportFormat() + " version of the current " +
 			    "document has been compiled and is available for viewing.",
 			    new ActionDialogOption[] {
-				    new ActionDialogOption("View Exported Document",
+				    new ActionDialogOption("View " + cmd.getExportFormat() + " Document",
 			        new SystemOpenPageCommand(currentDocument.getDocumentId() + "_exp", url, false))
 				}
 		    );
@@ -467,6 +464,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
     showStatus("Compiling document...", false);
     app.getPreviewer().clear();
     app.getOutput().clear();
+    app.getFooter().getPageViewer().reset(0);
     compile("png", new CompileCallback() {
 		@Override
 		public void onFailure(Throwable caught) {
@@ -477,24 +475,26 @@ public class DocsAdvancedEditorController implements CommandHandler {
 		public void onSuccess(ClsiServiceCompileResponse result) {
 		  setFunctionLock(LockFunction.COMPILE, false);
 		  String r = String.valueOf(new Date().getTime());
-	      String[] urls =  new String[result.getOutputFiles().length];
-		  for (int i=0; i<urls.length; i++) {
-			urls[i] = result.getOutputFiles()[i].getUrl() + "?r=" + r;
-	      }
-		  app.getPreviewer().setPages(urls);
-		  app.getFooter().getPageViewer().reset(urls.length);
 		  if (result.getOutputErrors().length > 0) {
 			String err = "";
 			for (ClsiOutputError msg : result.getOutputErrors()) {
 				err += msg.getMessage() + "\n";
 			}
-		    app.getFooter().getPageViewer().reset(0);
 			app.getPreviewer().setError(err);
+		  } else {
+	        String[] urls =  new String[result.getOutputFiles().length];
+		    for (int i=0; i<urls.length; i++) {
+			  urls[i] = result.getOutputFiles()[i].getUrl() + "?r=" + r;
+	        }
+		    app.getPreviewer().setPages(urls);
+			app.getFooter().getPageViewer().reset(urls.length);
 		  }
 		  if (result.getOutputLogs().length > 0) {
   		    app.getOutput().setUrl(result.getOutputLogs()[0].getUrl() + "?r=" + r);
 		  }
-		  app.getBody().setHorizontalSplitPosition("50%");
+		  if (!app.getQuadrantVisibility(Quadrant.PREVIEW)) {
+		    app.setPerspective(SystemSetPerspectiveCommand.VIEW_PREVIEW);
+		  }
           clearStatus();
 		}
 	});
@@ -661,30 +661,6 @@ public class DocsAdvancedEditorController implements CommandHandler {
       }
     });
   }
-  private void execute(final CurrentDocumentCompileLocalCommand cmd) {
-	Window.alert("Starting local service...");
-	final ClsiLocalService svc = new ClsiLocalService("/editor/");
-	svc.start(new ReadyCallback() {
-		@Override
-		public void onFailure(Throwable caught) {
-			Window.alert("On ready failure: " + caught.getMessage());
-		}
-		@Override
-		public void onSuccess(Boolean result) {
-			Window.alert("On ready succeeded.");
-	    	svc.compile("name", "contents", "primary", null, "compiler", "format", new CompileCallback() {
-				@Override
-				public void onFailure(Throwable caught) {
-				  Window.alert("Local compile command failed: " + caught.getMessage());
-				}
-				@Override
-				public void onSuccess(ClsiServiceCompileResponse result) {
-				  Window.alert("Local compile command succeeded.");
-				}
-	    	});
-		}
-	});
-	  }
   private void execute(final CurrentDocumentRevisionHistoryCommand cmd) {
     Window.open("http://docs.google.com/Revs?id=" +
         currentDocument.getDocumentId() + "&tab=revlist",
@@ -783,9 +759,21 @@ public class DocsAdvancedEditorController implements CommandHandler {
     });
   }
   private void execute(final SystemSetResourcesCommand cmd) {
-	SystemSetResourcesCommand ssrCmd = (SystemSetResourcesCommand) cmd;
-	settings.setResources(ssrCmd.getResources());
-	settings.setPrimaryResource(ssrCmd.getPrimaryResource());
+	settings.setResources(cmd.getResources());
+	settings.setPrimaryResource(cmd.getPrimaryResource());
+  }
+  private void execute(final SystemAddResourcesCommand cmd) {
+	ArrayList<DocumentServiceEntry> resources = settings.getResources();
+	for (DocumentServiceEntry entry : cmd.getResources()) {
+	  for (int i=0; i<resources.size(); i++) {
+		if (entry.equals(resources.get(i))) {
+		  resources.remove(i);
+		  i--;
+		}
+	  }
+	}
+	resources.addAll(cmd.getResources());
+	settings.setResources(resources);
   }
   private void execute(final SystemRefreshResourcesCommand cmd) {
     showStatus("Refreshing resources...", false);
@@ -828,23 +816,82 @@ public class DocsAdvancedEditorController implements CommandHandler {
 	}
   }
   private void execute(final SystemApplyCompilerSettingsCommand cmd) {
-	if (cmd.isUseDefault()) {
+	final Runnable updateService = new Runnable() {
+		@Override
+		public void run() {
+	      clsiService.setAsyncPath(settings.getClsiAsyncPath());
+		  clsiService.setServiceUrl(settings.getClsiServiceUrl());
+		  clsiService.setToken(settings.getClsiServiceToken());
+		  clsiService.setId(settings.getClsiServiceId());
+		  settings.setHasCompilerSettings(true);
+		  if (cmd.getContinueCommand() != null) {
+			execute(cmd.getContinueCommand(), DocsAdvancedEditorController.this);
+	      }
+		}
+	};
+	if (cmd.getCompiler() ==
+		SystemApplyCompilerSettingsCommand.Compiler.REMOTE_DEFAULT_COMPILER) {
 	  settings.setClsiAsyncPath("http://clsi.latexlab.org/clsi/out/<id>/");
 	  settings.setClsiServiceToken(CLSI_TOKEN);
 	  settings.setClsiServiceId(currentUser.getToken());
 	  settings.setClsiServiceUrl("http://clsi.latexlab.org/clsi/service.php");
 	  settings.setCompilerName("latex");
-	} else {
+	  updateService.run();
+	} else if (cmd.getCompiler() ==
+		SystemApplyCompilerSettingsCommand.Compiler.REMOTE_CUSTOM_COMPILER){
 	  settings.setClsiAsyncPath(cmd.getClsiAsyncPath());
 	  settings.setClsiServiceToken(cmd.getClsiServiceToken());
 	  settings.setClsiServiceUrl(cmd.getClsiServiceUrl());
 	  settings.setCompilerName(cmd.getCompilerName());
+	  updateService.run();
+	} else {
+	  final String sandboxMessage = "The local LaTeX service was not granted the necessary permissions, " +
+	    "this may happen if the certificate was declined. " +
+		"The browser may need to be restarted in order for the certificate prompt to display.";
+	  final ClsiLocalEngine latexEngine = ClsiLocalEngine.get("editor_advanced/");
+	  if (latexEngine.isStarted()) {
+		if (Window.Navigator.isJavaEnabled()) {
+		  StaticActionDialog ad = StaticActionDialog.get(DocsAdvancedEditorController.this);
+		  ad.update("Java Unavailable", "<a href=\"http://www.java.com\">Java</a> was not detected. " +
+		  		"Ensure that <a href=\"http://www.java.com\">Java</a> is installed and enabled.", new ActionDialogOption[0]);
+		  ad.center();
+		  return;
+		}
+		if (latexEngine.isLocked()) {
+		  StaticActionDialog ad = StaticActionDialog.get(DocsAdvancedEditorController.this);
+		  ad.update("Java Sandbox Detected", sandboxMessage, new ActionDialogOption[0]);
+		  ad.center();
+		}
+	  } else {
+		showStatus("Initializing the local LaTeX service. Please accept the certificate when prompted.", true);
+		latexEngine.start(new ReadyCallback() {
+			@Override
+			public void onFailure(Throwable caught) {
+			  clearStatus();
+		      StaticActionDialog ad = StaticActionDialog.get(DocsAdvancedEditorController.this);
+			  if (caught instanceof AppletUnavailableException) {
+				ad.update("Java Sandbox Detected",
+						sandboxMessage,
+				    new ActionDialogOption[0]);
+			  } else {
+				ad.update("Local LaTeX Service Initialization Error",
+				    "There was an error initializing the local LaTeX service.",
+				    new ActionDialogOption[0]);
+			  }
+			  ad.center();
+			}
+			@Override
+			public void onSuccess() {
+			  clearStatus();
+			  settings.setClsiAsyncPath(latexEngine.getAsyncPath());
+			  settings.setClsiServiceToken(CLSI_TOKEN);
+			  settings.setClsiServiceUrl(latexEngine.getServicePath());
+			  settings.setCompilerName(cmd.getCompilerName());
+			  updateService.run();
+			}
+		});
+	  }
 	}
-	clsiService.setAsyncPath(settings.getClsiAsyncPath());
-	clsiService.setServiceUrl(settings.getClsiServiceUrl());
-	clsiService.setToken(settings.getClsiServiceToken());
-	clsiService.setId(settings.getClsiServiceId());
-	settings.setHasCompilerSettings(true);
   }
   private void execute(final SystemApplyPreferencesCommand cmd) {
 	settings.setUseAutoSave(cmd.isUseAutoSave());
@@ -923,12 +970,33 @@ public class DocsAdvancedEditorController implements CommandHandler {
     });
   }
   private void execute(final SystemPasteCommand cmd) {
+	if (!app.getQuadrantVisibility(Quadrant.SOURCE)) {
+	  app.setPerspective(SystemSetPerspectiveCommand.VIEW_SOURCE);
+	}
 	String pasteText = cmd.getText();
 	String selText = app.getEditor().getSelectedText();
 	if (selText != null) {
 	  pasteText = pasteText.replace("<text here>", selText);
 	}
 	app.getEditor().replaceSelection(pasteText);
+	if (cmd.getPreamble() != null) {
+	  String src = app.getEditor().getText();
+	  int a = src.lastIndexOf("\\usepackage");
+	  if (a < 0) src.indexOf("\\documentclass");
+	  if (a >= 0) {
+		int b = src.indexOf("\n", a);
+		if (b > 0) {
+		  String all = "";
+	      for (String p : cmd.getPreamble()) {
+	    	if (!src.contains(p)) {
+		      all += "\n" + p;
+	    	}
+	      }
+	      src = src.substring(0, b) + all + src.substring(b);
+	      app.getEditor().setText(src);
+		}
+	  }
+	}
   }
   private void execute(final SystemUndoCommand cmd) {
   	app.getEditor().undo();
@@ -990,6 +1058,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
       case SystemLoadDocumentCommand.serialUid: execute((SystemLoadDocumentCommand) cmd); break;
       case SystemShowDialogCommand.serialUid: execute((SystemShowDialogCommand) cmd); break;
       case SystemSetResourcesCommand.serialUid: execute((SystemSetResourcesCommand) cmd); break;
+      case SystemAddResourcesCommand.serialUid: execute((SystemAddResourcesCommand) cmd); break;
       case SystemRefreshResourcesCommand.serialUid: execute((SystemRefreshResourcesCommand) cmd); break;
       case SystemToggleReuseToolbarWindowsCommand.serialUid: execute((SystemToggleReuseToolbarWindowsCommand) cmd); break;
       case SystemApplyCompilerSettingsCommand.serialUid: execute((SystemApplyCompilerSettingsCommand) cmd); break;
@@ -1006,7 +1075,6 @@ public class DocsAdvancedEditorController implements CommandHandler {
       case SystemRedoCommand.serialUid: execute((SystemRedoCommand) cmd); break;
       case SystemOpenPageCommand.serialUid: execute((SystemOpenPageCommand) cmd); break;
       case SystemSetPerspectiveCommand.serialUid: execute((SystemSetPerspectiveCommand) cmd); break;
-      case CurrentDocumentCompileLocalCommand.serialUid: execute((CurrentDocumentCompileLocalCommand) cmd); break;
       case SystemViewPageCommand.serialUid: execute((SystemViewPageCommand) cmd); break;
       case SystemViewPageIndexCommand.serialUid: execute((SystemViewPageIndexCommand) cmd); break;
       case SystemViewPageZoomInCommand.serialUid: execute((SystemViewPageZoomInCommand) cmd); break;

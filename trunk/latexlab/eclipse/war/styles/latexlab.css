@@ -697,6 +697,7 @@ a.lab-Header-Title:hover{
 	padding-top: 4px;
 	font-size: 12px;
 	width: 70px;
+	color: #0000AA;
 }
 .lab-PageScroller .gwt-PushButton {
 	background-image: none;
@@ -731,6 +732,18 @@ a.lab-Header-Title:hover{
 .lab-FileBox-Empty {
 }
 .lab-FileBox-Empty {
+}
+.lab-ColorPicker {
+	border-collapse:collapse;
+	empty-cells: show;
+	cursor: pointer;
+	border-right: solid 1px #000000;
+	border-bottom: solid 1px #000000;
+}
+.lab-ColorPicker td {
+	empty-cells: show;
+	border-top: solid 1px #000000;
+	border-left: solid 1px #000000;
 }
 .gwt-HorizontalSplitPanel left {
 	padding: 0px;

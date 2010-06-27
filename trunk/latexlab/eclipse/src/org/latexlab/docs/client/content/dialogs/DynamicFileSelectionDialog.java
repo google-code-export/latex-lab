@@ -8,8 +8,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -32,9 +34,10 @@ public class DynamicFileSelectionDialog extends DynamicDialog {
   /**
    * Contains File Selection Dialog contents.
    */
-  protected class ResourcesDialogContents extends Composite {
+  protected class FileSelectionDialogContents extends Composite {
 	
-	private Button ok, refresh, cancel;
+	private Button ok, cancel;
+	private Anchor refresh;
     private VerticalPanel panel;
     private ScrollPanel scroll;
     private ExplorerTree tree;
@@ -42,7 +45,7 @@ public class DynamicFileSelectionDialog extends DynamicDialog {
     /**
      * Constructs a new File Selection Dialog contents.
      */
-	protected ResourcesDialogContents() {
+	protected FileSelectionDialogContents() {
       addClickHandler(new ClickHandler() {
           public void onClick(ClickEvent event) {
             hide();
@@ -68,22 +71,26 @@ public class DynamicFileSelectionDialog extends DynamicDialog {
 	      }
 	    }
 	  });
-	  refresh = new Button("Refresh", new ClickHandler(){
-	    public void onClick(ClickEvent event) {
-	      loadEntries(false);
-	    }
-	  });
 	  cancel = new Button("Cancel", new ClickHandler() {
 	      public void onClick(ClickEvent event) {
 	        hide();
 	      }
 	    }
 	  );
+	  refresh = new Anchor("Refresh", "#");
+	  refresh.addClickHandler(new ClickHandler(){
+	    public void onClick(ClickEvent event) {
+	      event.preventDefault();
+	      event.stopPropagation();
+	      loadEntries(false);
+	    }
+	  });
 	  HorizontalPanel buttons = new HorizontalPanel();
+	  buttons.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 	  buttons.setSpacing(10);
 	  buttons.add(ok);
-	  buttons.add(refresh);
 	  buttons.add(cancel);
+	  buttons.add(refresh);
 	  panel.add(scroll);
 	  panel.add(buttons);
 	  onShowContent = new Runnable() {
@@ -145,7 +152,7 @@ public class DynamicFileSelectionDialog extends DynamicDialog {
   protected static DynamicFileSelectionDialog instance;
 
   /**
-   * Retrieves the single instance of this class, using asynchronous instantiation.
+   * Retrieves the single instance of this class.
    * 
    * @param commandHandler the command handler.
    * @param selectionHandler the selection handler.
@@ -165,7 +172,7 @@ public class DynamicFileSelectionDialog extends DynamicDialog {
   protected FileSelectionHandler selectionHandler;
   
   /**
-   * Constructs a dialog window for selecting project resources.
+   * Constructs a dialog window for selecting a file.
    */
   public DynamicFileSelectionDialog() {
     super("Select File", true, "400px", null);
@@ -184,7 +191,7 @@ public class DynamicFileSelectionDialog extends DynamicDialog {
 		}
 		@Override
 		public void onSuccess() {
-	      callback.onSuccess(new ResourcesDialogContents());
+	      callback.onSuccess(new FileSelectionDialogContents());
 	      center();
 		}
     });

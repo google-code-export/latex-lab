@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -78,6 +79,12 @@ public class DynamicResourcesDialog extends DynamicDialog {
       initWidget(table);
       buildLinks();
       buildForm();
+	  Window.addResizeHandler(new ResizeHandler(){
+	      public void onResize(ResizeEvent event) {
+	        resize();
+	        if (isShowing()) center();
+	      }
+	  });
 	}
 	  
 	/**
@@ -142,10 +149,20 @@ public class DynamicResourcesDialog extends DynamicDialog {
 	      }
 	    }
 	  );
+	  Anchor refresh = new Anchor("Refresh", "#");
+	  refresh.addClickHandler(new ClickHandler(){
+	    public void onClick(ClickEvent event) {
+		  event.preventDefault();
+		  event.stopPropagation();
+		  loadEntries(false);
+	    }
+	  });
 	  HorizontalPanel buttons = new HorizontalPanel();
+	  buttons.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 	  buttons.setSpacing(10);
 	  buttons.add(ok);
 	  buttons.add(cancel);
+	  buttons.add(refresh);
 	  rightPanel.add(buttons);
 	  onShowContent = new Runnable() {
 		@Override
@@ -163,6 +180,7 @@ public class DynamicResourcesDialog extends DynamicDialog {
 	 */
 	private void buildLinks() {
 	  VerticalPanel panel = new VerticalPanel();
+	  panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
 	  panel.setStylePrimaryName("lab-Explorer-Links");
 	  Anchor refreshLink = new Anchor("Refresh");
 	  refreshLink.addClickHandler(new ClickHandler() {
@@ -184,12 +202,6 @@ public class DynamicResourcesDialog extends DynamicDialog {
 	  panel.add(docsLink);
 	  ScrollPanel linksPanel = new ScrollPanel(panel);
 	  leftPanel.add(linksPanel);
-	  Window.addResizeHandler(new ResizeHandler(){
-	      public void onResize(ResizeEvent event) {
-	        resize();
-	        if (isShowing()) center();
-	      }
-	  });
 	}
 	  
 	/**

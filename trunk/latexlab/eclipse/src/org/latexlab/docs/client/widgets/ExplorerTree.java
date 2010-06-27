@@ -87,9 +87,9 @@ public class ExplorerTree extends Tree {
 	 * @param starHandler the star event handler
 	 */
 	public ExplorerTreeFileItem(String label, String identifier, String value,
-		boolean starred, boolean uniqueSelection,
-	    boolean checkable, StarHandler starHandler) {
-	  super(label, identifier, value, null, starred, checkable,uniqueSelection, starHandler);
+		boolean starred, boolean checkable, boolean uniqueSelection,
+	    StarHandler starHandler) {
+	  super(label, identifier, value, null, starred, checkable, uniqueSelection, starHandler);
 	  this.setIcon(Icons.editorIcons.File());
 	}
 	

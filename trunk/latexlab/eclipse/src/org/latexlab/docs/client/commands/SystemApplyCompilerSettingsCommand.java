@@ -6,35 +6,46 @@ package org.latexlab.docs.client.commands;
 public class SystemApplyCompilerSettingsCommand extends Command {
 
   /**
+   * Defines the allowed compiler types.
+   */
+  public enum Compiler {
+	LOCAL_MIKTEX_COMPILER,
+	LOCAL_TEXLIVE_COMPILER,
+	REMOTE_CUSTOM_COMPILER,
+	REMOTE_DEFAULT_COMPILER
+  }
+	
+  /**
    * The command's unique id.
    */
   public final static int serialUid = 93;
   
   protected String clsiServiceUrl, clsiServiceToken, clsiAsyncPath, compilerName;
-  protected boolean useDefault;
+  protected Compiler compiler;
+  protected Command continueCommand;
   
   /**
    * Constructs a command for applying compiler settings.
    */
   public SystemApplyCompilerSettingsCommand() {
 	super("Apply LaTeX compiler settings.");
-    this.useDefault = true;
+    this.compiler = Compiler.REMOTE_DEFAULT_COMPILER;
   }
   
   /**
    * Constructs a command for applying compiler settings.
    * 
-   * @param useDefault whether to use the default compiler.
+   * @param compiler whether the compiler type to use.
    * @param clsiServiceUrl the CLSI service url.
    * @param clsiServiceToken the CLSI service token.
    * @param clsiAsyncPath the CLSI service's async output path.
    * @param compilerName the CLSI service's compiler name.
    */
-  public SystemApplyCompilerSettingsCommand(boolean useDefault,
+  public SystemApplyCompilerSettingsCommand(Compiler compiler,
 	  String clsiServiceUrl, String clsiServiceToken,
 	  String clsiAsyncPath, String compilerName) {
 	super("Apply LaTeX compiler settings.");
-	this.useDefault = useDefault;
+	this.compiler = compiler;
 	this.clsiServiceUrl = clsiServiceUrl;
 	this.clsiServiceToken = clsiServiceToken;
 	this.clsiAsyncPath = clsiAsyncPath;
@@ -79,6 +90,15 @@ public class SystemApplyCompilerSettingsCommand extends Command {
   }
 
   /**
+   * Retrieves the compiler type to use.
+   * 
+   * @return the compiler type to use.
+   */
+  public Compiler getCompiler() {
+    return compiler;
+  }
+
+  /**
    * Retrieves the CLSI service's compiler name.
    * 
    * @return the CLSI service's compiler name.
@@ -88,12 +108,12 @@ public class SystemApplyCompilerSettingsCommand extends Command {
   }
 
   /**
-   * Whether to use the default compiler.
+   * Retrieves the command to execute after compiler settings have been applied.
    * 
-   * @return whether to use the default compiler.
+   * @return the command to execute after compiler settings have been applied.
    */
-  public boolean isUseDefault() {
-    return useDefault;
+  public Command getContinueCommand() {
+	return continueCommand;
   }
 
   /**
@@ -124,6 +144,15 @@ public class SystemApplyCompilerSettingsCommand extends Command {
   }
 
   /**
+   * Sets the compiler type to use.
+   * 
+   * @param compiler the compiler type to use.
+   */
+  public void setCompiler(Compiler compiler) {
+    this.compiler = compiler;
+  }
+
+  /**
    * Sets the CLSI service's compiler name.
    * 
    * @param compilerName the CLSI service's compiler name.
@@ -133,12 +162,12 @@ public class SystemApplyCompilerSettingsCommand extends Command {
   }
 
   /**
-   * Specifies whether to use the default compiler.
+   * Sets the command to execute after compiler settings have been applied.
    * 
-   * @param useDefault whether to use the default compiler.
+   * @param continueCommand the command to execute after compiler settings have been applied.
    */
-  public void setUseDefault(boolean useDefault) {
-    this.useDefault = useDefault;
+  public void setContinueCommand(Command continueCommand) {
+    this.continueCommand = continueCommand;
   }
 
 }

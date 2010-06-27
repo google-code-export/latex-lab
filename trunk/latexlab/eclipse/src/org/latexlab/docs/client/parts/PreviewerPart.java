@@ -12,6 +12,8 @@ import org.latexlab.docs.client.widgets.ScalableImage;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -39,7 +41,7 @@ public class PreviewerPart extends Composite implements HasCommandHandlers {
   
   private VerticalPanel content;
   private ScalableImage currentImage;
-  private int currentPage = 0, currentScale = 4;
+  private int currentPage = 0, currentScale = 4, lastTopScroll = 0, lastLeftScroll;
   private HandlerManager manager;
   private String[] pages = new String[0];
 
@@ -103,6 +105,10 @@ public class PreviewerPart extends Composite implements HasCommandHandlers {
    * Clears the preview contents.
    */
   public void clear() {
+	if (currentImage != null) {
+	  lastTopScroll = content.getElement().getParentElement().getScrollTop();
+	  lastLeftScroll = content.getElement().getParentElement().getScrollLeft();
+	}
     content.clear();
   }
   
@@ -147,26 +153,35 @@ public class PreviewerPart extends Composite implements HasCommandHandlers {
   public void setPages(String[] pages) {
 	this.pages = pages;
 	currentImage = null;
-	showPage(0);
+	showPage(currentPage);
   }
-  
+
   /**
    * Displays a given page.
    * 
    * @param page the index of the page to display
    */
   public void showPage(int page){
+	content.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
 	if (page == currentPage && currentImage != null) {
 	  currentImage.setScale(SCALES[currentScale]);
 	} else {
 	  if (page >= 0 && page < pages.length) {
-        currentPage = page;
 	    content.clear();
 	    addMessage();
 	    currentImage = new ScalableImage(pages[page],
 	      SCALES[currentScale]);
+	    if (page == currentPage && (lastTopScroll > 0 || lastLeftScroll > 0)) {
+	      currentImage.addLoadHandler(new LoadHandler() {
+			@Override
+			public void onLoad(LoadEvent event) {
+		      content.getElement().getParentElement().setScrollTop(lastTopScroll);
+		      content.getElement().getParentElement().setScrollLeft(lastLeftScroll);
+			}
+	      });
+	    }
+        currentPage = page;
 	    content.add(currentImage);
-		content.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
 	  }
 	}
   }
@@ -175,6 +190,7 @@ public class PreviewerPart extends Composite implements HasCommandHandlers {
    * Displays thumbnail of all the preview pages available.
    */
   public void showPageIndex() {
+	content.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
 	currentImage = null;
 	content.clear();
 	addMessage();
@@ -205,9 +221,8 @@ public class PreviewerPart extends Composite implements HasCommandHandlers {
 	  panel.add(box);
 	}
 	content.add(panel);
-	content.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
   }
-
+  
   /**
    * Zooms into the current page.
    */

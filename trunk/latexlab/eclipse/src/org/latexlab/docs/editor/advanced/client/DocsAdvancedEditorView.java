@@ -81,8 +81,19 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class DocsAdvancedEditorView {
 
-  protected static DocsAdvancedEditorView instance;
+  public enum LockFunction {
+	COMPILE,
+	SAVE
+  }
   
+  public enum Quadrant {
+	SOURCE,
+	OUTPUT,
+	PREVIEW
+  }
+	
+  protected static DocsAdvancedEditorView instance;
+
   public static void get(final CommandHandler handler, final String userEmail,
 	    final AsyncInstantiationCallback<DocsAdvancedEditorView> cb) {
 	GWT.runAsync(new RunAsyncCallback() {
@@ -99,26 +110,21 @@ public class DocsAdvancedEditorView {
 		}
 	});
   }
-	
-  public enum LockFunction {
-	SAVE,
-	COMPILE
-  }
-	  
-  private CommandHandler controller;
-  private AbsolutePanel root;
-  private WindowManager windowManager;
+  
   private BodyPart body;
-  private EditorPart editor;
-  private PreviewerPart previewer;
-  private OutputPart output;
   private FlexTable contentPane;
-  private HeaderPart header;
-  private FooterPart footer;
-  private MenuPart menu;
-  private ToolbarPart tools;
-  private HashMap<String, ToolbarWindow> toolbars;
   private IntRunnable controlKeyHandler;
+  private CommandHandler controller;
+  private EditorPart editor;
+  private FooterPart footer;
+  private HeaderPart header;
+  private MenuPart menu;
+  private OutputPart output;
+  private PreviewerPart previewer;
+  private AbsolutePanel root;
+  private HashMap<String, ToolbarWindow> toolbars;
+  private ToolbarPart tools;
+  private WindowManager windowManager;
   
   protected DocsAdvancedEditorView(CommandHandler c, String userEmail) {
 	controller = c;
@@ -235,28 +241,45 @@ public class DocsAdvancedEditorView {
     return editor;
   }
 
-  public PreviewerPart getPreviewer() {
-    return previewer;
-  }
-
-  public OutputPart getOutput() {
-    return output;
+  public FooterPart getFooter() {
+    return footer;
   }
 
   public HeaderPart getHeader() {
     return header;
   }
 
-  public FooterPart getFooter() {
-    return footer;
-  }
-
   public MenuPart getMenu() {
     return menu;
   }
 
-  public ToolbarPart getTools() {
-    return tools;
+  public OutputPart getOutput() {
+    return output;
+  }
+
+  public PreviewerPart getPreviewer() {
+    return previewer;
+  }
+
+  public boolean getQuadrantVisibility(Quadrant quadrant) {
+	int w = body.getOffsetWidth();
+	int h = body.getOffsetHeight();
+	int hpos = body.getHorizontalSplitPosition();
+	int vpos = body.getVerticalSplitPosition();
+	int min = 10;
+	boolean isRight = hpos < min;
+	boolean isLeft = (w - hpos) < min;
+	boolean isTop = (h - vpos) < min;
+	boolean isBottom = vpos < min;
+	switch (quadrant) {
+	case SOURCE:
+	  return !isRight && !isBottom;
+	case PREVIEW:
+	  return !isLeft && !isBottom;
+	case OUTPUT:
+	  return !isTop;
+	}
+	return false;
   }
   
   public int getToolbarLeft(ToolbarWindow tb) {
@@ -267,8 +290,8 @@ public class DocsAdvancedEditorView {
 	return windowManager.getBoundaryPanel().getWidgetTop(tb);
   }
   
-  public void setToolbarPosition(ToolbarWindow tb, int left, int top) {
-    windowManager.getBoundaryPanel().setWidgetPosition(tb, left, top);
+  public ToolbarPart getTools() {
+    return tools;
   }
   
   public void loadEditor(boolean colorSyntax,
@@ -277,6 +300,20 @@ public class DocsAdvancedEditorView {
     editor.addLoadHandler(handler);
     editor.init(colorSyntax, wrapText, showLineNumbers,
         checkSpelling, controlKeyHandler);
+  }
+  
+  public void setFunctionLock(LockFunction func, boolean locked) {
+	switch (func) {
+	case SAVE:
+	  header.setSaveState(locked ? SaveState.SAVING : SaveState.SAVED);
+	  tools.setButtonEnabled(1, !locked);
+	  menu.setMenuItemEnabled(new String[] { "File", "Save" }, !locked);
+	  break;
+	case COMPILE:
+	  tools.setButtonEnabled(5, !locked);
+	  menu.setMenuItemEnabled(new String[] { "Compiler", "Compile..." }, !locked);
+	  break;
+	}
   }
   
   public void setPerspective(int view) {
@@ -300,74 +337,10 @@ public class DocsAdvancedEditorView {
   	}
   }
   
-  public void setFunctionLock(LockFunction func, boolean locked) {
-	switch (func) {
-	case SAVE:
-	  header.setSaveState(locked ? SaveState.SAVING : SaveState.SAVED);
-	  tools.setButtonEnabled(1, !locked);
-	  menu.setMenuItemEnabled(new String[] { "File", "Save" }, !locked);
-	  break;
-	case COMPILE:
-	  tools.setButtonEnabled(5, !locked);
-	  menu.setMenuItemEnabled(new String[] { "Compiler", "Compile..." }, !locked);
-	  break;
-	}
-  }
-  
-  public void toggleFullScreen() {
-	boolean isFullScreen = !header.isVisible();
-	String[] path = new String[] { "View", "Full-screen mode" };
-    if (isFullScreen) {
-      menu.setMenuItemIcon(path, Icons.editorIcons.Blank());
-      header.setVisible(true);
-      contentPane.getFlexCellFormatter().setHeight(0, 0, "120px");
-	    body.setVerticalSplitPosition("100%");
-    } else {
-      menu.setMenuItemIcon(path, Icons.editorIcons.CheckBlack());
-      header.setVisible(false);
-      contentPane.getFlexCellFormatter().setHeight(0, 0, "40px");
-	    body.setVerticalSplitPosition("100%");
-    }
+  public void setToolbarPosition(ToolbarWindow tb, int left, int top) {
+    windowManager.getBoundaryPanel().setWidgetPosition(tb, left, top);
   }
 
-  public void toggleToolbar(final String name, final boolean reuseWindows) {
-	targetToolbar(name, new AsyncCallback<ToolbarWindow>() {
-		@Override
-		public void onFailure(Throwable caught) {
-		}
-		@Override
-		public void onSuccess(ToolbarWindow target) {
-		  toolbars.put(name, target);
-	      boolean toVisible = !target.isVisible();
-		  if (reuseWindows) {
-			Iterator<Entry<String, ToolbarWindow>> it =
-				toolbars.entrySet().iterator();
-			while(it.hasNext()) {
-			  Entry<String, ToolbarWindow> entry = it.next();
-			  ToolbarWindow tb = entry.getValue();
-		      if (tb.isVisible()) {
-		  	    int left = getToolbarLeft(tb);
-		  	    int top = getToolbarTop(tb);
-		        tb.hide();
-		        setToolbarPosition(target, left, top);
-		        tools.setButtonState(entry.getKey(), false);
-		        menu.setMenuItemHighlighted(new String[] { "View", "Toolbars", entry.getKey() }, false);
-		      }
-			}
-		  } else {
-		    target.hide();
-		    tools.setButtonState(name, false);
-	        menu.setMenuItemHighlighted(new String[] { "View", "Toolbars", name }, false);
-		  }
-		  if (toVisible) {
-		    target.show();
-		    tools.setButtonState(name, true);
-	        menu.setMenuItemHighlighted(new String[] { "View", "Toolbars", name }, true);
-		  }
-		}
-	});
-  }
-  
   private void targetToolbar(String name, final AsyncCallback<ToolbarWindow> cb) {
 	if (name.equalsIgnoreCase(SetAboveAndBelow.TITLE)) {
 	  cb.onSuccess(ToolbarWindowAboveAndBelow.get(controller, windowManager));
@@ -406,4 +379,57 @@ public class DocsAdvancedEditorView {
 	}
   }
   
+  public void toggleFullScreen() {
+	boolean isFullScreen = !header.isVisible();
+	String[] path = new String[] { "View", "Full-screen mode" };
+    if (isFullScreen) {
+      menu.setMenuItemIcon(path, Icons.editorIcons.Blank());
+      header.setVisible(true);
+      contentPane.getFlexCellFormatter().setHeight(0, 0, "120px");
+	    body.setVerticalSplitPosition("100%");
+    } else {
+      menu.setMenuItemIcon(path, Icons.editorIcons.CheckBlack());
+      header.setVisible(false);
+      contentPane.getFlexCellFormatter().setHeight(0, 0, "40px");
+	    body.setVerticalSplitPosition("100%");
+    }
+  }
+  
+  public void toggleToolbar(final String name, final boolean reuseWindows) {
+	targetToolbar(name, new AsyncCallback<ToolbarWindow>() {
+		@Override
+		public void onFailure(Throwable caught) {
+		}
+		@Override
+		public void onSuccess(ToolbarWindow target) {
+		  toolbars.put(name, target);
+	      boolean toVisible = !target.isVisible();
+		  if (reuseWindows) {
+			Iterator<Entry<String, ToolbarWindow>> it =
+				toolbars.entrySet().iterator();
+			while(it.hasNext()) {
+			  Entry<String, ToolbarWindow> entry = it.next();
+			  ToolbarWindow tb = entry.getValue();
+		      if (tb.isVisible()) {
+		  	    int left = getToolbarLeft(tb);
+		  	    int top = getToolbarTop(tb);
+		        tb.hide();
+		        setToolbarPosition(target, left, top);
+		        tools.setButtonState(entry.getKey(), false);
+		        menu.setMenuItemHighlighted(new String[] { "View", "Toolbars", entry.getKey() }, false);
+		      }
+			}
+		  } else {
+		    target.hide();
+		    tools.setButtonState(name, false);
+	        menu.setMenuItemHighlighted(new String[] { "View", "Toolbars", name }, false);
+		  }
+		  if (toVisible) {
+		    target.show();
+		    tools.setButtonState(name, true);
+	        menu.setMenuItemHighlighted(new String[] { "View", "Toolbars", name }, true);
+		  }
+		}
+	});
+  }
 }

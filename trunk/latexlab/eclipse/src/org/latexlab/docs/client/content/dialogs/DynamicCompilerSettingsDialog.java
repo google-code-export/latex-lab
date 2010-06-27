@@ -37,10 +37,11 @@ public class DynamicCompilerSettingsDialog extends DynamicFormDialog {
 	 */
 	@Override
 	protected void buildForm() {
+      content.setWidth("650px");
 	  ValueChangeHandler<Boolean> changeHandler = new ValueChangeHandler<Boolean>() {
 		@Override
 		public void onValueChange(ValueChangeEvent<Boolean> event) {
-	      setView(useDefault.getValue());
+	      setView(!useCustom.getValue());
 		}
 	  };
 	  VerticalPanel usage = new VerticalPanel();
@@ -51,13 +52,14 @@ public class DynamicCompilerSettingsDialog extends DynamicFormDialog {
 	  useCustom.setHTML("Use a third party <a href=\"http://code.google.com/p/common-latex-service-interface/\" target=\"_blank\">CLSI</a> provider.");
 	  useCustom.addValueChangeHandler(changeHandler);
 	  useMikTex = new RadioButton("usage");
-	  useMikTex.setHTML("Use a local <a href=\"http://miktex.org/\" target=\"_blank\">MikTeX</a> installation.");
-	  useMikTex.addValueChangeHandler(changeHandler);
 	  useMikTex.setEnabled(false);
+	  String devUrl = Window.Location.getHref().replace("/docs.", "/dev.");
+	  useMikTex.setHTML("Use a local <a href=\"http://miktex.org/\" target=\"_blank\">MikTeX</a> installation. <a href=\"" + devUrl + "\">Available in development version</a>");
+	  useMikTex.addValueChangeHandler(changeHandler);
 	  useTexLive = new RadioButton("usage");
+	  useTexLive.setEnabled(false);
 	  useTexLive.setHTML("Use a local <a href=\"http://www.tug.org/texlive/\" target=\"_blank\">TeX Live</a> installation.");
 	  useTexLive.addValueChangeHandler(changeHandler);
-	  useTexLive.setEnabled(false);
 	  usage.add(useDefault);
 	  usage.add(useMikTex);
 	  usage.add(useTexLive);
@@ -92,25 +94,36 @@ public class DynamicCompilerSettingsDialog extends DynamicFormDialog {
 	      if (useDefault.getValue()) {
 	    	cmd = new SystemApplyCompilerSettingsCommand();
 	      } else {
-	    	if (clsiServiceUrl.getValue().equals("") ||
+	    	if (useCustom.getValue() &&
+	    		(clsiServiceUrl.getValue().equals("") ||
 	    	    clsiServiceToken.getValue().equals("") ||
 	    	    clsiAsyncPath.getValue().equals("") ||
-	    	    compilerName.getValue().equals("")) {
+	    	    compilerName.getValue().equals(""))) {
 	    	  Window.alert("All fields are required.");
 	    	  return;
 	    	} else {
-	    	  cmd = new SystemApplyCompilerSettingsCommand(false,
+	    	  SystemApplyCompilerSettingsCommand.Compiler compiler =
+	    		  SystemApplyCompilerSettingsCommand.Compiler.REMOTE_DEFAULT_COMPILER;
+	    	  if (useMikTex.getValue()) {
+	    		compiler =
+	    		    SystemApplyCompilerSettingsCommand.Compiler.LOCAL_MIKTEX_COMPILER;
+	    	  } else if (useTexLive.getValue()) {
+    		    compiler =
+	    		    SystemApplyCompilerSettingsCommand.Compiler.LOCAL_TEXLIVE_COMPILER;
+	    	  } else if (useCustom.getValue()) {
+    		    compiler =
+	    		    SystemApplyCompilerSettingsCommand.Compiler.REMOTE_CUSTOM_COMPILER;
+	    	  }
+	    	  cmd = new SystemApplyCompilerSettingsCommand(compiler,
 	    	      clsiServiceUrl.getValue(),
 	    	      clsiServiceToken.getValue(),
 	    	      clsiAsyncPath.getValue(),
 	    	      compilerName.getValue());
 	    	}
 	      }
+    	  cmd.setContinueCommand(continueCommand);
 	      DynamicCompilerSettingsDialog.this.hide();
 	      CommandEvent.fire(DynamicCompilerSettingsDialog.this, cmd);
-	      if (continueCommand != null) {
-	    	CommandEvent.fire(DynamicCompilerSettingsDialog.this, continueCommand);
-	      }
 	    }
 	  });
 	  cancel.addClickHandler(new ClickHandler(){
