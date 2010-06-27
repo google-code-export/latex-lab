@@ -30,9 +30,8 @@ public abstract class DynamicWindow extends Window {
     if (targetHeight != null) {
       contents.setHeight(targetHeight);
     }
-    HTML loading = new HTML("&nbsp;");
-    loading.setStylePrimaryName("lab-Loading");
-    contents.add(loading);
+    contents.setStylePrimaryName("lab-Loading");
+    contents.add(new HTML("&nbsp;"));
   }
   
   /**

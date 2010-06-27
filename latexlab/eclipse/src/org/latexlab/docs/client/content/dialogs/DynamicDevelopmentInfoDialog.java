@@ -60,8 +60,12 @@ public class DynamicDevelopmentInfoDialog extends DynamicDialog {
 	  panel.add(new HTML("Welcome to the development version of LaTeX Lab.<br /><br />" +
   		"This is where we deploy and test new features that are not yet ready for production use.<br /><br />" +
   		"<a href=\"https://wave.google.com/wave/waveref/googlewave.com/w+tziZnYNzA\" target=\"_blank\">LaTeX Lab Development Wave</a><br /><br />" +
-  		"<b>Currently Deployed</b>:<ul><li>Editor Preferences Dialog (Edit -> Preferences)</li>" +
-  		"<li>Code Splitting (on-demand loading of components)</li><li>Insert, Math and Format menus</li></ul>"));
+  		"<b>Currently Deployed</b>:<ul>" +
+  		"<li>Editor Preferences Dialog (Edit -> Preferences)</li>" +
+  		"<li>Code Splitting (on-demand loading of components)</li>" +
+  		"<li>Insert, Math and Format menus</li>" +
+  		"<li>Local MikTeX compiler support</li>" +
+  		"</ul>"));
 	  Button ok = new Button("OK", new ClickHandler() {
 		@Override
 		public void onClick(ClickEvent event) {

@@ -17,7 +17,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.commands.CurrentDocumentCompileCommand;
-import org.latexlab.docs.client.commands.CurrentDocumentCompileLocalCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentSaveCommand;
 import org.latexlab.docs.client.commands.SystemShowDialogCommand;
 import org.latexlab.docs.client.content.dialogs.DynamicFileListDialog;
@@ -73,7 +72,6 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
     toolbarPanel.add(buildButton(Icons.editorIcons.ItemList(), "Project resources", false, new SystemShowDialogCommand(DynamicResourcesDialog.class)));
     toolbarPanel.add(buildButton(Icons.editorIcons.Compile(), "Compile", false, new CurrentDocumentCompileCommand()));
     toolbarPanel.add(buildSeparator());
-    toolbarPanel.add(buildButton(Icons.editorIcons.CheckBlack(), "Test Local Compile", false, new CurrentDocumentCompileLocalCommand()));
     return toolbarPanel;
   }
   

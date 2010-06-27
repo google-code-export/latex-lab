@@ -30,6 +30,24 @@ public class BodyPart extends Composite {
   }
   
   /**
+   * Retrieves the horizontal split position.
+   * 
+   * @return the horizontal split position
+   */
+  public int getHorizontalSplitPosition() {
+	return hContent.getLeftWidget().getElement().getParentElement().getOffsetWidth();
+  }
+  
+  /**
+   * Retrieves the vertical split position.
+   * 
+   * @return the vertical split position
+   */
+  public int getVerticalSplitPosition() {
+	return vContent.getTopWidget().getElement().getParentElement().getOffsetHeight();
+  }
+  
+  /**
    * Sets the bottom widget.
    * 
    * @param w the widget to use on the bottom panel

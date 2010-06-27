@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -97,6 +98,7 @@ public class DynamicFileListDialog extends DynamicDialog {
      */
     private void buildLinks() {
       VerticalPanel panel = new VerticalPanel();
+      panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
       panel.setStylePrimaryName("lab-Explorer-Links");
       mainPanel.getFlexCellFormatter().setStyleName(1, 0, ""); //cancel default style
       Anchor refreshLink = new Anchor("Refresh");

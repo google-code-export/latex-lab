@@ -1,8 +1,12 @@
 package org.latexlab.docs.client.content.dialogs;
 
+import java.util.ArrayList;
+
+import org.latexlab.docs.client.commands.SystemAddResourcesCommand;
 import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
+import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
 import org.latexlab.docs.client.widgets.FileBox;
 
 import com.google.gwt.core.client.GWT;
@@ -134,9 +138,13 @@ public class DynamicInsertImageDialog extends DynamicFormDialog {
         	    two = "*";
               }
             }
+            ArrayList<DocumentServiceEntry> addResources = new ArrayList<DocumentServiceEntry>();
+            addResources.add(image.getValue());
             String latex = "\\begin{figure" + two + "}" + pos + "\n" + center + "\\includegraphics{" + image.getValue().getIdentifier() + "}" + cap + lab + "\n\\end{figure" + two + "}";
   		    CommandEvent.fire(DynamicInsertImageDialog.this, 
-  			      new SystemPasteCommand(latex));
+  			      new SystemPasteCommand(latex, new String[] {"\\usepackage{graphicx}"}));
+  		    CommandEvent.fire(DynamicInsertImageDialog.this,
+  		    	  new SystemAddResourcesCommand(addResources));
             hide();
             resetForm();
           }

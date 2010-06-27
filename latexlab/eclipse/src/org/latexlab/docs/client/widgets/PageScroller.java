@@ -1,5 +1,6 @@
 package org.latexlab.docs.client.widgets;
 
+import org.latexlab.docs.client.commands.SystemSetPerspectiveCommand;
 import org.latexlab.docs.client.commands.SystemViewPageCommand;
 import org.latexlab.docs.client.commands.SystemViewPageIndexCommand;
 import org.latexlab.docs.client.commands.SystemViewPageZoomInCommand;
@@ -15,11 +16,12 @@ import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 
 /**
@@ -28,10 +30,10 @@ import com.google.gwt.user.client.ui.PushButton;
 public class PageScroller extends Composite implements HasCommandHandlers {
 
   private int currentPage = 0, totalPages = 0;
-  private PushButton indexButton, prevButton, nextButton, zinButton, zoutButton;
   private HandlerManager manager;
   private HorizontalPanel panel;
-  private Label stateLabel;
+  private PushButton prevButton, nextButton, zinButton, zoutButton;
+  private Anchor stateLabel;
   
   /**
    * Constructs a PageScroller.
@@ -41,12 +43,17 @@ public class PageScroller extends Composite implements HasCommandHandlers {
 	panel = new HorizontalPanel();
 	panel.setStylePrimaryName("lab-PageScroller");
     panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-	stateLabel = new Label();
+    panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+	stateLabel = new Anchor("No&nbsp;Pages", true);
 	stateLabel.setStylePrimaryName("lab-PageScroller-Caption");
-	indexButton = buildButton("Page Index", Icons.editorIcons.PageIndex(), new ClickHandler() {
+	stateLabel.addClickHandler(new ClickHandler() {
 		@Override
 		public void onClick(ClickEvent event) {
-		  CommandEvent.fire(PageScroller.this, new SystemViewPageIndexCommand());
+		  CommandEvent.fire(PageScroller.this, new SystemSetPerspectiveCommand(
+		      SystemSetPerspectiveCommand.VIEW_PREVIEW));
+		  if (totalPages > 0) {
+			  CommandEvent.fire(PageScroller.this, new SystemViewPageIndexCommand());
+		  }
 		}
 	});
     prevButton = buildButton("Previous Page", Icons.editorIcons.PagePrevious(), new ClickHandler() {
@@ -75,7 +82,6 @@ public class PageScroller extends Composite implements HasCommandHandlers {
 		  CommandEvent.fire(PageScroller.this, new SystemViewPageZoomOutCommand());
 		}
 	});
-	panel.add(indexButton);
 	panel.add(prevButton);
 	panel.add(stateLabel);
 	panel.add(nextButton);
@@ -113,6 +119,15 @@ public class PageScroller extends Composite implements HasCommandHandlers {
   }
   
   /**
+   * Retrieves the currently selected page.
+   * 
+   * @return the currently selected page
+   */
+  public int getPage() {
+	return currentPage;
+  }
+  
+  /**
    * Selects the next page.
    * 
    * @return the current page's index
@@ -120,7 +135,7 @@ public class PageScroller extends Composite implements HasCommandHandlers {
   public int nextPage() {
 	return setPage(currentPage + 1);
   }
-  
+
   /**
    * Selects the previous page.
    * 
@@ -129,7 +144,7 @@ public class PageScroller extends Composite implements HasCommandHandlers {
   public int previousPage() {
 	return setPage(currentPage - 1);
   }
-
+  
   /**
    * Resets the page view to the first page.
    * 
@@ -147,9 +162,11 @@ public class PageScroller extends Composite implements HasCommandHandlers {
    * @return the selected page's index
    */
   public int setPage(int page) {
+	String label;
+	int rv;
 	if (totalPages == 0) {
-	  stateLabel.setText("No Pages");
-	  return 0;
+	  label = "No&nbsp;Pages";
+	  rv = 0;
 	} else {
 	  if (page < 0) {
 		page = 0;
@@ -157,9 +174,11 @@ public class PageScroller extends Composite implements HasCommandHandlers {
 		page = totalPages - 1;
 	  }
 	  currentPage = page;
-	  stateLabel.setText("Page " + (currentPage + 1) + " of " + totalPages);
-	  return page;
+	  label = "Page&nbsp;" + (currentPage + 1) + "&nbsp;of&nbsp;" + totalPages;
+	  rv = currentPage;
 	}
+	stateLabel.setHTML(label);
+	return rv;
   }
   
 }

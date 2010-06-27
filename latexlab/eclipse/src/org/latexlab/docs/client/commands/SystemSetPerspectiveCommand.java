@@ -26,6 +26,10 @@ public class SystemSetPerspectiveCommand extends Command {
    * View the source a preview.
    */
   public final static int VIEW_SPLIT = 4;
+  /**
+   * View a mixed perspective.
+   */
+  public final static int VIEW_MIXED = 5;
   
   protected int view;
   
