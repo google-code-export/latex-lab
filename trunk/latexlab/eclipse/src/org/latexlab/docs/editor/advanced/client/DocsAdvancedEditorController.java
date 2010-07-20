@@ -70,10 +70,12 @@ import org.latexlab.docs.client.content.dialogs.DynamicResourcesDialog;
 import org.latexlab.docs.client.content.dialogs.StaticActionDialog;
 import org.latexlab.docs.client.content.dialogs.StaticErrorDialog;
 import org.latexlab.docs.client.content.dialogs.StaticEtagMismatchErrorDialog;
+import org.latexlab.docs.client.content.dialogs.StaticIncompatibilityErrorDialog;
 import org.latexlab.docs.client.content.dialogs.StaticLoadingDialog;
 import org.latexlab.docs.client.content.dialogs.StaticActionDialog.ActionDialogOption;
 import org.latexlab.docs.client.content.icons.Icons;
 import org.latexlab.docs.client.events.AsyncInstantiationCallback;
+import org.latexlab.docs.client.events.CommandBus;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.events.Scheduler;
@@ -146,6 +148,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
 
   protected DocsAdvancedEditorController() {
 	docService = GWT.create(DocumentService.class);
+	CommandBus.get().addCommandHandler(this);
   }
   
   /**
@@ -201,7 +204,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
    */
   public void start() {
 	showStatus("Loading components...", true);
-	DocsAdvancedEditorView.get(this, currentUser.getEmail(),
+	DocsAdvancedEditorView.get(currentUser.getEmail(),
 	    new AsyncInstantiationCallback<DocsAdvancedEditorView>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -214,14 +217,14 @@ public class DocsAdvancedEditorController implements CommandHandler {
 			  clsiService = new ClsiRemoteService();
 			  clsiService.setTimeout(30);
 			  settings = new DocsEditorSettings();
-		      execute(new SystemApplyCompilerSettingsCommand(), DocsAdvancedEditorController.this);
+		      execute(new SystemApplyCompilerSettingsCommand());
 			  settings.setHasCompilerSettings(false);
 		      loadDocument();
 		      scheduler = new Scheduler();
 		      scheduler.addCommandHandler(DocsAdvancedEditorController.this);
 			  if (settings.isUseAutoSave()) {
 		        scheduler.scheduleRepeating("AutoSave", settings.getAutoSaveInterval(),
-		            new CurrentDocumentSaveCommand());
+		            new CurrentDocumentSaveCommand(true));
 			  }
 			}
 		}
@@ -245,9 +248,9 @@ public class DocsAdvancedEditorController implements CommandHandler {
       }
     }
     if (documentId == null || documentId.equals("")) {
-      execute(new NewDocumentLoadCommand(), DocsAdvancedEditorController.this);
+      execute(new NewDocumentLoadCommand());
     } else {
-      execute(new SystemLoadDocumentCommand(documentId), DocsAdvancedEditorController.this);
+      execute(new SystemLoadDocumentCommand(documentId));
     }
   }
   
@@ -318,7 +321,6 @@ public class DocsAdvancedEditorController implements CommandHandler {
     }
   }
   
-  
   /**
    * Clears and hides any visible status messages.
    */
@@ -342,23 +344,19 @@ public class DocsAdvancedEditorController implements CommandHandler {
     clearStatus();
     if (command.getAttemptCount() <= retryAttempts) {
       command.newAttempt();
-      execute(command, DocsAdvancedEditorController.this);
+      execute(command);
     } else {
       if (error.getMessage().contains("Mismatch: etags")) {
-    	StaticEtagMismatchErrorDialog.get(DocsAdvancedEditorController.this,
-    	    new AsyncInstantiationCallback<StaticEtagMismatchErrorDialog>() {
-				@Override
-				public void onFailure(Throwable caught) {
-				  handleAsyncLoadError(caught);
-				}
-				@Override
-				public void onSuccess(StaticEtagMismatchErrorDialog dialog) {
-				  dialog.update(error, command, alternate);
-				  dialog.center();
-				}
-    	});
+    	StaticEtagMismatchErrorDialog dialog = StaticEtagMismatchErrorDialog.get();
+    	dialog.update(error, command, alternate);
+    	dialog.center();
+      } else if(error.getMessage().equalsIgnoreCase("OK") ||
+    	  error.getMessage().contains("Could not convert document")) {
+      	StaticIncompatibilityErrorDialog dialog = StaticIncompatibilityErrorDialog.get();
+      	dialog.update(error, command, alternate);
+		dialog.center();
       } else {
-        StaticErrorDialog errorDialog = StaticErrorDialog.get(this);
+        StaticErrorDialog errorDialog = StaticErrorDialog.get();
         errorDialog.update(error, command, alternate);
         errorDialog.center();
       }
@@ -371,7 +369,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
    * @param caught the error exception
    */
   private void handleAsyncLoadError(Throwable caught) {
-	Window.alert("Error loading a required component.");
+	Window.alert("A required component is unavailable or a new version has been deployed. You'll need to refresh your browser.");
   }
   
   /************************************************************************************
@@ -380,7 +378,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
 
   private void execute(final NewDocumentStartCommand cmd) {
     Date now = new Date();
-    StaticActionDialog ad = StaticActionDialog.get(this);
+    StaticActionDialog ad = StaticActionDialog.get();
     ad.update("New Document", "Do you want to start the new document in a new window?",
         new ActionDialogOption[] {
     	  new ActionDialogOption("Open New Window", new SystemOpenPageCommand("Untitled" + now.getTime(), "/docs", false)),
@@ -398,7 +396,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
 		@Override
 		public void onSuccess(DocumentServiceEntry result) {
 	      setDocument(result, false);
-	      execute(new CurrentDocumentLoadCommonContentsCommand("default"), DocsAdvancedEditorController.this);
+	      execute(new CurrentDocumentLoadCommonContentsCommand("default"));
 	    }
 	});
   }
@@ -408,7 +406,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
     }
 	if (!settings.getHasCompilerSettings()) {
 	  settings.setHasCompilerSettings(true);
-	  DynamicCompilerSettingsDialog.get(this, cmd).center();
+	  DynamicCompilerSettingsDialog.get(cmd).center();
 	  return;
 	}
 	setFunctionLock(LockFunction.COMPILE, true);
@@ -426,7 +424,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
 		  String r = String.valueOf(new Date().getTime());
 		  if (result.getOutputErrors().length == 0 && result.getOutputFiles().length > 0) {
 			String url = result.getOutputFiles()[0].getUrl() + "?r=" + r;
-			StaticActionDialog actionDialog = StaticActionDialog.get(DocsAdvancedEditorController.this);
+			StaticActionDialog actionDialog = StaticActionDialog.get();
 			actionDialog.update("View Exported Document",
 			    "A " + cmd.getExportFormat() + " version of the current " +
 			    "document has been compiled and is available for viewing.",
@@ -457,7 +455,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
 	}
   	if (!settings.getHasCompilerSettings()) {
   	  settings.setHasCompilerSettings(true);
-  	  DynamicCompilerSettingsDialog.get(this, cmd).center();
+  	  DynamicCompilerSettingsDialog.get(cmd).center();
   	  return;
   	}
 	setFunctionLock(LockFunction.COMPILE, true);
@@ -509,7 +507,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
           public void onSuccess(DocumentServiceEntry result) {
             clearStatus();
             String url = "/docs?docid=" + result.getDocumentId();
-            StaticActionDialog actionDialog = StaticActionDialog.get(DocsAdvancedEditorController.this);
+            StaticActionDialog actionDialog = StaticActionDialog.get();
 			actionDialog.update("Open Copied Document",
 			    "A copy of the current document has been created and is available for editing.",
 			    new ActionDialogOption[] {
@@ -521,11 +519,11 @@ public class DocsAdvancedEditorController implements CommandHandler {
           }
     });
   }
-  private void execute(final CurrentDocumentSaveCommand cmd, final boolean isScheduled) {
+  private void execute(final CurrentDocumentSaveCommand cmd) {
 	if (currentDocument != null && currentDocument.isSaving()) {
 	  return;
 	}
-	if (isScheduled) {
+	if (cmd.isScheduled()) {
 	  if (currentDocument == null ||
 	      !currentDocument.isStored() ||
 	      !currentDocument.isDirty()) {
@@ -539,7 +537,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
         app.getEditor().getText(), new AsyncCallback<DocumentServiceEntry>() {
       public void onFailure(Throwable caught) {
 		setFunctionLock(LockFunction.SAVE, false);
-        if (!isScheduled) {
+        if (!cmd.isScheduled()) {
     	  handleError(caught, cmd, null, 0);
         }
       }
@@ -582,7 +580,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
           clearStatus();
         }
         if (cmd.getContinueCommand() != null) {
-          execute(cmd.getContinueCommand(), DocsAdvancedEditorController.this);
+          execute(cmd.getContinueCommand());
         }
       }
     });
@@ -637,7 +635,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
   }
   private void execute(final CurrentDocumentLoadContentsCommand cmd) {
     showStatus("Loading document contents...", true);
-    docService.getDocumentContents(currentDocument.getDocumentId(),
+    docService.getDocumentContents(currentDocument.getContentLink(),
         new AsyncCallback<String>() {
       public void onFailure(Throwable caught) {
         handleError(caught, cmd, null, 1);
@@ -716,24 +714,24 @@ public class DocsAdvancedEditorController implements CommandHandler {
   private void execute(final SystemShowDialogCommand cmd) {
 	Class<?> type = cmd.getDialogType();
 	if (type == DynamicPreferencesDialog.class) {
-	  DynamicPreferencesDialog.get(this, settings.isUseAutoSave(),
+	  DynamicPreferencesDialog.get(settings.isUseAutoSave(),
 	      settings.getAutoSaveInterval()).center();
 	} else if(type == DynamicCompilerSettingsDialog.class) {
-	  DynamicCompilerSettingsDialog.get(this, null).center();
+	  DynamicCompilerSettingsDialog.get(null).center();
 	} else if (type == DynamicAboutDialog.class) {
-	  DynamicAboutDialog.get(this).center();
+	  DynamicAboutDialog.get().center();
 	} else if (type == DynamicFileListDialog.class) {
-	  DynamicFileListDialog.get(this).center();
+	  DynamicFileListDialog.get().center();
 	} else if (type == DynamicResourcesDialog.class) {
-	  DynamicResourcesDialog.get(this).center();
+	  DynamicResourcesDialog.get().center();
 	} else if (type == DynamicInsertHeaderDialog.class) {
-	  DynamicInsertHeaderDialog.get(this).center();
+	  DynamicInsertHeaderDialog.get().center();
 	} else if (type == DynamicInsertTableDialog.class) {
-	  DynamicInsertTableDialog.get(this).center();
+	  DynamicInsertTableDialog.get().center();
 	} else if (type == DynamicInsertImageDialog.class) {
-	  DynamicInsertImageDialog.get(this).center();
+	  DynamicInsertImageDialog.get().center();
 	} else if (type == DynamicDevelopmentInfoDialog.class) {
-	  DynamicDevelopmentInfoDialog.get(this).center();
+	  DynamicDevelopmentInfoDialog.get().center();
 	}
   }
   private void execute(final SystemUploadDocumentsCommand cmd) {
@@ -753,7 +751,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
     	} else {
           setDocument(result, false);
           clearStatus();
-          execute(new CurrentDocumentLoadContentsCommand(), DocsAdvancedEditorController.this);
+          execute(new CurrentDocumentLoadContentsCommand());
     	}
       }
     });
@@ -825,7 +823,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
 		  clsiService.setId(settings.getClsiServiceId());
 		  settings.setHasCompilerSettings(true);
 		  if (cmd.getContinueCommand() != null) {
-			execute(cmd.getContinueCommand(), DocsAdvancedEditorController.this);
+			execute(cmd.getContinueCommand());
 	      }
 		}
 	};
@@ -851,14 +849,14 @@ public class DocsAdvancedEditorController implements CommandHandler {
 	  final ClsiLocalEngine latexEngine = ClsiLocalEngine.get("editor_advanced/");
 	  if (latexEngine.isStarted()) {
 		if (Window.Navigator.isJavaEnabled()) {
-		  StaticActionDialog ad = StaticActionDialog.get(DocsAdvancedEditorController.this);
+		  StaticActionDialog ad = StaticActionDialog.get();
 		  ad.update("Java Unavailable", "<a href=\"http://www.java.com\">Java</a> was not detected. " +
 		  		"Ensure that <a href=\"http://www.java.com\">Java</a> is installed and enabled.", new ActionDialogOption[0]);
 		  ad.center();
 		  return;
 		}
 		if (latexEngine.isLocked()) {
-		  StaticActionDialog ad = StaticActionDialog.get(DocsAdvancedEditorController.this);
+		  StaticActionDialog ad = StaticActionDialog.get();
 		  ad.update("Java Sandbox Detected", sandboxMessage, new ActionDialogOption[0]);
 		  ad.center();
 		}
@@ -868,7 +866,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
 			@Override
 			public void onFailure(Throwable caught) {
 			  clearStatus();
-		      StaticActionDialog ad = StaticActionDialog.get(DocsAdvancedEditorController.this);
+		      StaticActionDialog ad = StaticActionDialog.get();
 			  if (caught instanceof AppletUnavailableException) {
 				ad.update("Java Sandbox Detected",
 						sandboxMessage,
@@ -898,7 +896,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
 	settings.setAutoSaveInterval(cmd.getAutoSaveIntervalMillisecs());
 	if (settings.isUseAutoSave()) {
       scheduler.scheduleRepeating("AutoSave", settings.getAutoSaveInterval(),
-    	  new CurrentDocumentSaveCommand());
+    	  new CurrentDocumentSaveCommand(true));
 	} else {
 	  scheduler.cancelRepeating("AutoSave");
 	}
@@ -1032,7 +1030,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
 	  currentDocument.setDirty(true);
 	}
   }
-  private void execute(final Command cmd, Object source) {
+  private void execute(final Command cmd) {
     switch (cmd.getCommandId()) {
       case SystemUnstarDocumentCommand.serialUid: execute((SystemUnstarDocumentCommand) cmd); break;
       case SystemStarDocumentCommand.serialUid: execute((SystemStarDocumentCommand) cmd); break;
@@ -1043,7 +1041,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
       case CurrentDocumentExportCommand.serialUid: execute((CurrentDocumentExportCommand) cmd); break;
       case CurrentDocumentCompileCommand.serialUid: execute((CurrentDocumentCompileCommand) cmd); break;
       case CurrentDocumentCopyCommand.serialUid: execute((CurrentDocumentCopyCommand) cmd); break;
-      case CurrentDocumentSaveCommand.serialUid: execute((CurrentDocumentSaveCommand) cmd, source == scheduler); break;
+      case CurrentDocumentSaveCommand.serialUid: execute((CurrentDocumentSaveCommand) cmd); break;
       case CurrentDocumentSaveAndCloseCommand.serialUid: execute((CurrentDocumentSaveAndCloseCommand) cmd); break;
       case CurrentDocumentRefreshCommand.serialUid: execute((CurrentDocumentRefreshCommand) cmd); break;
       case CurrentDocumentReloadCommand.serialUid: execute((CurrentDocumentReloadCommand) cmd); break;
@@ -1096,11 +1094,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
    */
   @Override
   public void onCommand(CommandEvent e) {
-	Object src = e.getSource();
-	if (src == null) {
-	  src = this;
-	}
-	execute(e.getCommand(), src);
+	execute(e.getCommand());
   }
 
   /**
@@ -1191,6 +1185,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
 		}
     });
   }
+  
   /**
    * Locks or unlocks the UI to disable or enable a given feature.
    * 

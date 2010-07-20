@@ -19,7 +19,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 import org.latexlab.docs.client.commands.SystemListDocumentsCommand;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.events.FileSelectionEvent;
 import org.latexlab.docs.client.events.FileSelectionHandler;
 import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
@@ -112,7 +111,7 @@ public class DynamicFileSelectionDialog extends DynamicDialog {
 	private void loadEntries(boolean useCache) {
 	  tree.clear();
 	  panel.setStylePrimaryName("lab-Loading");
-	  CommandEvent.fire(DynamicFileSelectionDialog.this, new SystemListDocumentsCommand(useCache,
+	  CommandEvent.fire(new SystemListDocumentsCommand(useCache,
 	      new AsyncCallback<DocumentServiceEntry[]>() {
 			  @Override
 		      public void onFailure(Throwable caught) {
@@ -154,17 +153,14 @@ public class DynamicFileSelectionDialog extends DynamicDialog {
   /**
    * Retrieves the single instance of this class.
    * 
-   * @param commandHandler the command handler.
    * @param selectionHandler the selection handler.
    */
   public static DynamicFileSelectionDialog get(
-	  final CommandHandler commandHandler,
 	  FileSelectionHandler selectionHandler) {
     if (instance == null) {
       instance = new DynamicFileSelectionDialog();
-      instance.addCommandHandler(commandHandler);
     }
-    instance.setSelectionHandler(selectionHandler);
+    instance.selectionHandler = selectionHandler;
     return instance;
   }
   
@@ -195,15 +191,6 @@ public class DynamicFileSelectionDialog extends DynamicDialog {
 	      center();
 		}
     });
-  }
-  
-  /**
-   * Sets the file selection handler.
-   * 
-   * @param selectionHandler the file selection handler
-   */
-  public void setSelectionHandler(FileSelectionHandler selectionHandler) {
-    this.selectionHandler = selectionHandler;
   }
 
   /**

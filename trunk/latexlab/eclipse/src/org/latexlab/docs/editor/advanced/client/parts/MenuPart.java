@@ -1,8 +1,5 @@
 package org.latexlab.docs.editor.advanced.client.parts;
 
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.MenuBar;
@@ -17,36 +14,26 @@ import org.latexlab.docs.client.content.menus.DynamicInsertMenu;
 import org.latexlab.docs.client.content.menus.DynamicMathMenu;
 import org.latexlab.docs.client.content.menus.DynamicProjectMenu;
 import org.latexlab.docs.client.content.menus.DynamicViewMenu;
-import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.ExtendedMenuBar;
 import org.latexlab.docs.client.widgets.ExtendedMenuBar.ExtendedMenuItem;
 
 /**
  * A specialized, non-reusable widget containing the main menu bar.
  */
-public class MenuPart extends Composite implements HasCommandHandlers {
+public class MenuPart extends Composite {
 	
-  private HandlerManager manager;
   private ExtendedMenuBar menu;
   
   /**
    * Constructs a Menu part.
    */
   public MenuPart() {
-    manager = new HandlerManager(this);
     VerticalPanel menuPanel = new VerticalPanel();
     menuPanel.setWidth("100%");
     menuPanel.setHeight("30px");
     menuPanel.add(buildMenu());
     menuPanel.setStylePrimaryName("lab-Menu-Panel");
     initWidget(menuPanel);
-  }
-  
-  @Override
-  public HandlerRegistration addCommandHandler(CommandHandler handler) {
-	return manager.addHandler(CommandEvent.getType(), handler);
   }
  
   /**
@@ -55,16 +42,16 @@ public class MenuPart extends Composite implements HasCommandHandlers {
    * @return the main menu bar
    */
   private ExtendedMenuBar buildMenu() {
-    menu = new ExtendedMenuBar(false, this);
-    this.menu.addItem("File", DynamicFileMenu.get(this));
-    this.menu.addItem("Edit", DynamicEditMenu.get(this));
-    this.menu.addItem("View", DynamicViewMenu.get(this));
-    this.menu.addItem("Insert", DynamicInsertMenu.get(this));
-    this.menu.addItem("Math", DynamicMathMenu.get(this));
-    this.menu.addItem("Format", DynamicFormatMenu.get(this));
-    this.menu.addItem("Project", DynamicProjectMenu.get(this));
-    this.menu.addItem("Compiler", DynamicCompilerMenu.get(this));
-    this.menu.addItem("Help", DynamicHelpMenu.get(this));
+    menu = new ExtendedMenuBar(false);
+    this.menu.addItem("File", DynamicFileMenu.get());
+    this.menu.addItem("Edit", DynamicEditMenu.get());
+    this.menu.addItem("View", DynamicViewMenu.get());
+    this.menu.addItem("Insert", DynamicInsertMenu.get());
+    this.menu.addItem("Math", DynamicMathMenu.get());
+    this.menu.addItem("Format", DynamicFormatMenu.get());
+    this.menu.addItem("Project", DynamicProjectMenu.get());
+    this.menu.addItem("Compiler", DynamicCompilerMenu.get());
+    this.menu.addItem("Help", DynamicHelpMenu.get());
     return menu;
   }
   
@@ -73,11 +60,6 @@ public class MenuPart extends Composite implements HasCommandHandlers {
    */
   public void close() {
 	this.menu.close();
-  }
-
-  @Override
-  public void fireEvent(GwtEvent<?> event) {
-	manager.fireEvent(event);
   }
   
   /**

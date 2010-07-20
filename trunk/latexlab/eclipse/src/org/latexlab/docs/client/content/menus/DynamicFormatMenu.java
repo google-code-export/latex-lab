@@ -2,7 +2,6 @@ package org.latexlab.docs.client.content.menus;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -18,23 +17,19 @@ public class DynamicFormatMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicFormatMenu get(HasCommandHandlers commandSource) {
+  public static DynamicFormatMenu get() {
     if (instance == null) {
-      instance = new DynamicFormatMenu(commandSource);
+      instance = new DynamicFormatMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a format menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicFormatMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicFormatMenu() {
+    super(true);
   }
 
   /**
@@ -53,14 +48,14 @@ public class DynamicFormatMenu extends DynamicMenuBar {
 		public void onSuccess() {
 		  callback.onSuccess(new ExtendedMenuItem[] {
 			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Normal Font", new SystemPasteCommand("\\normalfont")),
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Font Family", DynamicLatexFontFamilyMenu.get(commandSource)),
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Font Series", DynamicLatexFontSeriesMenu.get(commandSource)),
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Font Shapes", DynamicLatexFontShapesMenu.get(commandSource)),
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Font Sizes", DynamicLatexFontSizesMenu.get(commandSource)),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Font Family", DynamicLatexFontFamilyMenu.get()),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Font Series", DynamicLatexFontSeriesMenu.get()),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Font Shapes", DynamicLatexFontShapesMenu.get()),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Font Sizes", DynamicLatexFontSizesMenu.get()),
 			null,
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Characters", DynamicLatexCharactersMenu.get(commandSource)),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Characters", DynamicLatexCharactersMenu.get()),
 			null,
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Alignment", DynamicLatexAlignmentMenu.get(commandSource)),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Alignment", DynamicLatexAlignmentMenu.get()),
 			null,
 			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Sloppy Paragraph", new SystemPasteCommand("\\begin{sloppypar} <text here> \\end{sloppypar}")),
 		  });

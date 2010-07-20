@@ -15,7 +15,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.widgets.DynamicDialog;
 
 /**
@@ -66,13 +65,10 @@ public class DynamicAboutDialog extends DynamicDialog {
   
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param handler the command handler.
    */
-  public static DynamicAboutDialog get(final CommandHandler handler) {
+  public static DynamicAboutDialog get() {
     if (instance == null) {
       instance = new DynamicAboutDialog();
-      instance.addCommandHandler(handler);
     }
     return instance;
   }

@@ -6,7 +6,6 @@ import org.latexlab.docs.client.content.dialogs.DynamicInsertHeaderDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicInsertImageDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicInsertTableDialog;
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -22,23 +21,19 @@ public class DynamicInsertMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicInsertMenu get(HasCommandHandlers commandSource) {
+  public static DynamicInsertMenu get() {
     if (instance == null) {
-      instance = new DynamicInsertMenu(commandSource);
+      instance = new DynamicInsertMenu();
     }
     return instance;
   }
   
   /**
    * Constructs an insert menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicInsertMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicInsertMenu() {
+    super(true);
   }
 
   /**
@@ -61,13 +56,13 @@ public class DynamicInsertMenu extends DynamicMenuBar {
 			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Tabular...", new SystemShowDialogCommand(DynamicInsertTableDialog.class)),
 			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Picture...", new SystemShowDialogCommand(DynamicInsertImageDialog.class)),
 			null,
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Enumerations", DynamicEnumerationMenu.get(commandSource)),
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Code Environments", DynamicCodeEnvironmentMenu.get(commandSource)),
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Formulas", DynamicFormulasMenu.get(commandSource)),
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Floating Environments", DynamicFloatingEnvironmentMenu.get(commandSource)),
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Document Title", DynamicDocumentTitleMenu.get(commandSource)),
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Tables", DynamicTablesMenu.get(commandSource)),
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Quotations", DynamicQuotationsMenu.get(commandSource))
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Enumerations", DynamicEnumerationMenu.get()),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Code Environments", DynamicCodeEnvironmentMenu.get()),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Formulas", DynamicFormulasMenu.get()),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Floating Environments", DynamicFloatingEnvironmentMenu.get()),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Document Title", DynamicDocumentTitleMenu.get()),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Tables", DynamicTablesMenu.get()),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Quotations", DynamicQuotationsMenu.get())
 		  });
 		}
     });

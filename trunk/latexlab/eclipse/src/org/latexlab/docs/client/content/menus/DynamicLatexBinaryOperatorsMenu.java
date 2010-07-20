@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetBinaryOperators;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexBinaryOperatorsMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexBinaryOperatorsMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexBinaryOperatorsMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexBinaryOperatorsMenu(commandSource);
+      instance = new DynamicLatexBinaryOperatorsMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex binary operators menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexBinaryOperatorsMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexBinaryOperatorsMenu() {
+    super(true);
   }
 
   /**

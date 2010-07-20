@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetAboveAndBelow;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexAboveAndBelowMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexAboveAndBelowMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexAboveAndBelowMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexAboveAndBelowMenu(commandSource);
+      instance = new DynamicLatexAboveAndBelowMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex above and below menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexAboveAndBelowMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexAboveAndBelowMenu() {
+    super(true);
   }
 
   /**

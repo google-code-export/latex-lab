@@ -2,7 +2,6 @@ package org.latexlab.docs.client.content.menus;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -18,23 +17,19 @@ public class DynamicCodeEnvironmentMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicCodeEnvironmentMenu get(HasCommandHandlers commandSource) {
+  public static DynamicCodeEnvironmentMenu get() {
     if (instance == null) {
-      instance = new DynamicCodeEnvironmentMenu(commandSource);
+      instance = new DynamicCodeEnvironmentMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a code Environment menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicCodeEnvironmentMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicCodeEnvironmentMenu() {
+    super(true);
   }
 
   /**

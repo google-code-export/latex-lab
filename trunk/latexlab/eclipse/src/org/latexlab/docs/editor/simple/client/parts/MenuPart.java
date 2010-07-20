@@ -1,8 +1,5 @@
 package org.latexlab.docs.editor.simple.client.parts;
 
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.AttachDetachException;
 import com.google.gwt.user.client.ui.Composite;
@@ -29,17 +26,14 @@ import org.latexlab.docs.client.content.dialogs.DynamicFileListDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicResourcesDialog;
 import org.latexlab.docs.client.content.icons.Icons;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 
 import java.util.HashMap;
 
 /**
  * A specialized, non-reusable widget containing the main menu bar.
  */
-public class MenuPart extends Composite implements HasCommandHandlers {
+public class MenuPart extends Composite {
 	
-  private HandlerManager manager;
   private MenuBarExt menu;
   private HashMap<String, MenuItem> itemIndex;
   
@@ -47,7 +41,6 @@ public class MenuPart extends Composite implements HasCommandHandlers {
    * Constructs a Menu part.
    */
   public MenuPart() {
-    manager = new HandlerManager(this);
     itemIndex = new HashMap<String, MenuItem>();
     VerticalPanel menuPanel = new VerticalPanel();
     menuPanel.setWidth("100%");
@@ -96,7 +89,7 @@ public class MenuPart extends Composite implements HasCommandHandlers {
     addMenuItem(fileMenu, Icons.editorIcons.Blank(), "New", new NewDocumentStartCommand());
     fileMenu.addSeparator();
     addMenuItem(fileMenu, Icons.editorIcons.Blank(), "Open", new SystemShowDialogCommand(DynamicFileListDialog.class));
-    addMenuItem(fileMenu, Icons.editorIcons.Save(), "Save", new CurrentDocumentSaveCommand());
+    addMenuItem(fileMenu, Icons.editorIcons.Save(), "Save", new CurrentDocumentSaveCommand(false));
     addMenuItem(fileMenu, Icons.editorIcons.Blank(), "Save as new copy", new CurrentDocumentCopyCommand());
     addMenuItem(fileMenu, Icons.editorIcons.Blank(), "Rename...", new CurrentDocumentRenameCommand());
     addMenuItem(fileMenu, Icons.editorIcons.Blank(), "Delete...", new CurrentDocumentDeleteCommand());
@@ -140,7 +133,7 @@ public class MenuPart extends Composite implements HasCommandHandlers {
 	  final Command command) {
     addMenuItem(menuBar, icon, title, new com.google.gwt.user.client.Command() {
       public void execute() {
-    	CommandEvent.fire(MenuPart.this, command);
+    	CommandEvent.fire(command);
       }
     });
   }
@@ -149,16 +142,6 @@ public class MenuPart extends Composite implements HasCommandHandlers {
 	  com.google.gwt.user.client.Command command) {
     MenuItem item = menuBar.addItem(icon.getHTML() + " " + title, true, command);
     itemIndex.put(title, item);
-  }
-
-  @Override
-  public HandlerRegistration addCommandHandler(CommandHandler handler) {
-	return manager.addHandler(CommandEvent.getType(), handler);
-  }
-  
-  @Override
-  public void fireEvent(GwtEvent<?> event) {
-	manager.fireEvent(event);
   }
   
   private class MenuBarExt extends MenuBar {

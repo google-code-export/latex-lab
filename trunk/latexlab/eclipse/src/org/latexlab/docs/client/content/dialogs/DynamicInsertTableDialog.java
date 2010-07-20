@@ -2,7 +2,6 @@ package org.latexlab.docs.client.content.dialogs;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -142,8 +141,7 @@ public class DynamicInsertTableDialog extends DynamicFormDialog {
               }
             }
             String latex = "\\begin{table" + two + "}" + pos + "\n" + center + "\\begin{tabular}\n" + align + "\n  \n\\end{tabular}" + cap + lab + "\n\\end{table" + two + "}";
-  		    CommandEvent.fire(DynamicInsertTableDialog.this, 
-  			      new SystemPasteCommand(latex));
+  		    CommandEvent.fire(new SystemPasteCommand(latex));
             hide();
             resetForm();
           }
@@ -182,13 +180,10 @@ public class DynamicInsertTableDialog extends DynamicFormDialog {
   
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param handler the command handler.
    */
-  public static DynamicInsertTableDialog get(final CommandHandler handler) {
+  public static DynamicInsertTableDialog get() {
     if (instance == null) {
       instance = new DynamicInsertTableDialog();
-      instance.addCommandHandler(handler);
     }
     return instance;
   }

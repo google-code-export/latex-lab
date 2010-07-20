@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetGreekLowercase;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexGreekLowercaseLettersMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexGreekLowercaseLettersMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexGreekLowercaseLettersMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexGreekLowercaseLettersMenu(commandSource);
+      instance = new DynamicLatexGreekLowercaseLettersMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex lowercase greek letters menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexGreekLowercaseLettersMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexGreekLowercaseLettersMenu() {
+    super(true);
   }
 
   /**

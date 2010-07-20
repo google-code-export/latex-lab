@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetComparison;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexComparisonMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexComparisonMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexComparisonMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexComparisonMenu(commandSource);
+      instance = new DynamicLatexComparisonMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex comparison menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexComparisonMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexComparisonMenu() {
+    super(true);
   }
 
   /**

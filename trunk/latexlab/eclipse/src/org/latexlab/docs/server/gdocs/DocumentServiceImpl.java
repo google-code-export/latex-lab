@@ -86,6 +86,7 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
       newDocument.setMediaSource(source);
       entry = svc.insert(new URL(DOCS_SCOPE + "default/private/full"), newDocument);
     } catch (Exception e) {
+      e.printStackTrace();
       throw new DocumentServiceException(e.getMessage());
     }
     return getDocumentReference(entry);
@@ -118,6 +119,7 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
     try {
       svc.delete(new URL(documentUri));
     } catch (Exception e) {
+      e.printStackTrace();
       throw new DocumentServiceException(e.getMessage());
     }
     return true;
@@ -173,16 +175,15 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
   /**
    * Retrieves the contents of a document by resource Id.
    * 
-   * @param resourceId the resource Id
+   * @param contentUrl the resource content url
    * @throws DocumentServiceException
    */
   @Override
-  public String getDocumentContents(String resourceId) throws DocumentServiceException {
+  public String getDocumentContents(String contentUrl) throws DocumentServiceException {
     DocsService svc = getDocsService();
-    String contentUri = DOCS_SCOPE + "download/documents/Export?exportFormat=txt&docID=" + resourceId;
     try {
       MediaContent mc = new MediaContent();
-      mc.setUri(contentUri.toString());
+      mc.setUri(contentUrl);
       MediaSource ms = svc.getMedia(mc);
       InputStreamReader reader = null;
       try {
@@ -202,6 +203,7 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
         }
       }
     }catch (Exception e) {
+      e.printStackTrace();
       throw new DocumentServiceException(e.getMessage());
     }
   }
@@ -232,7 +234,8 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
 	  }
 	  return dsls;
 	} catch (Exception e) {
-		throw new DocumentServiceException(e.getMessage());
+	  e.printStackTrace();
+      throw new DocumentServiceException(e.getMessage());
 	}
   }
   
@@ -249,6 +252,7 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
     try {
       return svc.getEntry(new URL(documentUri), DocumentListEntry.class);
     } catch (Exception e) {
+      e.printStackTrace();
       throw new DocumentServiceException(e.getMessage());
     }
   }
@@ -298,13 +302,20 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
     String prefix = getResourceIdPrefix(entry.getResourceId());
     if (prefix != null && prefix.equalsIgnoreCase("document")) {
       doc.setContentType("text/plain");
-      doc.setContentLink(DOCS_SCOPE + "download/documents/Export?exportFormat=txt&docID=" +
-          entry.getResourceId());
+      if (entry.getContent() != null) {
+        MediaContent mc = (MediaContent) entry.getContent();
+    	doc.setContentLink(mc.getUri() + "&format=txt&exportFormat=txt");
+      } else {
+        doc.setContentLink(DOCS_SCOPE +
+            "download/documents/Export?format=txt&exportFormat=txt&docID=" +
+            entry.getResourceId() + "&id=" + entry.getResourceId());
+      }
     } else {
       MediaContent mc = (MediaContent) entry.getContent();
       doc.setContentType(mc.getMimeType().getMediaType());
       doc.setContentLink(mc.getUri());
     }
+    //System.out.println("Content Link: " + doc.getContentLink());
     List<Link> parents = entry.getParentLinks();
     String[] folders = new String[parents.size()];
     for (int i=0; i<parents.size(); i++) {
@@ -337,6 +348,7 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
         docs.add(getDocumentReference(entry));
       }
     } catch (Exception e) {
+      e.printStackTrace();
       throw new DocumentServiceException(e.getMessage());
     }
     Collections.sort(docs, new Comparator<DocumentServiceEntry>() {
@@ -425,12 +437,15 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
       try {
     	try {
           AuthSubUtil.revokeToken(token.getToken(), AuthenticationKey.getAuthSubKey());
-    	} catch (Exception x) { }
+    	} catch (Exception x) {
+    	  x.printStackTrace();
+    	}
         AuthenticationToken.clearUserToken(token.getEmail());
         UserService userService = UserServiceFactory.getUserService();
         URI url = new URI(this.getThreadLocalRequest().getRequestURL().toString());
         return userService.createLogoutURL("http://" + url.getAuthority() + LOGOUT_RETURN_RELATIVE_PATH);
       } catch (Exception e) {
+        e.printStackTrace();
         throw new DocumentServiceException(e.getMessage());
       }
     }
@@ -452,6 +467,7 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
       entry.update();
       return getDocument(documentId);
     } catch (Exception e) {
+      e.printStackTrace();
       throw new DocumentServiceException(e.getMessage());
     }
   }
@@ -496,6 +512,7 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
 	  entry = getDocumentEntry(documentId, etag);
 	  return getDocumentReference(entry);
     } catch (Exception e) {
+      e.printStackTrace();
       throw new DocumentServiceException(e.getMessage());
     }
   }
@@ -514,6 +531,7 @@ public class DocumentServiceImpl extends RemoteServiceServlet implements
       entry.setStarred(starred);
       entry.update();
     } catch (Exception e) {
+      e.printStackTrace();
       throw new DocumentServiceException(e.getMessage());
     }
     return true;

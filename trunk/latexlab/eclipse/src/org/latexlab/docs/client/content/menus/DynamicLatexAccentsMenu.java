@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetAccents;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexAccentsMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexAccentsMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexAccentsMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexAccentsMenu(commandSource);
+      instance = new DynamicLatexAccentsMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex accents menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexAccentsMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexAccentsMenu() {
+    super(true);
   }
 
   /**

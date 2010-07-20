@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetBigOperators;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexBigOperatorsMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexBigOperatorsMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexBigOperatorsMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexBigOperatorsMenu(commandSource);
+      instance = new DynamicLatexBigOperatorsMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex big operators menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexBigOperatorsMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexBigOperatorsMenu() {
+    super(true);
   }
 
   /**

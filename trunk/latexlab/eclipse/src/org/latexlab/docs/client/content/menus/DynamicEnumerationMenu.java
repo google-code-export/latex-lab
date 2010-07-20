@@ -2,7 +2,6 @@ package org.latexlab.docs.client.content.menus;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -18,23 +17,19 @@ public class DynamicEnumerationMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicEnumerationMenu get(HasCommandHandlers commandSource) {
+  public static DynamicEnumerationMenu get() {
     if (instance == null) {
-      instance = new DynamicEnumerationMenu(commandSource);
+      instance = new DynamicEnumerationMenu();
     }
     return instance;
   }
   
   /**
    * Constructs an enumeration menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicEnumerationMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicEnumerationMenu() {
+    super(true);
   }
 
   /**

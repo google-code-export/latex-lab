@@ -32,13 +32,12 @@ public class FileBox extends Composite {
 	      event.preventDefault();
 	      event.stopPropagation();
 		  DynamicFileSelectionDialog.get(
-			  null,
-			    new FileSelectionHandler() {
-					@Override
-					public void onSelection(FileSelectionEvent event) {
-					  setValue(event.getSelectedItem());
-					}
-			    }
+			  new FileSelectionHandler() {
+				  @Override
+				  public void onSelection(FileSelectionEvent event) {
+					setValue(event.getSelectedItem());
+				  }
+			  }
 		  ).center();
 		}
     });

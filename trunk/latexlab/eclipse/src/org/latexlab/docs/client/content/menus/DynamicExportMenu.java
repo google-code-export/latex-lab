@@ -2,7 +2,6 @@ package org.latexlab.docs.client.content.menus;
 
 import org.latexlab.docs.client.commands.CurrentDocumentExportCommand;
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -18,23 +17,19 @@ public class DynamicExportMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicExportMenu get(HasCommandHandlers commandSource) {
+  public static DynamicExportMenu get() {
     if (instance == null) {
-      instance = new DynamicExportMenu(commandSource);
+      instance = new DynamicExportMenu();
     }
     return instance;
   }
   
   /**
    * Constructs an export menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicExportMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicExportMenu() {
+    super(true);
   }
 
   /**

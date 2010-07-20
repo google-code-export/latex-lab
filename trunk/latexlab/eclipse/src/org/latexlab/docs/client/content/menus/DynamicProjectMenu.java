@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemRefreshResourcesCommand;
 import org.latexlab.docs.client.commands.SystemShowDialogCommand;
 import org.latexlab.docs.client.content.dialogs.DynamicResourcesDialog;
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicProjectMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicProjectMenu get(HasCommandHandlers commandSource) {
+  public static DynamicProjectMenu get() {
     if (instance == null) {
-      instance = new DynamicProjectMenu(commandSource);
+      instance = new DynamicProjectMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a project menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicProjectMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicProjectMenu() {
+    super(true);
   }
 
   /**

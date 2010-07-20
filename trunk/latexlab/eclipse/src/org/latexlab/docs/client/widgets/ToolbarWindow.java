@@ -2,15 +2,10 @@ package org.latexlab.docs.client.widgets;
 
 import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
@@ -22,7 +17,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * The base implementation of a toolbar window.
  */
-public abstract class ToolbarWindow extends DynamicWindow implements HasCommandHandlers {
+public abstract class ToolbarWindow extends DynamicWindow {
 
   /**
    * Contains toolbar buttons.
@@ -67,7 +62,7 @@ public abstract class ToolbarWindow extends DynamicWindow implements HasCommandH
         btn.setTitle(title);
         btn.addClickHandler(new ClickHandler(){
           public void onClick(ClickEvent event) {
-            CommandEvent.fire(ToolbarWindow.this, command);
+            CommandEvent.fire(command);
           }
         });
         return btn;
@@ -76,7 +71,7 @@ public abstract class ToolbarWindow extends DynamicWindow implements HasCommandH
         btn.setTitle(title);
         btn.addClickHandler(new ClickHandler(){
           public void onClick(ClickEvent event) {
-            CommandEvent.fire(ToolbarWindow.this, command);
+            CommandEvent.fire(command);
           }
         });
         return btn;
@@ -85,7 +80,6 @@ public abstract class ToolbarWindow extends DynamicWindow implements HasCommandH
     
   }
   
-  protected HandlerManager manager;
   protected int buttonsPerRow = 10, buttonWidth = 27, buttonHeight = 27;
 	
   /**
@@ -96,22 +90,6 @@ public abstract class ToolbarWindow extends DynamicWindow implements HasCommandH
   public ToolbarWindow(String title, String targetWidth, String targetHeight) {
     super(title, false, targetWidth, targetHeight);
 	mainPanel.getFlexCellFormatter().setStylePrimaryName(1, 0, "lab-Toolbar");
-    manager = new HandlerManager(this);
-  }
-
-  /**
-   * Adds a command handler.
-   * 
-   * @param handler the command handler
-   */
-  @Override
-  public HandlerRegistration addCommandHandler(CommandHandler handler) {
-	return manager.addHandler(CommandEvent.getType(), handler);
-  }
-
-  @Override
-  public void fireEvent(GwtEvent<?> event) {
-	manager.fireEvent(event);
   }
   
   /**

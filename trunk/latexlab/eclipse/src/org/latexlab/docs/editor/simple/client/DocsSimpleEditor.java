@@ -20,6 +20,7 @@ import org.latexlab.docs.client.commands.NewDocumentLoadCommand;
 import org.latexlab.docs.client.commands.SystemApplyCompilerSettingsCommand;
 import org.latexlab.docs.client.content.dialogs.StaticErrorDialog;
 import org.latexlab.docs.client.content.dialogs.StaticLoadingDialog;
+import org.latexlab.docs.client.events.CommandBus;
 import org.latexlab.docs.client.events.CommandEvent;
 import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
@@ -63,6 +64,7 @@ private final static String CLSI_TOKEN = "8d3id348f34wbvew234sf4df0098";
    */
   public void onModuleLoad() {
 	clsiService = new ClsiRemoteService();
+	CommandBus.get().addCommandHandler(this);
 	docService.getUser(new AsyncCallback<DocumentUser>() {
 		@Override
 		public void onFailure(Throwable caught) {
@@ -129,11 +131,8 @@ private final static String CLSI_TOKEN = "8d3id348f34wbvew234sf4df0098";
     contentPane.insertCell(1, 0);
     header = new HeaderPart();
     header.setAuthor(currentUser.getEmail());
-    header.addCommandHandler(this);
     menu = new MenuPart();
-    menu.addCommandHandler(this);
     toolbar = new ToolbarPart();
-    toolbar.addCommandHandler(this);
     editor = new EditorPart();
     previewer = new PreviewerPart();
     VerticalPanel headerPanel = new VerticalPanel();
@@ -241,7 +240,7 @@ private final static String CLSI_TOKEN = "8d3id348f34wbvew234sf4df0098";
       command.newAttempt();
       execute(command);
     } else {
-      StaticErrorDialog errorDialog = StaticErrorDialog.get(this);
+      StaticErrorDialog errorDialog = StaticErrorDialog.get();
       errorDialog.update(error, command, alternate);
       errorDialog.center();
     }

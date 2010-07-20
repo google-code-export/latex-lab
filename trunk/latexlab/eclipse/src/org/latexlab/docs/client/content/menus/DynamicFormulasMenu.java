@@ -2,7 +2,6 @@ package org.latexlab.docs.client.content.menus;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -18,23 +17,19 @@ public class DynamicFormulasMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicFormulasMenu get(HasCommandHandlers commandSource) {
+  public static DynamicFormulasMenu get() {
     if (instance == null) {
-      instance = new DynamicFormulasMenu(commandSource);
+      instance = new DynamicFormulasMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a formulas menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicFormulasMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicFormulasMenu() {
+    super(true);
   }
 
   /**

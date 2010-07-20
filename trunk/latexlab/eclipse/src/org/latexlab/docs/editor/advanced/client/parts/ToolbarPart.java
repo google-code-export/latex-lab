@@ -4,9 +4,6 @@ import java.util.ArrayList;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -47,15 +44,12 @@ import org.latexlab.docs.client.content.latex.SetWhiteSpacesAndDots;
 import org.latexlab.docs.client.events.ColorSelectionEvent;
 import org.latexlab.docs.client.events.ColorSelectionHandler;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 
 /**
  * A specialized, non-reusable widget containing the main toolbar.
  */
-public class ToolbarPart extends Composite implements HasCommandHandlers {
+public class ToolbarPart extends Composite {
 
-  private HandlerManager manager;
   private HorizontalPanel bar;
   private ArrayList<Widget> buttons;
   
@@ -63,7 +57,6 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
    * Constructs a Toolbar part.
    */
   public ToolbarPart() {
-	manager = new HandlerManager(this);
 	buttons = new ArrayList<Widget>();
     bar = new HorizontalPanel();
     bar.setHeight("30px");
@@ -126,7 +119,7 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
     toolbarPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
     toolbarPanel.setStyleName("lab-Toolbar");
     toolbarPanel.add(buildButton(Icons.editorIcons.OpenDocument(), "Open Document", false, new SystemShowDialogCommand(DynamicFileListDialog.class)));
-    toolbarPanel.add(buildButton(Icons.editorIcons.Save(), "Save", false, new CurrentDocumentSaveCommand()));
+    toolbarPanel.add(buildButton(Icons.editorIcons.Save(), "Save", false, new CurrentDocumentSaveCommand(false)));
     toolbarPanel.add(buildSeparator());
     toolbarPanel.add(buildButton(Icons.editorIcons.Undo(), "Undo", false, new SystemUndoCommand()));
     toolbarPanel.add(buildButton(Icons.editorIcons.Redo(), "Redo", false, new SystemRedoCommand()));
@@ -148,8 +141,7 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
 		      int g = Integer.valueOf(color.substring(2, 4), 16);
 		      int b = Integer.valueOf(color.substring(4, 6), 16);
 		      String texLabel = "c" + color;
-			  CommandEvent.fire(ToolbarPart.this,
-			      new SystemPasteCommand("\\textcolor{" + texLabel + "}{ <text here> }",
+			  CommandEvent.fire(new SystemPasteCommand("\\textcolor{" + texLabel + "}{ <text here> }",
 			          new String[] { "\\usepackage{color}",
 			    		  "\\definecolor{" + texLabel + "}{RGB}{" + r + "," + g + "," + b + "}" }));
 			}
@@ -198,14 +190,14 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
       return buildButton(icon, title, isToggle, new com.google.gwt.user.client.Command() {
 		@Override
 		public void execute() {
-          CommandEvent.fire(ToolbarPart.this, command);
+          CommandEvent.fire(command);
 		}
       });
     } else {
       return buildButton(icon, title, isToggle, new com.google.gwt.user.client.Command() {
 		@Override
 		public void execute() {
-          CommandEvent.fire(ToolbarPart.this, command);
+          CommandEvent.fire(command);
 		}
       });
     }
@@ -253,16 +245,6 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
 	Image sep = Icons.editorIcons.Separator().createImage();
 	sep.addStyleName("separator");
     return sep;
-  }
-
-  @Override
-  public HandlerRegistration addCommandHandler(CommandHandler handler) {
-	return manager.addHandler(CommandEvent.getType(), handler);
-  }
-  
-  @Override
-  public void fireEvent(GwtEvent<?> event) {
-	manager.fireEvent(event);
   }
 
 }

@@ -1,7 +1,6 @@
 package org.latexlab.docs.client.widgets;
 
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
@@ -19,8 +18,8 @@ public abstract class DynamicMenuBar extends ExtendedMenuBar {
    * 
    * @param vertical whether to orient the menu bar vertically
    */
-  public DynamicMenuBar(boolean vertical, HasCommandHandlers commandSource) {
-    super(vertical, commandSource);
+  public DynamicMenuBar(boolean vertical) {
+    super(vertical);
     this.addItem(Icons.editorIcons.Blank(), "Loading...", (Command) null);
   }
 
@@ -36,7 +35,7 @@ public abstract class DynamicMenuBar extends ExtendedMenuBar {
 		@Override
 		public void onFailure(Throwable caught) {
 	      hasContents = false;
-		  Window.alert("A required component failed to load.");
+		  Window.alert("A required component is unavailable or a new version has been deployed. You'll need to refresh your browser.");
 		}
 		@Override
 		public void onSuccess(ExtendedMenuItem[] result) {

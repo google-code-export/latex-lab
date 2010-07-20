@@ -2,15 +2,10 @@ package org.latexlab.docs.client.parts;
 
 import org.latexlab.docs.client.commands.SystemSetPerspectiveCommand;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.PageScroller;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -21,18 +16,16 @@ import com.google.gwt.user.client.ui.PushButton;
 /**
  * A specialized, non-reusable widget containing the footer panel.
  */
-public class FooterPart extends Composite implements HasCommandHandlers {
+public class FooterPart extends Composite {
 
   private FlexTable content;
   private HorizontalPanel left, right;
-  private HandlerManager manager;
   private PageScroller viewer;
   
   /**
    * Constructs a FooterPart.
    */
   public FooterPart() {
-	manager = new HandlerManager(this);
 	left = new HorizontalPanel();
 	left.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 	right = new HorizontalPanel();
@@ -55,7 +48,7 @@ public class FooterPart extends Composite implements HasCommandHandlers {
     viewSource.addClickHandler(new ClickHandler() {
 		@Override
 		public void onClick(ClickEvent event) {
-          CommandEvent.fire(FooterPart.this, new SystemSetPerspectiveCommand(SystemSetPerspectiveCommand.VIEW_SOURCE));
+          CommandEvent.fire(new SystemSetPerspectiveCommand(SystemSetPerspectiveCommand.VIEW_SOURCE));
 		}
     });
     PushButton viewPreview = new PushButton();
@@ -64,7 +57,7 @@ public class FooterPart extends Composite implements HasCommandHandlers {
     viewPreview.addClickHandler(new ClickHandler() {
 		@Override
 		public void onClick(ClickEvent event) {
-          CommandEvent.fire(FooterPart.this, new SystemSetPerspectiveCommand(SystemSetPerspectiveCommand.VIEW_PREVIEW));
+          CommandEvent.fire(new SystemSetPerspectiveCommand(SystemSetPerspectiveCommand.VIEW_PREVIEW));
 		}
     });
     PushButton viewSplit = new PushButton();
@@ -73,7 +66,7 @@ public class FooterPart extends Composite implements HasCommandHandlers {
     viewSplit.addClickHandler(new ClickHandler() {
 		@Override
 		public void onClick(ClickEvent event) {
-          CommandEvent.fire(FooterPart.this, new SystemSetPerspectiveCommand(SystemSetPerspectiveCommand.VIEW_SPLIT));
+          CommandEvent.fire(new SystemSetPerspectiveCommand(SystemSetPerspectiveCommand.VIEW_SPLIT));
 		}
     });
     PushButton viewOutput = new PushButton();
@@ -82,7 +75,7 @@ public class FooterPart extends Composite implements HasCommandHandlers {
     viewOutput.addClickHandler(new ClickHandler() {
 		@Override
 		public void onClick(ClickEvent event) {
-          CommandEvent.fire(FooterPart.this, new SystemSetPerspectiveCommand(SystemSetPerspectiveCommand.VIEW_OUTPUT));
+          CommandEvent.fire(new SystemSetPerspectiveCommand(SystemSetPerspectiveCommand.VIEW_OUTPUT));
 		}
     });
     HorizontalPanel buttons = new HorizontalPanel();
@@ -94,17 +87,6 @@ public class FooterPart extends Composite implements HasCommandHandlers {
     left.add(buttons);
     right.add(viewer);
     initWidget(content);
-  }
-  
-  @Override
-  public HandlerRegistration addCommandHandler(CommandHandler handler) {
-	viewer.addCommandHandler(handler);
-	return manager.addHandler(CommandEvent.getType(), handler);
-  }
-
-  @Override
-  public void fireEvent(GwtEvent<?> event) {
-	manager.fireEvent(event);
   }
   
   /**

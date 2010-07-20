@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetGreekUppercase;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexGreekUppercaseLettersMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexGreekUppercaseLettersMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexGreekUppercaseLettersMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexGreekUppercaseLettersMenu(commandSource);
+      instance = new DynamicLatexGreekUppercaseLettersMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex greek uppercase letters menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexGreekUppercaseLettersMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexGreekUppercaseLettersMenu() {
+    super(true);
   }
 
   /**

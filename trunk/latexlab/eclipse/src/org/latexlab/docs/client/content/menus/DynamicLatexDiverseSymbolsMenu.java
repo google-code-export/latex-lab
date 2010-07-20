@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetDiverseSymbols;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexDiverseSymbolsMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexDiverseSymbolsMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexDiverseSymbolsMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexDiverseSymbolsMenu(commandSource);
+      instance = new DynamicLatexDiverseSymbolsMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex diverse symbols menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexDiverseSymbolsMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexDiverseSymbolsMenu() {
+    super(true);
   }
 
   /**

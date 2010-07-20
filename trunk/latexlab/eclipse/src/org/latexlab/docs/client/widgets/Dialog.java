@@ -1,14 +1,8 @@
 package org.latexlab.docs.client.widgets;
 
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -19,7 +13,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * A base dialog box implementation with glass panel support and close button.
  */
-public abstract class Dialog extends DialogBox implements HasCommandHandlers {
+public abstract class Dialog extends DialogBox {
 
   /**
    * Defines the number of visible modal windows.
@@ -30,7 +24,6 @@ public abstract class Dialog extends DialogBox implements HasCommandHandlers {
   protected final int DIALOG_ZINDEX = 6;
   protected boolean isRaised;
   protected FlexTable mainPanel;
-  protected HandlerManager manager;
   protected Label titleLabel;
   
   /**
@@ -40,7 +33,6 @@ public abstract class Dialog extends DialogBox implements HasCommandHandlers {
    * @param modal whether the dialog window is modal
    */
   protected Dialog(String title, boolean modal) {
-	manager = new HandlerManager(this);
     setModal(modal);
     this.getElement().getStyle().setZIndex(DIALOG_ZINDEX);
     titleLabel = new Label();
@@ -83,16 +75,6 @@ public abstract class Dialog extends DialogBox implements HasCommandHandlers {
   }
   
   /**
-   * Register a command handler.
-   * 
-   * @param handler the command handler
-   */
-  @Override
-  public HandlerRegistration addCommandHandler(CommandHandler handler) {
-	return manager.addHandler(CommandEvent.getType(), handler);
-  }
-  
-  /**
    * Shows and centers the dialog window on the page.
    */
   @Override
@@ -100,17 +82,7 @@ public abstract class Dialog extends DialogBox implements HasCommandHandlers {
 	super.center();
 	show();
   }
-  
-  /**
-   * Fires a GWT event.
-   * 
-   * @param event the GWT event
-   */
-  @Override
-  public void fireEvent(GwtEvent<?> event) {
-	manager.fireEvent(event);
-  }
-  
+
   /**
    * Retrieves the dialog's content widget.
    */

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.latexlab.docs.client.commands.SystemAddResourcesCommand;
 import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
 import org.latexlab.docs.client.widgets.FileBox;
 
@@ -141,10 +140,9 @@ public class DynamicInsertImageDialog extends DynamicFormDialog {
             ArrayList<DocumentServiceEntry> addResources = new ArrayList<DocumentServiceEntry>();
             addResources.add(image.getValue());
             String latex = "\\begin{figure" + two + "}" + pos + "\n" + center + "\\includegraphics{" + image.getValue().getIdentifier() + "}" + cap + lab + "\n\\end{figure" + two + "}";
-  		    CommandEvent.fire(DynamicInsertImageDialog.this, 
-  			      new SystemPasteCommand(latex, new String[] {"\\usepackage{graphicx}"}));
-  		    CommandEvent.fire(DynamicInsertImageDialog.this,
-  		    	  new SystemAddResourcesCommand(addResources));
+  		    CommandEvent.fire(new SystemPasteCommand(latex,
+  		    	new String[] {"\\usepackage{graphicx}"}));
+  		    CommandEvent.fire(new SystemAddResourcesCommand(addResources));
             hide();
             resetForm();
           }
@@ -181,14 +179,11 @@ public class DynamicInsertImageDialog extends DynamicFormDialog {
   
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param handler the command handler.
    */
-  public static DynamicInsertImageDialog get(final CommandHandler handler) {
+  public static DynamicInsertImageDialog get() {
     if (instance == null) {
       instance = new DynamicInsertImageDialog();
-      instance.addCommandHandler(handler);
-      DynamicFileSelectionDialog.get(handler, null);
+      DynamicFileSelectionDialog.get(null);
     }
     return instance;
   }

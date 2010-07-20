@@ -2,7 +2,6 @@ package org.latexlab.docs.client.content.dialogs;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -76,8 +75,7 @@ public class DynamicInsertHeaderDialog extends DynamicFormDialog {
             if (!label.getText().equals("")) {
         	  latex += "\n\\label{" + label.getText() + "}";
             }
-  		    CommandEvent.fire(DynamicInsertHeaderDialog.this, 
-  			      new SystemPasteCommand(latex));
+  		    CommandEvent.fire(new SystemPasteCommand(latex));
             hide();
             resetForm();
           }
@@ -106,13 +104,10 @@ public class DynamicInsertHeaderDialog extends DynamicFormDialog {
   
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param handler the command handler.
    */
-  public static DynamicInsertHeaderDialog get(final CommandHandler handler) {
+  public static DynamicInsertHeaderDialog get() {
     if (instance == null) {
       instance = new DynamicInsertHeaderDialog();
-      instance.addCommandHandler(handler);
     }
     return instance;
   }

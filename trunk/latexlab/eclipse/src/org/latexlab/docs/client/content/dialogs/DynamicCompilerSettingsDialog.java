@@ -3,7 +3,6 @@ package org.latexlab.docs.client.content.dialogs;
 import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.commands.SystemApplyCompilerSettingsCommand;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -52,7 +51,7 @@ public class DynamicCompilerSettingsDialog extends DynamicFormDialog {
 	  useCustom.setHTML("Use a third party <a href=\"http://code.google.com/p/common-latex-service-interface/\" target=\"_blank\">CLSI</a> provider.");
 	  useCustom.addValueChangeHandler(changeHandler);
 	  useMikTex = new RadioButton("usage");
-	  useMikTex.setEnabled(false);
+	  useMikTex.setEnabled(true);
 	  String devUrl = Window.Location.getHref().replace("/docs.", "/dev.");
 	  useMikTex.setHTML("Use a local <a href=\"http://miktex.org/\" target=\"_blank\">MikTeX</a> installation. <a href=\"" + devUrl + "\">Available in development version</a>");
 	  useMikTex.addValueChangeHandler(changeHandler);
@@ -123,7 +122,7 @@ public class DynamicCompilerSettingsDialog extends DynamicFormDialog {
 	      }
     	  cmd.setContinueCommand(continueCommand);
 	      DynamicCompilerSettingsDialog.this.hide();
-	      CommandEvent.fire(DynamicCompilerSettingsDialog.this, cmd);
+	      CommandEvent.fire(cmd);
 	    }
 	  });
 	  cancel.addClickHandler(new ClickHandler(){
@@ -163,15 +162,13 @@ public class DynamicCompilerSettingsDialog extends DynamicFormDialog {
   /**
    * Retrieves the single instance of this class.
    * 
-   * @param handler the command handler.
    * @param continueCommand the command to execute once settings are applied.
    */
-  public static DynamicCompilerSettingsDialog get(final CommandHandler handler, final Command continueCommand) {
+  public static DynamicCompilerSettingsDialog get(final Command continueCommand) {
     if (instance == null) {
       instance = new DynamicCompilerSettingsDialog();
-      instance.addCommandHandler(handler);
     }
-    instance.setContinueCommand(continueCommand);
+    instance.continueCommand = continueCommand;
     return instance;
   }
   
@@ -187,15 +184,6 @@ public class DynamicCompilerSettingsDialog extends DynamicFormDialog {
           hide();
         }
     });
-  }
-
-  /**
-   * Retrieves the command to execute once settings are applied.
-   * 
-   * @return the command to execute once settings are applied.
-   */
-  public Command getContinueCommand() {
-    return continueCommand;
   }
 
   /**
@@ -215,15 +203,6 @@ public class DynamicCompilerSettingsDialog extends DynamicFormDialog {
 		  callback.onSuccess(new CompilerSettingsFormContents());
 		}
   	});
-  }
-  
-  /**
-   * Sets the command to execute once settings are applied.
-   * 
-   * @param continueCommand the command to execute once settings are applied.
-   */
-  public void setContinueCommand(Command continueCommand) {
-    this.continueCommand = continueCommand;
   }
   
 }

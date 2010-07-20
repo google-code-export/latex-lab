@@ -7,14 +7,9 @@ import org.latexlab.docs.client.commands.SystemViewPageZoomInCommand;
 import org.latexlab.docs.client.commands.SystemViewPageZoomOutCommand;
 import org.latexlab.docs.client.content.icons.Icons;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
@@ -27,10 +22,9 @@ import com.google.gwt.user.client.ui.PushButton;
 /**
  * A page scroller widget.
  */
-public class PageScroller extends Composite implements HasCommandHandlers {
+public class PageScroller extends Composite {
 
   private int currentPage = 0, totalPages = 0;
-  private HandlerManager manager;
   private HorizontalPanel panel;
   private PushButton prevButton, nextButton, zinButton, zoutButton;
   private Anchor stateLabel;
@@ -39,7 +33,6 @@ public class PageScroller extends Composite implements HasCommandHandlers {
    * Constructs a PageScroller.
    */
   public PageScroller() {
-	manager = new HandlerManager(this);
 	panel = new HorizontalPanel();
 	panel.setStylePrimaryName("lab-PageScroller");
     panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -49,10 +42,10 @@ public class PageScroller extends Composite implements HasCommandHandlers {
 	stateLabel.addClickHandler(new ClickHandler() {
 		@Override
 		public void onClick(ClickEvent event) {
-		  CommandEvent.fire(PageScroller.this, new SystemSetPerspectiveCommand(
+		  CommandEvent.fire(new SystemSetPerspectiveCommand(
 		      SystemSetPerspectiveCommand.VIEW_PREVIEW));
 		  if (totalPages > 0) {
-			  CommandEvent.fire(PageScroller.this, new SystemViewPageIndexCommand());
+			  CommandEvent.fire(new SystemViewPageIndexCommand());
 		  }
 		}
 	});
@@ -60,26 +53,26 @@ public class PageScroller extends Composite implements HasCommandHandlers {
 		@Override
 		public void onClick(ClickEvent event) {
 		  int page = previousPage();
-		  CommandEvent.fire(PageScroller.this, new SystemViewPageCommand(page));
+		  CommandEvent.fire(new SystemViewPageCommand(page));
 		}
 	});
 	nextButton = buildButton("Next Page", Icons.editorIcons.PageNext(), new ClickHandler() {
 		@Override
 		public void onClick(ClickEvent event) {
 		  int page = nextPage();
-		  CommandEvent.fire(PageScroller.this, new SystemViewPageCommand(page));
+		  CommandEvent.fire(new SystemViewPageCommand(page));
 		}
 	});
 	zinButton = buildButton("Zoom In", Icons.editorIcons.PageZoomIn(), new ClickHandler() {
 		@Override
 		public void onClick(ClickEvent event) {
-		  CommandEvent.fire(PageScroller.this, new SystemViewPageZoomInCommand());
+		  CommandEvent.fire(new SystemViewPageZoomInCommand());
 		}
 	});
 	zoutButton = buildButton("Zoom Out", Icons.editorIcons.PageZoomOut(), new ClickHandler() {
 		@Override
 		public void onClick(ClickEvent event) {
-		  CommandEvent.fire(PageScroller.this, new SystemViewPageZoomOutCommand());
+		  CommandEvent.fire(new SystemViewPageZoomOutCommand());
 		}
 	});
 	panel.add(prevButton);
@@ -91,11 +84,6 @@ public class PageScroller extends Composite implements HasCommandHandlers {
 	main.add(panel);
 	initWidget(main);
 	setPage(0);
-  }
-  
-  @Override
-  public HandlerRegistration addCommandHandler(CommandHandler handler) {
-	return manager.addHandler(CommandEvent.getType(), handler);
   }
   
   /**
@@ -111,11 +99,6 @@ public class PageScroller extends Composite implements HasCommandHandlers {
 	button.setTitle(title);
 	button.addClickHandler(handler);
 	return button;
-  }
-  
-  @Override
-  public void fireEvent(GwtEvent<?> event) {
-	manager.fireEvent(event);
   }
   
   /**

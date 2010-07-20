@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetLogical;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexLogicalMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexLogicalMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexLogicalMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexLogicalMenu(commandSource);
+      instance = new DynamicLatexLogicalMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex logical menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexLogicalMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexLogicalMenu() {
+    super(true);
   }
 
   /**

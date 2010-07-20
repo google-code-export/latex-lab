@@ -51,7 +51,6 @@ public class DynamicColorSelectionDialog extends DynamicDialog {
       initWidget(content);
 	}
 	
-	
   }
 
   protected static DynamicColorSelectionDialog instance;
@@ -59,7 +58,6 @@ public class DynamicColorSelectionDialog extends DynamicDialog {
   /**
    * Retrieves the single instance of this class.
    * 
-   * @param commandHandler the command handler.
    * @param selectionHandler the selection handler.
    */
   public static DynamicColorSelectionDialog get(
@@ -67,7 +65,7 @@ public class DynamicColorSelectionDialog extends DynamicDialog {
     if (instance == null) {
       instance = new DynamicColorSelectionDialog();
     }
-    instance.setSelectionHandler(selectionHandler);
+    instance.selectionHandler = selectionHandler;
     return instance;
   }
   
@@ -98,15 +96,6 @@ public class DynamicColorSelectionDialog extends DynamicDialog {
 	      center();
 		}
     });
-  }
-  
-  /**
-   * Sets the color selection handler.
-   * 
-   * @param selectionHandler the color selection handler
-   */
-  public void setSelectionHandler(ColorSelectionHandler selectionHandler) {
-    this.selectionHandler = selectionHandler;
   }
   
 }

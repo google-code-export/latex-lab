@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetFontSeries;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,12 +19,10 @@ public class DynamicLatexFontSeriesMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexFontSeriesMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexFontSeriesMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexFontSeriesMenu(commandSource);
+      instance = new DynamicLatexFontSeriesMenu();
     }
     return instance;
   }
@@ -35,8 +32,8 @@ public class DynamicLatexFontSeriesMenu extends DynamicMenuBar {
    * 
    * @param commandSource the command source
    */
-  protected DynamicLatexFontSeriesMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexFontSeriesMenu() {
+    super(true);
   }
 
   /**

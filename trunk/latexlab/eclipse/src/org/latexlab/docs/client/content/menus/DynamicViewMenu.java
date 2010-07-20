@@ -7,7 +7,6 @@ import org.latexlab.docs.client.commands.SystemToggleReuseToolbarWindowsCommand;
 import org.latexlab.docs.client.commands.SystemToggleSpellcheckCommand;
 import org.latexlab.docs.client.commands.SystemToggleWrapTextCommand;
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -23,23 +22,19 @@ public class DynamicViewMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicViewMenu get(HasCommandHandlers commandSource) {
+  public static DynamicViewMenu get() {
     if (instance == null) {
-      instance = new DynamicViewMenu(commandSource);
+      instance = new DynamicViewMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a view menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicViewMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicViewMenu() {
+    super(true);
   }
 
   /**
@@ -57,7 +52,7 @@ public class DynamicViewMenu extends DynamicMenuBar {
 		@Override
 		public void onSuccess() {
 		  callback.onSuccess(new ExtendedMenuItem[] {
-		    new ExtendedMenuItem(Icons.editorIcons.Blank(), "Toolbars", DynamicToolbarsMenu.get(commandSource)),
+		    new ExtendedMenuItem(Icons.editorIcons.Blank(), "Toolbars", DynamicToolbarsMenu.get()),
 		    null,
 			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Check Spelling", new SystemToggleSpellcheckCommand()),
 			new ExtendedMenuItem(Icons.editorIcons.CheckBlack(), "Highlight Syntax", new SystemToggleColorSyntaxCommand()),

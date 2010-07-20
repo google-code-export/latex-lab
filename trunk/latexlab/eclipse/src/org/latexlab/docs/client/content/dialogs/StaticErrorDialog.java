@@ -2,7 +2,6 @@ package org.latexlab.docs.client.content.dialogs;
 
 import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.widgets.Dialog;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -24,13 +23,11 @@ public class StaticErrorDialog extends Dialog {
   /**
    * Retrieves the single instance of this class.
    * 
-   * @param handler the command handler.
    * @return the single instance of this class.
    */
-  public static StaticErrorDialog get(CommandHandler handler) {
+  public static StaticErrorDialog get() {
     if (instance == null) {
       instance = new StaticErrorDialog();
-      instance.addCommandHandler(handler);
     }
     return instance;
   }
@@ -50,7 +47,7 @@ public class StaticErrorDialog extends Dialog {
       public void onClick(ClickEvent event) {
         hide();
         if (cancelCommand != null) {
-          CommandEvent.fire(StaticErrorDialog.this, cancelCommand);
+          CommandEvent.fire(cancelCommand);
         }
       }
     };
@@ -60,7 +57,7 @@ public class StaticErrorDialog extends Dialog {
     this.retry = new Button("Retry", new ClickHandler(){
       public void onClick(ClickEvent event) {
         hide();
-        CommandEvent.fire(StaticErrorDialog.this, errorCommand);
+        CommandEvent.fire(errorCommand);
       }
     });
     this.cancel = new Button("Cancel", cancelHandler);
