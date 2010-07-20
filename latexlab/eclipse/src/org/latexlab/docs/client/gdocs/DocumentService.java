@@ -49,11 +49,11 @@ public interface DocumentService extends RemoteService {
   /**
    * Retrieves the contents of a document by resource Id.
    * 
-   * @param resourceId the resource Id
+   * @param contentUrl the resource content url
    * @return the document contents
    * @throws DocumentServiceException
    */
-  String getDocumentContents(String resourceId) throws DocumentServiceException;
+  String getDocumentContents(String contentUrl) throws DocumentServiceException;
   
   /**
    * Retrieves signed URLs for retrieving the contents of the specified documents.

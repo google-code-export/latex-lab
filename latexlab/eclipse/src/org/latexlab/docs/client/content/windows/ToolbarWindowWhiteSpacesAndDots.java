@@ -3,7 +3,6 @@ package org.latexlab.docs.client.content.windows;
 import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.SetWhiteSpacesAndDots;
-import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.widgets.LatexCommandToolbar;
 import org.latexlab.docs.client.widgets.WindowManager;
 
@@ -24,10 +23,9 @@ public class ToolbarWindowWhiteSpacesAndDots extends LatexCommandToolbar {
    * @param handler the command handler
    * @param manager the window manager
    */
-  public static ToolbarWindowWhiteSpacesAndDots get(final CommandHandler handler, final WindowManager manager) {
+  public static ToolbarWindowWhiteSpacesAndDots get(final WindowManager manager) {
     if (instance == null) {
       instance = new ToolbarWindowWhiteSpacesAndDots();
-      instance.addCommandHandler(handler);
       instance.registeredDragController = manager.getWindowController().getPickupDragController();
       instance.hide();
       manager.getWindowController().makeResizable(instance);

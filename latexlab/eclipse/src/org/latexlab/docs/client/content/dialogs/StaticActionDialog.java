@@ -2,7 +2,6 @@ package org.latexlab.docs.client.content.dialogs;
 
 import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.widgets.Dialog;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -78,13 +77,11 @@ public class StaticActionDialog extends Dialog {
   /**
    * Retrieves the single instance of this class.
    * 
-   * @param handler the command handler.
    * @return the single instance of this class.
    */
-  public static StaticActionDialog get(CommandHandler handler) {
+  public static StaticActionDialog get() {
     if (instance == null) {
       instance = new StaticActionDialog();
-      instance.addCommandHandler(handler);
     }
     return instance;
   }
@@ -134,7 +131,7 @@ public class StaticActionDialog extends Dialog {
           public void onClick(ClickEvent event) {
             hide();
             if (cmd != null) {
-              CommandEvent.fire(StaticActionDialog.this, cmd);
+              CommandEvent.fire(cmd);
             }
           }
         });

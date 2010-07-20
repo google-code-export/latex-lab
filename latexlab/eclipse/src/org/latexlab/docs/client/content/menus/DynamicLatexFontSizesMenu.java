@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetFontSizes;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexFontSizesMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexFontSizesMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexFontSizesMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexFontSizesMenu(commandSource);
+      instance = new DynamicLatexFontSizesMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex font sizes menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexFontSizesMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexFontSizesMenu() {
+    super(true);
   }
 
   /**

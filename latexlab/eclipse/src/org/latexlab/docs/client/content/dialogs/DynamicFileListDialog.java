@@ -28,7 +28,6 @@ import org.latexlab.docs.client.commands.SystemStarDocumentCommand;
 import org.latexlab.docs.client.commands.SystemUnstarDocumentCommand;
 import org.latexlab.docs.client.content.icons.Icons;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
 import org.latexlab.docs.client.widgets.DynamicDialog;
 import org.latexlab.docs.client.widgets.ExplorerTree;
@@ -148,7 +147,7 @@ public class DynamicFileListDialog extends DynamicDialog {
     private void loadEntries(boolean useCache) {
       documentsPanel.clear();
       rightPanel.setStylePrimaryName("lab-Loading");
-      CommandEvent.fire(DynamicFileListDialog.this, new SystemListDocumentsCommand(useCache,
+      CommandEvent.fire(new SystemListDocumentsCommand(useCache,
           new AsyncCallback<DocumentServiceEntry[]>() {
 		  	  @Override
 			  public void onFailure(Throwable caught) {
@@ -206,11 +205,11 @@ public class DynamicFileListDialog extends DynamicDialog {
       ExplorerTree tree = new ExplorerTree(false, false, false, new StarHandler(){
 		  @Override
 		  public void onStar(String id) {
-		    CommandEvent.fire(DynamicFileListDialog.this, new SystemStarDocumentCommand(id));
+		    CommandEvent.fire(new SystemStarDocumentCommand(id));
 		  }
 		  @Override
 		  public void onUnstar(String id) {
-		    CommandEvent.fire(DynamicFileListDialog.this, new SystemUnstarDocumentCommand(id));
+		    CommandEvent.fire(new SystemUnstarDocumentCommand(id));
 		  }
       });
       tree.setEntries(entries);
@@ -262,9 +261,9 @@ public class DynamicFileListDialog extends DynamicDialog {
           public void onClick(ClickEvent event) {
             ToggleButton btn = (ToggleButton)event.getSource();
             if (btn.isDown()) {
-              CommandEvent.fire(DynamicFileListDialog.this, new SystemStarDocumentCommand(id));
+              CommandEvent.fire(new SystemStarDocumentCommand(id));
             } else {
-              CommandEvent.fire(DynamicFileListDialog.this, new SystemUnstarDocumentCommand(id));
+              CommandEvent.fire(new SystemUnstarDocumentCommand(id));
             }
           }
         });
@@ -298,13 +297,10 @@ public class DynamicFileListDialog extends DynamicDialog {
   
   /**
    * Retrieves the single instance of this class, using asynchronous instantiation.
-   * 
-   * @param handler the command handler.
    */
-  public static DynamicFileListDialog get(final CommandHandler handler) {
+  public static DynamicFileListDialog get() {
     if (instance == null) {
       instance = new DynamicFileListDialog();
-      instance.addCommandHandler(handler);
     }
     return instance;
   }

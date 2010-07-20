@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemOpenPageCommand;
 import org.latexlab.docs.client.commands.SystemShowDialogCommand;
 import org.latexlab.docs.client.content.dialogs.DynamicAboutDialog;
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicHelpMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicHelpMenu get(HasCommandHandlers commandSource) {
+  public static DynamicHelpMenu get() {
     if (instance == null) {
-      instance = new DynamicHelpMenu(commandSource);
+      instance = new DynamicHelpMenu();
     }
     return instance;
   }
   
   /**
    * Constructs an help menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicHelpMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicHelpMenu() {
+    super(true);
   }
 
   /**

@@ -17,8 +17,7 @@ public abstract class LatexCommandToolbar extends ToolbarWindow {
 	super(title, "200px", null);
     addClickHandler(new ClickHandler() {
         public void onClick(ClickEvent event) {
-          CommandEvent.fire(LatexCommandToolbar.this,
-    		  new SystemToggleLatexToolbarCommand(title));
+          CommandEvent.fire(new SystemToggleLatexToolbarCommand(title));
 	    }
 	});
   }

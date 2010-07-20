@@ -10,7 +10,6 @@ import org.latexlab.docs.client.commands.SystemShowDialogCommand;
 import org.latexlab.docs.client.commands.SystemUploadDocumentsCommand;
 import org.latexlab.docs.client.content.dialogs.DynamicFileListDialog;
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -26,23 +25,19 @@ public class DynamicFileMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicFileMenu get(HasCommandHandlers commandSource) {
+  public static DynamicFileMenu get() {
     if (instance == null) {
-      instance = new DynamicFileMenu(commandSource);
+      instance = new DynamicFileMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a file menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicFileMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicFileMenu() {
+    super(true);
   }
 
   /**
@@ -62,14 +57,14 @@ public class DynamicFileMenu extends DynamicMenuBar {
 		  callback.onSuccess(new ExtendedMenuItem[] {
 			new ExtendedMenuItem(Icons.editorIcons.Blank(), "New", new NewDocumentStartCommand()),
 			null,
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Open", new SystemShowDialogCommand(DynamicFileListDialog.class)),
-			new ExtendedMenuItem(Icons.editorIcons.Save(), "Save", new CurrentDocumentSaveCommand()),
+			new ExtendedMenuItem(Icons.editorIcons.OpenDocument(), "Open", new SystemShowDialogCommand(DynamicFileListDialog.class)),
+			new ExtendedMenuItem(Icons.editorIcons.Save(), "Save", new CurrentDocumentSaveCommand(false)),
 			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Save as new copy", new CurrentDocumentCopyCommand()),
 			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Rename...", new CurrentDocumentRenameCommand()),
 			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Delete...", new CurrentDocumentDeleteCommand()),
 			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Revision History", new CurrentDocumentRevisionHistoryCommand()),
 			null,
-			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Export...", DynamicExportMenu.get(commandSource)),
+			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Export...", DynamicExportMenu.get()),
 			null,
 			new ExtendedMenuItem(Icons.editorIcons.UploadDocument(), "Upload Files...", new SystemUploadDocumentsCommand()),
 		  });

@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.CurrentDocumentCompileCommand;
 import org.latexlab.docs.client.commands.SystemShowDialogCommand;
 import org.latexlab.docs.client.content.dialogs.DynamicCompilerSettingsDialog;
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicCompilerMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicCompilerMenu get(HasCommandHandlers commandSource) {
+  public static DynamicCompilerMenu get() {
     if (instance == null) {
-      instance = new DynamicCompilerMenu(commandSource);
+      instance = new DynamicCompilerMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a compiler menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicCompilerMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicCompilerMenu() {
+    super(true);
   }
 
   /**

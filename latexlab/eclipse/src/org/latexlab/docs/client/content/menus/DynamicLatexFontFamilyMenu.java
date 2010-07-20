@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetFontFamily;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexFontFamilyMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexFontFamilyMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexFontFamilyMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexFontFamilyMenu(commandSource);
+      instance = new DynamicLatexFontFamilyMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex font family menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexFontFamilyMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexFontFamilyMenu() {
+    super(true);
   }
 
   /**

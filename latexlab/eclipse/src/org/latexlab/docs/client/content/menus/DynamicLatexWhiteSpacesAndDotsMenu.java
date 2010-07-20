@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetWhiteSpacesAndDots;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexWhiteSpacesAndDotsMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexWhiteSpacesAndDotsMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexWhiteSpacesAndDotsMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexWhiteSpacesAndDotsMenu(commandSource);
+      instance = new DynamicLatexWhiteSpacesAndDotsMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex whitespaces and dots menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexWhiteSpacesAndDotsMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexWhiteSpacesAndDotsMenu() {
+    super(true);
   }
 
   /**

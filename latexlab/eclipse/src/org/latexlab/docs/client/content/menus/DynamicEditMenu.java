@@ -5,7 +5,6 @@ import org.latexlab.docs.client.commands.SystemShowDialogCommand;
 import org.latexlab.docs.client.commands.SystemUndoCommand;
 import org.latexlab.docs.client.content.dialogs.DynamicPreferencesDialog;
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -21,23 +20,19 @@ public class DynamicEditMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicEditMenu get(HasCommandHandlers commandSource) {
+  public static DynamicEditMenu get() {
     if (instance == null) {
-      instance = new DynamicEditMenu(commandSource);
+      instance = new DynamicEditMenu();
     }
     return instance;
   }
   
   /**
    * Constructs an edit menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicEditMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicEditMenu() {
+    super(true);
   }
 
   /**

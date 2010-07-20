@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetSubscriptAndSuperscript;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexSubscriptAndSuperscriptMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexSubscriptAndSuperscriptMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexSubscriptAndSuperscriptMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexSubscriptAndSuperscriptMenu(commandSource);
+      instance = new DynamicLatexSubscriptAndSuperscriptMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex subscript and superscript menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexSubscriptAndSuperscriptMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexSubscriptAndSuperscriptMenu() {
+    super(true);
   }
 
   /**

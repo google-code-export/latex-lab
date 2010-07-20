@@ -44,10 +44,10 @@ public interface DocumentServiceAsync {
   /**
    * Retrieves the contents of a document by resource Id.
    * 
-   * @param resourceId the resource Id
+   * @param contentUrl the resource content url
    * @param callback the success/failure handler
    */
-  void getDocumentContents(String resourceId, AsyncCallback<String> callback);
+  void getDocumentContents(String contentUrl, AsyncCallback<String> callback);
   
   /**
    * Retrieves signed URLs for retrieving the contents of the specified documents.

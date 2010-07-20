@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetArrows;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexArrowsMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexArrowsMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexArrowsMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexArrowsMenu(commandSource);
+      instance = new DynamicLatexArrowsMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex arrows menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexArrowsMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexArrowsMenu() {
+    super(true);
   }
 
   /**

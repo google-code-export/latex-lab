@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetAlignment;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexAlignmentMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexAlignmentMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexAlignmentMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexAlignmentMenu(commandSource);
+      instance = new DynamicLatexAlignmentMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex font alignment menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexAlignmentMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexAlignmentMenu() {
+    super(true);
   }
 
   /**

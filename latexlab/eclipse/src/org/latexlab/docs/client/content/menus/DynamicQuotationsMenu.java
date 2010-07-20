@@ -2,7 +2,6 @@ package org.latexlab.docs.client.content.menus;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -18,23 +17,19 @@ public class DynamicQuotationsMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicQuotationsMenu get(HasCommandHandlers commandSource) {
+  public static DynamicQuotationsMenu get() {
     if (instance == null) {
-      instance = new DynamicQuotationsMenu(commandSource);
+      instance = new DynamicQuotationsMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a quotations menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicQuotationsMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicQuotationsMenu() {
+    super(true);
   }
 
   /**

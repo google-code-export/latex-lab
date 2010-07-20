@@ -29,7 +29,6 @@ import com.google.gwt.user.client.ui.Widget;
 import org.latexlab.docs.client.commands.SystemListDocumentsCommand;
 import org.latexlab.docs.client.commands.SystemSetResourcesCommand;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
 import org.latexlab.docs.client.widgets.DynamicDialog;
 import org.latexlab.docs.client.widgets.ExplorerTree;
@@ -139,8 +138,7 @@ public class DynamicResourcesDialog extends DynamicDialog {
 	          }
 	        }
 	      }
-	      CommandEvent.fire(DynamicResourcesDialog.this,
-	          new SystemSetResourcesCommand(resources, primaryResource));
+	      CommandEvent.fire(new SystemSetResourcesCommand(resources, primaryResource));
 	    }
 	  });
 	  cancel = new Button("Cancel", new ClickHandler() {
@@ -222,7 +220,7 @@ public class DynamicResourcesDialog extends DynamicDialog {
 	  tree.clear();
 	  primary.clear();
 	  rightPanel.setStylePrimaryName("lab-Loading");
-	  CommandEvent.fire(DynamicResourcesDialog.this, new SystemListDocumentsCommand(useCache,
+	  CommandEvent.fire(new SystemListDocumentsCommand(useCache,
 	      new AsyncCallback<DocumentServiceEntry[]>() {
 			  @Override
 		      public void onFailure(Throwable caught) {
@@ -297,13 +295,10 @@ public class DynamicResourcesDialog extends DynamicDialog {
 
   /**
    * Retrieves the single instance of this class, using asynchronous instantiation.
-   * 
-   * @param handler the command handler.
    */
-  public static DynamicResourcesDialog get(final CommandHandler handler) {
+  public static DynamicResourcesDialog get() {
     if (instance == null) {
       instance = new DynamicResourcesDialog();
-      instance.addCommandHandler(handler);
     }
     return instance;
   }

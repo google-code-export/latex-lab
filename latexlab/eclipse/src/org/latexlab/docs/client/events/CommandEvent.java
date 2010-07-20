@@ -16,6 +16,16 @@ public class CommandEvent extends GwtEvent<CommandHandler> {
   private static Type<CommandHandler> TYPE;
 
   /**
+   * Fires a command event on all registered handlers in the shared command bus.
+   * 
+   * @param command the command
+   */
+  public static <S extends HasCommandHandlers & HasHandlers> void fire(
+      Command command) {
+    fire(CommandBus.get(), command);
+  }
+  
+  /**
    * Fires a command event on all registered handlers in the handler source.
    * 
    * @param <S> The handler source

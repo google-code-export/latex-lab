@@ -5,8 +5,6 @@ import org.latexlab.docs.client.commands.CurrentDocumentExportCommand;
 import org.latexlab.docs.client.commands.SystemSetPerspectiveCommand;
 import org.latexlab.docs.client.commands.SystemViewPageCommand;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.ScalableImage;
 
 import com.google.gwt.dom.client.Style.Overflow;
@@ -14,9 +12,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -31,7 +26,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 /**
  * A specialized, non-reusable widget containing the preview panel.
  */
-public class PreviewerPart extends Composite implements HasCommandHandlers {
+public class PreviewerPart extends Composite {
 
   /**
    * The allows zoom percentages.
@@ -42,14 +37,12 @@ public class PreviewerPart extends Composite implements HasCommandHandlers {
   private VerticalPanel content;
   private ScalableImage currentImage;
   private int currentPage = 0, currentScale = 4, lastTopScroll = 0, lastLeftScroll;
-  private HandlerManager manager;
   private String[] pages = new String[0];
 
   /**
    * Constructs a previewer part.
    */
   public PreviewerPart() {
-    manager = new HandlerManager(this);
 	content = new VerticalPanel();
     content.setSize("100%", "100%");
     content.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -65,18 +58,13 @@ public class PreviewerPart extends Composite implements HasCommandHandlers {
 		public void onClick(ClickEvent event) {
 		  event.preventDefault();
 		  event.stopPropagation();
-          CommandEvent.fire(PreviewerPart.this, new CurrentDocumentCompileCommand());
+          CommandEvent.fire(new CurrentDocumentCompileCommand());
 		}
 	});
 	panel.add(msg);
 	panel.add(showLogs);
 	content.add(panel);
 	initWidget(content);
-  }
-  
-  @Override
-  public HandlerRegistration addCommandHandler(CommandHandler handler) {
-	return manager.addHandler(CommandEvent.getType(), handler);
   }
 	
   /**
@@ -93,7 +81,7 @@ public class PreviewerPart extends Composite implements HasCommandHandlers {
 		public void onClick(ClickEvent event) {
 		  event.preventDefault();
 		  event.stopPropagation();
-	      CommandEvent.fire(PreviewerPart.this, new CurrentDocumentExportCommand(CurrentDocumentExportCommand.PDF));
+	      CommandEvent.fire(new CurrentDocumentExportCommand(CurrentDocumentExportCommand.PDF));
 		}
 	});
 	pan.add(msg);
@@ -110,11 +98,6 @@ public class PreviewerPart extends Composite implements HasCommandHandlers {
 	  lastLeftScroll = content.getElement().getParentElement().getScrollLeft();
 	}
     content.clear();
-  }
-  
-  @Override
-  public void fireEvent(GwtEvent<?> event) {
-	manager.fireEvent(event);
   }
   
   /**
@@ -137,7 +120,7 @@ public class PreviewerPart extends Composite implements HasCommandHandlers {
 		public void onClick(ClickEvent event) {
 		  event.preventDefault();
 		  event.stopPropagation();
-          CommandEvent.fire(PreviewerPart.this, new SystemSetPerspectiveCommand(SystemSetPerspectiveCommand.VIEW_OUTPUT));
+          CommandEvent.fire(new SystemSetPerspectiveCommand(SystemSetPerspectiveCommand.VIEW_OUTPUT));
 		}
 	});
 	panel.add(err);
@@ -213,7 +196,7 @@ public class PreviewerPart extends Composite implements HasCommandHandlers {
 		public void onClick(ClickEvent event) {
 		  event.preventDefault();
 		  event.stopPropagation();
-		  CommandEvent.fire(PreviewerPart.this, new SystemViewPageCommand(pageNumber));
+		  CommandEvent.fire(new SystemViewPageCommand(pageNumber));
 		}
 	  });
 	  box.add(caption);

@@ -4,12 +4,8 @@ import org.latexlab.docs.client.commands.Command;
 import org.latexlab.docs.client.commands.CurrentDocumentRefreshCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentReloadCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentRevisionHistoryCommand;
-import org.latexlab.docs.client.events.AsyncInstantiationCallback;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
@@ -27,41 +23,13 @@ public class StaticEtagMismatchErrorDialog extends StaticErrorDialog {
   protected static StaticEtagMismatchErrorDialog instance;
 
   /**
-   * Retrieves the single instance of this class, using asynchronous instantiation.
-   * 
-   * @param handler the command handler.
-   * @param cb the asynchronous instantiation callback.
+   * Retrieves the single instance of this class.
    */
-  public static void get(final CommandHandler handler,
-	    final AsyncInstantiationCallback<StaticEtagMismatchErrorDialog> cb) {
-	GWT.runAsync(new RunAsyncCallback() {
-		@Override
-		public void onFailure(Throwable reason) {
-		  cb.onFailure(reason);
-		}
-		@Override
-		public void onSuccess() {
-	      if (instance == null) {
-	        instance = new StaticEtagMismatchErrorDialog();
-	        instance.addCommandHandler(handler);
-	      }
-		  cb.onSuccess(instance);
-		}
-	});
-  }
-  
-  /**
-   * Causes the code for this class to be loaded.
-   */
-  public static void prefetch() {
-	GWT.runAsync(new RunAsyncCallback() {
-		@Override
-		public void onFailure(Throwable reason) { }
-		@Override
-		public void onSuccess() {
-		  new StaticEtagMismatchErrorDialog();
-		}
-	});
+  public static StaticEtagMismatchErrorDialog get() {
+    if (instance == null) {
+      instance = new StaticEtagMismatchErrorDialog();
+    }
+    return instance;
   }
   
   protected Button reload;
@@ -76,7 +44,7 @@ public class StaticEtagMismatchErrorDialog extends StaticErrorDialog {
       public void onClick(ClickEvent event) {
         if (Window.confirm("The document will be reloaded, any unsaved changes will be lost.")) {
           hide();
-          CommandEvent.fire(StaticEtagMismatchErrorDialog.this, new CurrentDocumentReloadCommand());
+          CommandEvent.fire(new CurrentDocumentReloadCommand());
         }
       }
     });
@@ -105,7 +73,7 @@ public class StaticEtagMismatchErrorDialog extends StaticErrorDialog {
 		public void onClick(ClickEvent event) {
 		  event.preventDefault();
 		  event.stopPropagation();
-		  CommandEvent.fire(StaticEtagMismatchErrorDialog.this, new CurrentDocumentRevisionHistoryCommand());
+		  CommandEvent.fire(new CurrentDocumentRevisionHistoryCommand());
 		}
     });
     this.messagePanel.add(viewRevisions);

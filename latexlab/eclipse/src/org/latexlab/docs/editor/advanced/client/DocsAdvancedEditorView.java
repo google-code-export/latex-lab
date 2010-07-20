@@ -47,7 +47,6 @@ import org.latexlab.docs.client.content.windows.ToolbarWindowSubscriptAndSupersc
 import org.latexlab.docs.client.content.windows.ToolbarWindowWhiteSpacesAndDots;
 import org.latexlab.docs.client.events.AsyncInstantiationCallback;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.events.IntRunnable;
 import org.latexlab.docs.client.parts.BodyPart;
 import org.latexlab.docs.client.parts.FooterPart;
@@ -94,7 +93,7 @@ public class DocsAdvancedEditorView {
 	
   protected static DocsAdvancedEditorView instance;
 
-  public static void get(final CommandHandler handler, final String userEmail,
+  public static void get(final String userEmail,
 	    final AsyncInstantiationCallback<DocsAdvancedEditorView> cb) {
 	GWT.runAsync(new RunAsyncCallback() {
 		@Override
@@ -104,7 +103,7 @@ public class DocsAdvancedEditorView {
 		@Override
 		public void onSuccess() {
 	      if (instance == null) {
-	        instance = new DocsAdvancedEditorView(handler, userEmail);
+	        instance = new DocsAdvancedEditorView(userEmail);
 	      }
 		  cb.onSuccess(instance);
 		}
@@ -114,7 +113,6 @@ public class DocsAdvancedEditorView {
   private BodyPart body;
   private FlexTable contentPane;
   private IntRunnable controlKeyHandler;
-  private CommandHandler controller;
   private EditorPart editor;
   private FooterPart footer;
   private HeaderPart header;
@@ -126,8 +124,7 @@ public class DocsAdvancedEditorView {
   private ToolbarPart tools;
   private WindowManager windowManager;
   
-  protected DocsAdvancedEditorView(CommandHandler c, String userEmail) {
-	controller = c;
+  protected DocsAdvancedEditorView(String userEmail) {
 	toolbars = new HashMap<String, ToolbarWindow>();
     contentPane = new FlexTable();
     contentPane.setWidth("100%");
@@ -145,13 +142,9 @@ public class DocsAdvancedEditorView {
     contentPane.getFlexCellFormatter().setHeight(2, 0, "20px");
     header = new HeaderPart();
     header.setAuthor(userEmail);
-    header.addCommandHandler(controller);
     footer = new FooterPart();
-    footer.addCommandHandler(controller);
     menu = new MenuPart();
-    menu.addCommandHandler(controller);
     tools = new ToolbarPart();
-    tools.addCommandHandler(controller);
     editor = new EditorPart();
     editor.addClickHandler(new ClickHandler() {
 		@Override
@@ -164,11 +157,10 @@ public class DocsAdvancedEditorView {
     editor.addChangeHandler(new ChangeHandler() {
 		@Override
 		public void onChange(ChangeEvent event) {
-	      CommandEvent.flow(controller, new CurrentDocumentChangedCommand());
+	      CommandEvent.fire(new CurrentDocumentChangedCommand());
 		}
     });
     previewer = new PreviewerPart();
-    previewer.addCommandHandler(controller);
     VerticalPanel headerPanel = new VerticalPanel();
     headerPanel.setWidth("100%");
     headerPanel.add(header);
@@ -196,15 +188,15 @@ public class DocsAdvancedEditorView {
 	      switch(i) {
 	      case 83: //CTRL+S
 	    	if (e != null) e.preventDefault();
-	    	CommandEvent.flow(controller, new CurrentDocumentSaveCommand());
+	    	CommandEvent.fire(new CurrentDocumentSaveCommand(false));
 			break;
 		  case 79: //CTRL+O
 	    	if (e != null) e.preventDefault();
-	    	CommandEvent.flow(controller, new SystemShowDialogCommand(DynamicFileListDialog.class));
+	    	CommandEvent.fire(new SystemShowDialogCommand(DynamicFileListDialog.class));
 			break;
 		  case 78: //CTRL+N
 	    	if (e != null) e.preventDefault();
-	    	CommandEvent.flow(controller, new NewDocumentStartCommand());
+	    	CommandEvent.fire(new NewDocumentStartCommand());
 			break;
 		  }
 		}
@@ -343,39 +335,39 @@ public class DocsAdvancedEditorView {
 
   private void targetToolbar(String name, final AsyncCallback<ToolbarWindow> cb) {
 	if (name.equalsIgnoreCase(SetAboveAndBelow.TITLE)) {
-	  cb.onSuccess(ToolbarWindowAboveAndBelow.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowAboveAndBelow.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetAccents.TITLE)) {
-	  cb.onSuccess(ToolbarWindowAccents.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowAccents.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetArrows.TITLE)) {
-	  cb.onSuccess(ToolbarWindowArrows.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowArrows.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetArrowsWithCaptions.TITLE)) {
-	  cb.onSuccess(ToolbarWindowArrowsWithCaptions.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowArrowsWithCaptions.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetBinaryOperators.TITLE)) {
-	  cb.onSuccess(ToolbarWindowBinaryOperators.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowBinaryOperators.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetBoundaries.TITLE)) {
-	  cb.onSuccess(ToolbarWindowBoundaries.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowBoundaries.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetComparison.TITLE)) {
-	  cb.onSuccess(ToolbarWindowComparison.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowComparison.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetDiverseSymbols.TITLE)) {
-	  cb.onSuccess(ToolbarWindowDiverseSymbols.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowDiverseSymbols.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetFormatting.TITLE)) {
-	  cb.onSuccess(ToolbarWindowFormatting.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowFormatting.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetGreekLowercase.TITLE)) {
-	  cb.onSuccess(ToolbarWindowGreekLowercase.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowGreekLowercase.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetGreekUppercase.TITLE)) {
-	  cb.onSuccess(ToolbarWindowGreekUppercase.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowGreekUppercase.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetLogical.TITLE)) {
-	  cb.onSuccess(ToolbarWindowLogical.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowLogical.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetConstructs.TITLE)) {
-	  cb.onSuccess(ToolbarWindowMath.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowMath.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetBigOperators.TITLE)) {
-	  cb.onSuccess(ToolbarWindowOperators.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowOperators.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetSets.TITLE)) {
-	  cb.onSuccess(ToolbarWindowSets.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowSets.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetSubscriptAndSuperscript.TITLE)) {
-	  cb.onSuccess(ToolbarWindowSubscriptAndSuperscript.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowSubscriptAndSuperscript.get(windowManager));
 	} else if (name.equalsIgnoreCase(SetWhiteSpacesAndDots.TITLE)) {
-	  cb.onSuccess(ToolbarWindowWhiteSpacesAndDots.get(controller, windowManager));
+	  cb.onSuccess(ToolbarWindowWhiteSpacesAndDots.get(windowManager));
 	}
   }
   

@@ -4,9 +4,6 @@ import java.util.ArrayList;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -23,15 +20,12 @@ import org.latexlab.docs.client.content.dialogs.DynamicFileListDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicResourcesDialog;
 import org.latexlab.docs.client.content.icons.Icons;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 
 /**
  * A specialized, non-reusable widget containing the main toolbar.
  */
-public class ToolbarPart extends Composite implements HasCommandHandlers {
+public class ToolbarPart extends Composite {
 
-  private HandlerManager manager;
   private HorizontalPanel bar;
   private ArrayList<Widget> buttons;
   
@@ -39,7 +33,6 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
    * Constructs a Toolbar part.
    */
   public ToolbarPart() {
-	manager = new HandlerManager(this);
 	buttons = new ArrayList<Widget>();
     bar = new HorizontalPanel();
     bar.setHeight("30px");
@@ -67,7 +60,7 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
     toolbarPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
     toolbarPanel.setStyleName("lab-Toolbar");
     toolbarPanel.add(buildButton(Icons.editorIcons.OpenDocument(), "Open Document", false, new SystemShowDialogCommand(DynamicFileListDialog.class)));
-    toolbarPanel.add(buildButton(Icons.editorIcons.Save(), "Save", false, new CurrentDocumentSaveCommand()));
+    toolbarPanel.add(buildButton(Icons.editorIcons.Save(), "Save", false, new CurrentDocumentSaveCommand(false)));
     toolbarPanel.add(buildSeparator());
     toolbarPanel.add(buildButton(Icons.editorIcons.ItemList(), "Project resources", false, new SystemShowDialogCommand(DynamicResourcesDialog.class)));
     toolbarPanel.add(buildButton(Icons.editorIcons.Compile(), "Compile", false, new CurrentDocumentCompileCommand()));
@@ -92,7 +85,7 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
         public void onClick(ClickEvent event) {
           btn.setFocus(false);
           btn.removeStyleName("gwt-ToggleButton-up-hovering");
-          CommandEvent.fire(ToolbarPart.this, command);
+          CommandEvent.fire(command);
         }
       });
       buttons.add(btn);
@@ -104,7 +97,7 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
         public void onClick(ClickEvent event) {
           btn.setFocus(false);
           btn.removeStyleName("gwt-PushButton-up-hovering");
-          CommandEvent.fire(ToolbarPart.this, command);
+          CommandEvent.fire(command);
         }
       });
       buttons.add(btn);
@@ -116,16 +109,6 @@ public class ToolbarPart extends Composite implements HasCommandHandlers {
 	Image sep = Icons.editorIcons.Separator().createImage();
 	sep.addStyleName("separator");
     return sep;
-  }
-
-  @Override
-  public HandlerRegistration addCommandHandler(CommandHandler handler) {
-	return manager.addHandler(CommandEvent.getType(), handler);
-  }
-  
-  @Override
-  public void fireEvent(GwtEvent<?> event) {
-	manager.fireEvent(event);
   }
 
 }

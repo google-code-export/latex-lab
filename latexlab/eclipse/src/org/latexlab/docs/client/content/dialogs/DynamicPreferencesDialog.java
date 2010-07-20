@@ -2,7 +2,6 @@ package org.latexlab.docs.client.content.dialogs;
 
 import org.latexlab.docs.client.commands.SystemApplyPreferencesCommand;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -59,8 +58,7 @@ public class DynamicPreferencesDialog extends DynamicFormDialog {
   		    if (interval.matches("\\d*")) {
   		      int nInterval = Integer.valueOf(interval);
   		      if (nInterval >= 5) {
-  		        CommandEvent.fire(DynamicPreferencesDialog.this, 
-  		            new SystemApplyPreferencesCommand(true,
+  		        CommandEvent.fire(new SystemApplyPreferencesCommand(true,
   		                nInterval * 1000));
   		      } else {
   			    Window.alert("The save interval can't be less than 5 seconds.");
@@ -72,8 +70,7 @@ public class DynamicPreferencesDialog extends DynamicFormDialog {
   		    }
   		  }
   		} else {
-  		  CommandEvent.fire(DynamicPreferencesDialog.this, 
-  		      new SystemApplyPreferencesCommand(false, 10000));
+  		  CommandEvent.fire(new SystemApplyPreferencesCommand(false, 10000));
   		}
           hide();
         }
@@ -112,15 +109,13 @@ public class DynamicPreferencesDialog extends DynamicFormDialog {
   /**
    * Retrieves the single instance of this class, using asynchronous instantiation.
    * 
-   * @param handler the command handler.
    * @param autoSave the value to populated the auto save field with.
    * @param saveInterval the value to populated the save interval field with.
    */
-  public static DynamicPreferencesDialog get(final CommandHandler handler,
-		final boolean autoSave, final int saveInterval) {
+  public static DynamicPreferencesDialog get(final boolean autoSave,
+	    final int saveInterval) {
     if (instance == null) {
       instance = new DynamicPreferencesDialog(autoSave, saveInterval);
-      instance.addCommandHandler(handler);
     }
     return instance;
   }

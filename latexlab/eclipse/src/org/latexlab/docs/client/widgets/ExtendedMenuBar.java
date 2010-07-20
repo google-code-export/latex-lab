@@ -3,7 +3,6 @@ package org.latexlab.docs.client.widgets;
 import java.util.HashMap;
 
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.GWT.UncaughtExceptionHandler;
@@ -68,7 +67,7 @@ public class ExtendedMenuBar extends MenuBar {
 	  super("<span>" + icon.getHTML() + "</span> " + text, true, new Command() {
 		@Override
 		public void execute() {
-          CommandEvent.fire(commandSource, cmd);
+          CommandEvent.fire(cmd);
 		} 
 	  });
 	  this.text = text;
@@ -128,7 +127,7 @@ public class ExtendedMenuBar extends MenuBar {
 	}
 	
   }
-  protected HasCommandHandlers commandSource;
+
   protected HashMap<String, ExtendedMenuItem> itemIndex;
 
   protected boolean sim = false, vertical;
@@ -137,13 +136,11 @@ public class ExtendedMenuBar extends MenuBar {
    * Constructs an extended MenuBar.
    * 
    * @param vertical whether to orient the menu bar vertically
-   * @param commandSource the command event source
    */
-  public ExtendedMenuBar(boolean vertical, HasCommandHandlers commandSource) {
+  public ExtendedMenuBar(boolean vertical) {
     super(vertical);
     this.itemIndex = new HashMap<String, ExtendedMenuItem>();
     this.vertical = vertical;
-    this.commandSource = commandSource;
   }
   
   /**

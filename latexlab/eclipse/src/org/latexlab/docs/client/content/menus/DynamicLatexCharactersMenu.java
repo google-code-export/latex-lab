@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetCharacters;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexCharactersMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexCharactersMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexCharactersMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexCharactersMenu(commandSource);
+      instance = new DynamicLatexCharactersMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex character styles menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexCharactersMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexCharactersMenu() {
+    super(true);
   }
 
   /**

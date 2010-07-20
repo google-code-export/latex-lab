@@ -3,9 +3,6 @@ package org.latexlab.docs.client.parts;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.Anchor;
@@ -28,15 +25,13 @@ import org.latexlab.docs.client.commands.CurrentDocumentSaveCommand;
 import org.latexlab.docs.client.commands.SystemSignOutCommand;
 import org.latexlab.docs.client.content.icons.Icons;
 import org.latexlab.docs.client.events.CommandEvent;
-import org.latexlab.docs.client.events.CommandHandler;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 
 import java.util.Date;
 
 /**
  * A specialized, non-reusable widget containing the logo, title, links and button menu.
  */
-public class HeaderPart extends Composite implements HasCommandHandlers, ClickHandler {
+public class HeaderPart extends Composite implements ClickHandler {
 
   /**
    * Defines the allows save states.
@@ -51,7 +46,6 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
   private HTML info;
   private HorizontalPanel leftLinks, rightLinks, status;
   private FlexTable main;
-  private HandlerManager manager;
   private MenuItem saveMenuItem, saveAndCloseMenuItem;
   private Timer timer;
   private Anchor title, signoutLink;
@@ -60,7 +54,6 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
    * Constructs a new Header part.
    */
   public HeaderPart() {
-	manager = new HandlerManager(this);
     content = new VerticalPanel();
     content.setWidth("100%");
     status = new HorizontalPanel();
@@ -87,11 +80,6 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
     initWidget(content);
   }
   
-  @Override
-  public HandlerRegistration addCommandHandler(CommandHandler handler) {
-	return manager.addHandler(CommandEvent.getType(), handler);
-  }
-  
   /**
    * Adds a menu item to a menu bar.
    * 
@@ -109,7 +97,7 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
     }
     mi.setCommand(new com.google.gwt.user.client.Command() {
       public void execute() {
-      	CommandEvent.fire(HeaderPart.this, command);
+      	CommandEvent.fire(command);
       }
     });
     return mi;
@@ -152,7 +140,7 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
     actionsPanel.setHeight("30px");
     actionsPanel.setStylePrimaryName("lab-Header-Actions");
     MenuBar menu = new MenuBar(false);
-    saveMenuItem = addMenuItem(menu, null, "Save Now", new CurrentDocumentSaveCommand());
+    saveMenuItem = addMenuItem(menu, null, "Save Now", new CurrentDocumentSaveCommand(false));
     menu.addSeparator();
     saveAndCloseMenuItem = addMenuItem(menu, null, "Save & Close", new CurrentDocumentSaveAndCloseCommand());
     saveAndCloseMenuItem.setStylePrimaryName("lab-HighlightedMenuItem");
@@ -202,7 +190,7 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
     signoutLink = new Anchor("Sign Out");
     signoutLink.addClickHandler(new ClickHandler(){
       public void onClick(ClickEvent event) {
-        CommandEvent.fire(HeaderPart.this, new SystemSignOutCommand());
+        CommandEvent.fire(new SystemSignOutCommand());
       }
     });
     rightLinks.add(author);
@@ -214,11 +202,6 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
     table.setWidget(0, 1, rightLinks);
     main.setWidget(0, 0, table);
   }
-  
-  @Override
-  public void fireEvent(GwtEvent<?> event) {
-	manager.fireEvent(event);
-  }
 
   /**
    * Handles a click event. Listens to click events on the title region and prompts
@@ -226,7 +209,7 @@ public class HeaderPart extends Composite implements HasCommandHandlers, ClickHa
    */
   public void onClick(ClickEvent event) {
     if (event.getSource() == title) {
-      CommandEvent.fire(HeaderPart.this, new CurrentDocumentRenameCommand());
+      CommandEvent.fire(new CurrentDocumentRenameCommand());
       event.preventDefault();
     }
   }

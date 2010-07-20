@@ -2,7 +2,6 @@ package org.latexlab.docs.client.content.menus;
 
 import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -18,23 +17,19 @@ public class DynamicDocumentTitleMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicDocumentTitleMenu get(HasCommandHandlers commandSource) {
+  public static DynamicDocumentTitleMenu get() {
     if (instance == null) {
-      instance = new DynamicDocumentTitleMenu(commandSource);
+      instance = new DynamicDocumentTitleMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a document title menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicDocumentTitleMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicDocumentTitleMenu() {
+    super(true);
   }
 
   /**

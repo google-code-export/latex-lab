@@ -4,7 +4,6 @@ import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.content.latex.LatexCommand;
 import org.latexlab.docs.client.content.latex.LatexCommandSet;
 import org.latexlab.docs.client.content.latex.SetFontShapes;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -20,23 +19,19 @@ public class DynamicLatexFontShapesMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicLatexFontShapesMenu get(HasCommandHandlers commandSource) {
+  public static DynamicLatexFontShapesMenu get() {
     if (instance == null) {
-      instance = new DynamicLatexFontShapesMenu(commandSource);
+      instance = new DynamicLatexFontShapesMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a latex font shapes menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicLatexFontShapesMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicLatexFontShapesMenu() {
+    super(true);
   }
 
   /**

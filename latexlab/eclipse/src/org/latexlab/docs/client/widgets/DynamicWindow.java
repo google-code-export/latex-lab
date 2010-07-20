@@ -62,7 +62,7 @@ public abstract class DynamicWindow extends Window {
 		  @Override
 		  public void onFailure(Throwable caught) {
 	        hasContents = false;
-		    com.google.gwt.user.client.Window.alert("A required component failed to load.");
+		    com.google.gwt.user.client.Window.alert("A required component is unavailable or a new version has been deployed. You'll need to refresh your browser.");
 		  }
 		  @Override
 		  public void onSuccess(Widget result) {

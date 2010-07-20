@@ -11,7 +11,6 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.latexlab.docs.client.events.CommandHandler;
 import org.latexlab.docs.client.widgets.DynamicDialog;
 
 /**
@@ -26,10 +25,9 @@ public class DynamicDevelopmentInfoDialog extends DynamicDialog {
    * 
    * @return the single instance of this class.
    */
-  public static DynamicDevelopmentInfoDialog get(final CommandHandler handler) {
+  public static DynamicDevelopmentInfoDialog get() {
     if (instance == null) {
       instance = new DynamicDevelopmentInfoDialog();
-      instance.addCommandHandler(handler);
     }
     return instance;
   }

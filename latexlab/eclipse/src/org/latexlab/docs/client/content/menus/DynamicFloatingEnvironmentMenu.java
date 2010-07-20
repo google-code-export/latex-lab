@@ -2,7 +2,6 @@ package org.latexlab.docs.client.content.menus;
 
 import org.latexlab.docs.client.commands.SystemNotImplementedCommand;
 import org.latexlab.docs.client.content.icons.Icons;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -18,23 +17,19 @@ public class DynamicFloatingEnvironmentMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicFloatingEnvironmentMenu get(HasCommandHandlers commandSource) {
+  public static DynamicFloatingEnvironmentMenu get() {
     if (instance == null) {
-      instance = new DynamicFloatingEnvironmentMenu(commandSource);
+      instance = new DynamicFloatingEnvironmentMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a floating environment menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicFloatingEnvironmentMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicFloatingEnvironmentMenu() {
+    super(true);
   }
 
   /**

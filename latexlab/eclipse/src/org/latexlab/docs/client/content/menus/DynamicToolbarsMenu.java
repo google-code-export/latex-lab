@@ -19,7 +19,6 @@ import org.latexlab.docs.client.content.latex.SetBigOperators;
 import org.latexlab.docs.client.content.latex.SetSets;
 import org.latexlab.docs.client.content.latex.SetSubscriptAndSuperscript;
 import org.latexlab.docs.client.content.latex.SetWhiteSpacesAndDots;
-import org.latexlab.docs.client.events.HasCommandHandlers;
 import org.latexlab.docs.client.widgets.DynamicMenuBar;
 
 import com.google.gwt.core.client.GWT;
@@ -35,23 +34,19 @@ public class DynamicToolbarsMenu extends DynamicMenuBar {
 	
   /**
    * Retrieves the single instance of this class.
-   * 
-   * @param commandSource the command source.
    */
-  public static DynamicToolbarsMenu get(HasCommandHandlers commandSource) {
+  public static DynamicToolbarsMenu get() {
     if (instance == null) {
-      instance = new DynamicToolbarsMenu(commandSource);
+      instance = new DynamicToolbarsMenu();
     }
     return instance;
   }
   
   /**
    * Constructs a toolbars menu.
-   * 
-   * @param commandSource the command source
    */
-  protected DynamicToolbarsMenu(HasCommandHandlers commandSource) {
-    super(true, commandSource);
+  protected DynamicToolbarsMenu() {
+    super(true);
   }
 
   /**
