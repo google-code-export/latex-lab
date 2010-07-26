@@ -1,7 +1,11 @@
 package org.latexlab.docs.client.parts;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 import org.latexlab.docs.client.commands.CurrentDocumentCompileCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentExportCommand;
+import org.latexlab.docs.client.commands.SystemJumpToLineCommand;
 import org.latexlab.docs.client.commands.SystemSetPerspectiveCommand;
 import org.latexlab.docs.client.commands.SystemViewPageCommand;
 import org.latexlab.docs.client.events.CommandEvent;
@@ -37,6 +41,8 @@ public class PreviewerPart extends Composite {
   private VerticalPanel content;
   private ScalableImage currentImage;
   private int currentPage = 0, currentScale = 4, lastTopScroll = 0, lastLeftScroll;
+  private HashMap<Integer, HashMap<Integer, Integer>> sourceHints =
+      new HashMap<Integer, HashMap<Integer, Integer>>();
   private String[] pages = new String[0];
 
   /**
@@ -131,10 +137,12 @@ public class PreviewerPart extends Composite {
   /**
    * Sets the preview page image urls.
    * 
-   * @param pages
+   * @param pages the preview page urls
+   * @param sourceHints a map of y-coordinate to source line
    */
-  public void setPages(String[] pages) {
+  public void setPages(String[] pages, HashMap<Integer, HashMap<Integer, Integer>> sourceHints) {
 	this.pages = pages;
+	this.sourceHints = sourceHints;
 	currentImage = null;
 	showPage(currentPage);
   }
@@ -154,6 +162,31 @@ public class PreviewerPart extends Composite {
 	    addMessage();
 	    currentImage = new ScalableImage(pages[page],
 	      SCALES[currentScale]);
+	    if (sourceHints.containsKey(currentPage)) {
+	      currentImage.setTitle("CTRL + Click to jump to the corresponding source code region.");
+	      currentImage.addClickHandler(new ClickHandler() {
+			  @Override
+			  public void onClick(ClickEvent event) {
+			    if (!event.getNativeEvent().getCtrlKey()) {
+				  return;
+			    }
+			    if (sourceHints.containsKey(currentPage)) {
+				  HashMap<Integer, Integer> pageHints = sourceHints.get(currentPage);
+				  if (pageHints.size() > 0) {
+				    int line = 0;
+				    int y = event.getNativeEvent().getClientY();
+				    for (Entry<Integer, Integer> hint : pageHints.entrySet()) {
+				      if (hint.getKey() > y) {
+				        break;
+				      }
+				      line = hint.getValue();
+				    }
+				    CommandEvent.fire(new SystemJumpToLineCommand(line));
+				  }
+			    }
+			  }
+	      });
+	    }
 	    if (page == currentPage && (lastTopScroll > 0 || lastLeftScroll > 0)) {
 	      currentImage.addLoadHandler(new LoadHandler() {
 			@Override

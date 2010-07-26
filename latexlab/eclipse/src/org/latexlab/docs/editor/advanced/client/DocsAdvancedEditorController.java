@@ -2,6 +2,7 @@ package org.latexlab.docs.editor.advanced.client;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.latexlab.clsi.client.AppletUnavailableException;
 import org.latexlab.clsi.client.async.CompileCallback;
@@ -10,6 +11,7 @@ import org.latexlab.clsi.client.local.ClsiLocalEngine;
 import org.latexlab.clsi.client.protocol.ClsiOutputError;
 import org.latexlab.clsi.client.protocol.ClsiResourceReference;
 import org.latexlab.clsi.client.protocol.ClsiServiceCompileResponse;
+import org.latexlab.clsi.client.protocol.ClsiSourceHint;
 import org.latexlab.clsi.client.remote.ClsiRemoteService;
 import org.latexlab.docs.client.DocsEditorSettings;
 import org.latexlab.docs.client.commands.Command;
@@ -28,6 +30,7 @@ import org.latexlab.docs.client.commands.CurrentDocumentRevisionHistoryCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentSaveAndCloseCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentSaveCommand;
 import org.latexlab.docs.client.commands.SystemAddResourcesCommand;
+import org.latexlab.docs.client.commands.SystemJumpToLineCommand;
 import org.latexlab.docs.client.commands.SystemLoadDocumentCommand;
 import org.latexlab.docs.client.commands.SystemListDocumentsCommand;
 import org.latexlab.docs.client.commands.SystemOpenDocumentCommand;
@@ -481,10 +484,20 @@ public class DocsAdvancedEditorController implements CommandHandler {
 			app.getPreviewer().setError(err);
 		  } else {
 	        String[] urls =  new String[result.getOutputFiles().length];
+	        HashMap<Integer, HashMap<Integer, Integer>> hints = new HashMap<Integer, HashMap<Integer, Integer>>();
 		    for (int i=0; i<urls.length; i++) {
 			  urls[i] = result.getOutputFiles()[i].getUrl() + "?r=" + r;
 	        }
-		    app.getPreviewer().setPages(urls);
+		    for (ClsiSourceHint hint : result.getSourceHints()) {
+		      if (hint.getSourceFile().equals(currentDocument.getIdentifier())) {
+		    	int pnum = hint.getOutputPage() - 1;
+		    	if (!hints.containsKey(pnum)) {
+		    	  hints.put(pnum, new HashMap<Integer, Integer>());
+		    	}
+		    	hints.get(pnum).put(hint.getY(), hint.getSourceLine());
+		      }
+		    }
+		    app.getPreviewer().setPages(urls, hints);
 			app.getFooter().getPageViewer().reset(urls.length);
 		  }
 		  if (result.getOutputLogs().length > 0) {
@@ -1030,6 +1043,12 @@ public class DocsAdvancedEditorController implements CommandHandler {
 	  currentDocument.setDirty(true);
 	}
   }
+  private void execute(final SystemJumpToLineCommand cmd) {
+    if (!app.getQuadrantVisibility(Quadrant.SOURCE)) {
+	  app.setPerspective(SystemSetPerspectiveCommand.VIEW_SOURCE);
+	}
+    app.getEditor().jumpToLine(cmd.getLineNumber());
+  }
   private void execute(final Command cmd) {
     switch (cmd.getCommandId()) {
       case SystemUnstarDocumentCommand.serialUid: execute((SystemUnstarDocumentCommand) cmd); break;
@@ -1077,6 +1096,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
       case SystemViewPageIndexCommand.serialUid: execute((SystemViewPageIndexCommand) cmd); break;
       case SystemViewPageZoomInCommand.serialUid: execute((SystemViewPageZoomInCommand) cmd); break;
       case SystemViewPageZoomOutCommand.serialUid: execute((SystemViewPageZoomOutCommand) cmd); break;
+      case SystemJumpToLineCommand.serialUid: execute((SystemJumpToLineCommand) cmd); break;
       default:
         Window.alert("Not implemented");
         break;

@@ -227,6 +227,17 @@ public class EditorPart extends Composite
   }
   
   /**
+   * Jumps to a given line.
+   * 
+   * @param lineNumber the number corresponding to the line to jump to
+   */
+  public void jumpToLine(int lineNumber) {
+	if (mirror != null) {
+	  mirror.jumpToLine(lineNumber);
+	}
+  }
+  
+  /**
    * Performs a redo on the previous text changes.
    */
   public void redo() {
