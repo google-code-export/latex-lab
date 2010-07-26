@@ -113,6 +113,15 @@ public class CodeMirror extends JavaScriptObject {
   }-*/;
   
   /**
+   * Jumps to a given line.
+   * 
+   * @param lineNumber the number corresponding to the line to jump to
+   */
+  public final native void jumpToLine(int lineNumber) /*-{
+    this.jumpToLine(lineNumber);
+  }-*/;
+  
+  /**
    * Causes this editor to redo the most recent set of changes.
    */
   public final native void redo() /*-{
