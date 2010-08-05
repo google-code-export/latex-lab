@@ -2,7 +2,7 @@ package org.latexlab.docs.editor.advanced.client;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.latexlab.clsi.client.AppletUnavailableException;
 import org.latexlab.clsi.client.async.CompileCallback;
@@ -66,6 +66,7 @@ import org.latexlab.docs.client.content.dialogs.DynamicCompilerSettingsDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicDevelopmentInfoDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicFileListDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicInsertHeaderDialog;
+import org.latexlab.docs.client.content.dialogs.DynamicInsertHyperlinkDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicInsertImageDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicInsertTableDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicPreferencesDialog;
@@ -87,6 +88,7 @@ import org.latexlab.docs.client.gdocs.DocumentServiceAsync;
 import org.latexlab.docs.client.gdocs.DocumentServiceEntry;
 import org.latexlab.docs.client.gdocs.DocumentSignedLocation;
 import org.latexlab.docs.client.gdocs.DocumentUser;
+import org.latexlab.docs.client.widgets.AnnotatedPanel.Annotation;
 import org.latexlab.docs.editor.advanced.client.DocsAdvancedEditorView.LockFunction;
 import org.latexlab.docs.editor.advanced.client.DocsAdvancedEditorView.Quadrant;
 
@@ -465,7 +467,7 @@ public class DocsAdvancedEditorController implements CommandHandler {
     showStatus("Compiling document...", false);
     app.getPreviewer().clear();
     app.getOutput().clear();
-    app.getFooter().getPageViewer().reset(0);
+    app.getFooter().getPageViewer().reset();
     compile("png", new CompileCallback() {
 		@Override
 		public void onFailure(Throwable caught) {
@@ -484,7 +486,8 @@ public class DocsAdvancedEditorController implements CommandHandler {
 			app.getPreviewer().setError(err);
 		  } else {
 	        String[] urls =  new String[result.getOutputFiles().length];
-	        HashMap<Integer, HashMap<Integer, Integer>> hints = new HashMap<Integer, HashMap<Integer, Integer>>();
+	        LinkedHashMap<Integer, ArrayList<Annotation>> hints =
+	        	new LinkedHashMap<Integer, ArrayList<Annotation>>();
 		    for (int i=0; i<urls.length; i++) {
 			  urls[i] = result.getOutputFiles()[i].getUrl() + "?r=" + r;
 	        }
@@ -492,13 +495,20 @@ public class DocsAdvancedEditorController implements CommandHandler {
 		      if (hint.getSourceFile().equals(currentDocument.getIdentifier())) {
 		    	int pnum = hint.getOutputPage() - 1;
 		    	if (!hints.containsKey(pnum)) {
-		    	  hints.put(pnum, new HashMap<Integer, Integer>());
+		    	  hints.put(pnum, new ArrayList<Annotation>());
 		    	}
-		    	hints.get(pnum).put(hint.getY(), hint.getSourceLine());
+		    	String line = String.valueOf(hint.getSourceLine());
+		    	Annotation ann = new Annotation(
+		    	    hint.getY(),
+		    	    line,
+		    	    "Jump to source code, line " + line,
+		    	    String.valueOf(line)
+		    	);
+		    	hints.get(pnum).add(ann);
 		      }
 		    }
-		    app.getPreviewer().setPages(urls, hints);
-			app.getFooter().getPageViewer().reset(urls.length);
+		    int curPage = app.getPreviewer().setPages(urls, hints);
+			app.getFooter().getPageViewer().reset(urls.length, curPage);
 		  }
 		  if (result.getOutputLogs().length > 0) {
   		    app.getOutput().setUrl(result.getOutputLogs()[0].getUrl() + "?r=" + r);
@@ -745,6 +755,8 @@ public class DocsAdvancedEditorController implements CommandHandler {
 	  DynamicInsertImageDialog.get().center();
 	} else if (type == DynamicDevelopmentInfoDialog.class) {
 	  DynamicDevelopmentInfoDialog.get().center();
+	} else if (type == DynamicInsertHyperlinkDialog.class) {
+      DynamicInsertHyperlinkDialog.get(app.getEditor().getSelectedText()).center();
 	}
   }
   private void execute(final SystemUploadDocumentsCommand cmd) {
@@ -1026,16 +1038,28 @@ public class DocsAdvancedEditorController implements CommandHandler {
 	app.setPerspective(cmd.getView());
   }
   private void execute(final SystemViewPageCommand cmd) {
+    if (!app.getQuadrantVisibility(Quadrant.PREVIEW)) {
+	  app.setPerspective(SystemSetPerspectiveCommand.VIEW_PREVIEW);
+	}
 	app.getPreviewer().showPage(cmd.getPageNumber());
 	app.getFooter().getPageViewer().setPage(cmd.getPageNumber());
   }
   private void execute(final SystemViewPageIndexCommand cmd) {
+    if (!app.getQuadrantVisibility(Quadrant.PREVIEW)) {
+  	  app.setPerspective(SystemSetPerspectiveCommand.VIEW_PREVIEW);
+  	}
   	app.getPreviewer().showPageIndex();
   }
   private void execute(final SystemViewPageZoomInCommand cmd) {
+    if (!app.getQuadrantVisibility(Quadrant.PREVIEW)) {
+  	  app.setPerspective(SystemSetPerspectiveCommand.VIEW_PREVIEW);
+  	}
   	app.getPreviewer().zoomIn();
   }
   private void execute(final SystemViewPageZoomOutCommand cmd) {
+    if (!app.getQuadrantVisibility(Quadrant.PREVIEW)) {
+  	  app.setPerspective(SystemSetPerspectiveCommand.VIEW_PREVIEW);
+  	}
   	app.getPreviewer().zoomOut();
   }
   private void execute(final CurrentDocumentChangedCommand cmd) {

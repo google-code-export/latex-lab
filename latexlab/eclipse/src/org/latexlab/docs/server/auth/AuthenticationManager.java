@@ -2,6 +2,7 @@ package org.latexlab.docs.server.auth;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
@@ -70,9 +71,9 @@ public class AuthenticationManager extends HttpServlet {
    * @param passive whether to allow redirects
    * @return an authentication token containing an AuthSub token string
    * @throws IOException if a redirect error occurs
- * @throws GeneralSecurityException 
- * @throws AuthenticationException 
- * @throws Base64DecoderException 
+   * @throws GeneralSecurityException 
+   * @throws AuthenticationException 
+   * @throws Base64DecoderException 
    */
   public AuthenticationToken autoPilot(HttpServletRequest req, HttpServletResponse resp, boolean passive)
       throws IOException, AuthenticationException, GeneralSecurityException, Base64DecoderException {
@@ -110,6 +111,7 @@ public class AuthenticationManager extends HttpServlet {
           token = AuthSubUtil.getTokenFromReply(qs);
         }
         if (token != null && !token.equals("")) {
+          token = URLDecoder.decode(token, "UTF-8");
           token = AuthSubUtil.exchangeForSessionToken(token, key);
           store.setUserToken(req.getUserPrincipal().getName(), token);
           resp.sendRedirect(getFullUrl(req));

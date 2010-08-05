@@ -3,6 +3,7 @@ package org.latexlab.docs.client.content.menus;
 import org.latexlab.docs.client.commands.SystemPasteCommand;
 import org.latexlab.docs.client.commands.SystemShowDialogCommand;
 import org.latexlab.docs.client.content.dialogs.DynamicInsertHeaderDialog;
+import org.latexlab.docs.client.content.dialogs.DynamicInsertHyperlinkDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicInsertImageDialog;
 import org.latexlab.docs.client.content.dialogs.DynamicInsertTableDialog;
 import org.latexlab.docs.client.content.icons.Icons;
@@ -55,6 +56,7 @@ public class DynamicInsertMenu extends DynamicMenuBar {
 			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Footnote", new SystemPasteCommand("\\footnote{}")),
 			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Tabular...", new SystemShowDialogCommand(DynamicInsertTableDialog.class)),
 			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Picture...", new SystemShowDialogCommand(DynamicInsertImageDialog.class)),
+			new ExtendedMenuItem(Icons.editorIcons.Hyperlink(), "Hyperlink...", new SystemShowDialogCommand(DynamicInsertHyperlinkDialog.class)),
 			null,
 			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Enumerations", DynamicEnumerationMenu.get()),
 			new ExtendedMenuItem(Icons.editorIcons.Blank(), "Code Environments", DynamicCodeEnvironmentMenu.get()),

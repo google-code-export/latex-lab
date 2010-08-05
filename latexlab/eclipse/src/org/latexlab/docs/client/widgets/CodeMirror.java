@@ -55,6 +55,15 @@ public class CodeMirror extends JavaScriptObject {
   }-*/;
   
   /**
+   * Sets the cursor to the beginning of a given line.
+   * 
+   * @param lineNumber the line to jump to
+   */
+  public final native void jumpToLine(int lineNumber) /*-{
+    this.jumpToLine(lineNumber);
+  }-*/;
+  
+  /**
    * Retrieves the text editor contents.
    * 
    * @return the text editor contents
@@ -110,15 +119,6 @@ public class CodeMirror extends JavaScriptObject {
    */
   public final native void grabKeys(JavaScriptObject callback, JavaScriptObject filter) /*-{
     this.grabKeys(callback, filter);
-  }-*/;
-  
-  /**
-   * Jumps to a given line.
-   * 
-   * @param lineNumber the number corresponding to the line to jump to
-   */
-  public final native void jumpToLine(int lineNumber) /*-{
-    this.jumpToLine(lineNumber);
   }-*/;
   
   /**
@@ -181,8 +181,8 @@ public class CodeMirror extends JavaScriptObject {
    * 
    * @param name the parser name
    */
-  public final native void setParser(String name) /*-{
-    this.setParser(name);
+  public final native void setParser(String name, JavaScriptObject parserConfig) /*-{
+    this.setParser(name, parserConfig);
   }-*/;
   
   /**
