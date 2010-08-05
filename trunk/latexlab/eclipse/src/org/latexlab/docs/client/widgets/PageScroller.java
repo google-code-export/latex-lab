@@ -130,12 +130,19 @@ public class PageScroller extends Composite {
   
   /**
    * Resets the page view to the first page.
+   */
+  public void reset() {
+	reset(0, 0);
+  }
+  
+  /**
+   * Resets the page view to the first page.
    * 
    * @param pageCount the total number of pages
    */
-  public void reset(int pageCount) {
+  public void reset(int pageCount, int activePage) {
 	totalPages = pageCount;
-	setPage(0);
+	setPage(activePage);
   }
   
   /**

@@ -51,7 +51,7 @@ public class DynamicCompilerSettingsDialog extends DynamicFormDialog {
 	  useCustom.setHTML("Use a third party <a href=\"http://code.google.com/p/common-latex-service-interface/\" target=\"_blank\">CLSI</a> provider.");
 	  useCustom.addValueChangeHandler(changeHandler);
 	  useMikTex = new RadioButton("usage");
-	  useMikTex.setEnabled(true);
+	  useMikTex.setEnabled(false);
 	  String devUrl = Window.Location.getHref().replace("/docs.", "/dev.");
 	  useMikTex.setHTML("Use a local <a href=\"http://miktex.org/\" target=\"_blank\">MikTeX</a> installation. <a href=\"" + devUrl + "\">Available in development version</a>");
 	  useMikTex.addValueChangeHandler(changeHandler);

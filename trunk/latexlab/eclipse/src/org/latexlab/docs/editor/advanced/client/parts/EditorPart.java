@@ -265,9 +265,9 @@ public class EditorPart extends Composite
   public void setColorSyntax(boolean colorSyntax) {
 	if (mirror != null) {
 	  if (colorSyntax) {
-		mirror.setParser("LatexParser");
+		mirror.setParser("LatexParser", null);
 	  } else {
-		mirror.setParser("NoParser");
+		mirror.setParser("NoParser", null);
 	  }
 	  mirror.setCode(mirror.getCode());
 	  this.colorSyntax = colorSyntax;

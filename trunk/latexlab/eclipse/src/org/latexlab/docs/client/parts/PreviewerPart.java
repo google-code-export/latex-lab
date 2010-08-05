@@ -1,7 +1,7 @@
 package org.latexlab.docs.client.parts;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import org.latexlab.docs.client.commands.CurrentDocumentCompileCommand;
 import org.latexlab.docs.client.commands.CurrentDocumentExportCommand;
@@ -9,13 +9,17 @@ import org.latexlab.docs.client.commands.SystemJumpToLineCommand;
 import org.latexlab.docs.client.commands.SystemSetPerspectiveCommand;
 import org.latexlab.docs.client.commands.SystemViewPageCommand;
 import org.latexlab.docs.client.events.CommandEvent;
+import org.latexlab.docs.client.widgets.AnnotatedPanel;
 import org.latexlab.docs.client.widgets.ScalableImage;
+import org.latexlab.docs.client.widgets.AnnotatedPanel.Annotation;
 
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -37,18 +41,28 @@ public class PreviewerPart extends Composite {
    */
   private static final double[] SCALES = new double[]
       { 0.15, 0.25, 0.50, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3 };
+  private static final int DEFAULT_SCALE = 4;
   
   private VerticalPanel content;
   private ScalableImage currentImage;
-  private int currentPage = 0, currentScale = 4, lastTopScroll = 0, lastLeftScroll;
-  private HashMap<Integer, HashMap<Integer, Integer>> sourceHints =
-      new HashMap<Integer, HashMap<Integer, Integer>>();
+  private AnnotatedPanel annPanel;
+  private int currentPage = 0, currentScale = DEFAULT_SCALE, lastTopScroll = 0, lastLeftScroll;
+  private LinkedHashMap<Integer, ArrayList<Annotation>> sourceHints =
+      new LinkedHashMap<Integer, ArrayList<Annotation>>();
   private String[] pages = new String[0];
 
   /**
    * Constructs a previewer part.
    */
   public PreviewerPart() {
+	annPanel = new AnnotatedPanel();
+    annPanel.addSelectionHandler(new SelectionHandler<Annotation>() {
+		@Override
+		public void onSelection(SelectionEvent<Annotation> event) {
+		  int line = Integer.valueOf(event.getSelectedItem().getValue());
+		  CommandEvent.fire(new SystemJumpToLineCommand(line));
+		}
+    });
 	content = new VerticalPanel();
     content.setSize("100%", "100%");
     content.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -100,8 +114,8 @@ public class PreviewerPart extends Composite {
    */
   public void clear() {
 	if (currentImage != null) {
-	  lastTopScroll = content.getElement().getParentElement().getScrollTop();
-	  lastLeftScroll = content.getElement().getParentElement().getScrollLeft();
+	  lastTopScroll = getScrollTop();
+	  lastLeftScroll = getScrollLeft();
 	}
     content.clear();
   }
@@ -138,13 +152,13 @@ public class PreviewerPart extends Composite {
    * Sets the preview page image urls.
    * 
    * @param pages the preview page urls
-   * @param sourceHints a map of y-coordinate to source line
+   * @param sourceHints a map of y-coordinate to source line annotations
    */
-  public void setPages(String[] pages, HashMap<Integer, HashMap<Integer, Integer>> sourceHints) {
+  public int setPages(String[] pages, LinkedHashMap<Integer, ArrayList<Annotation>> sourceHints) {
 	this.pages = pages;
 	this.sourceHints = sourceHints;
 	currentImage = null;
-	showPage(currentPage);
+	return showPage(currentPage);
   }
 
   /**
@@ -152,54 +166,42 @@ public class PreviewerPart extends Composite {
    * 
    * @param page the index of the page to display
    */
-  public void showPage(int page){
+  public int showPage(final int page){
 	content.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
 	if (page == currentPage && currentImage != null) {
 	  currentImage.setScale(SCALES[currentScale]);
+	  annPanel.setAnnotationsVisibility(currentScale == DEFAULT_SCALE);
 	} else {
 	  if (page >= 0 && page < pages.length) {
 	    content.clear();
+	    annPanel.clearAnnotations();
 	    addMessage();
 	    currentImage = new ScalableImage(pages[page],
 	      SCALES[currentScale]);
-	    if (sourceHints.containsKey(currentPage)) {
-	      currentImage.setTitle("CTRL + Click to jump to the corresponding source code region.");
-	      currentImage.addClickHandler(new ClickHandler() {
-			  @Override
-			  public void onClick(ClickEvent event) {
-			    if (!event.getNativeEvent().getCtrlKey()) {
-				  return;
-			    }
-			    if (sourceHints.containsKey(currentPage)) {
-				  HashMap<Integer, Integer> pageHints = sourceHints.get(currentPage);
-				  if (pageHints.size() > 0) {
-				    int line = 0;
-				    int y = event.getNativeEvent().getClientY();
-				    for (Entry<Integer, Integer> hint : pageHints.entrySet()) {
-				      if (hint.getKey() > y) {
-				        break;
-				      }
-				      line = hint.getValue();
-				    }
-				    CommandEvent.fire(new SystemJumpToLineCommand(line));
-				  }
-			    }
-			  }
+	    if (sourceHints.containsKey(page)) {
+	      annPanel.setAnnotations(sourceHints.get(page));
+	      annPanel.setAnnotationsVisibility(false);
+	      currentImage.addLoadHandler(new LoadHandler() {
+			@Override
+			public void onLoad(LoadEvent event) {
+			  annPanel.setAnnotationsVisibility(currentScale == DEFAULT_SCALE);
+			}
 	      });
 	    }
 	    if (page == currentPage && (lastTopScroll > 0 || lastLeftScroll > 0)) {
 	      currentImage.addLoadHandler(new LoadHandler() {
 			@Override
 			public void onLoad(LoadEvent event) {
-		      content.getElement().getParentElement().setScrollTop(lastTopScroll);
-		      content.getElement().getParentElement().setScrollLeft(lastLeftScroll);
+			  setScrollPosition(lastTopScroll, lastLeftScroll);
 			}
 	      });
 	    }
+        annPanel.setAnnotatedWidget(currentImage);
+	    content.add(annPanel);
         currentPage = page;
-	    content.add(currentImage);
 	  }
 	}
+	return currentPage;
   }
   
   /**
@@ -259,6 +261,19 @@ public class PreviewerPart extends Composite {
 	  currentScale--;
 	}
 	showPage(currentPage);
+  }
+  
+  private void setScrollPosition(int top, int left) {
+    content.getElement().getParentElement().setScrollTop(top);
+    content.getElement().getParentElement().setScrollLeft(left);
+  }
+  
+  private int getScrollTop() {
+	return content.getElement().getParentElement().getScrollTop();
+  }
+  
+  private int getScrollLeft() {
+	return content.getElement().getParentElement().getScrollLeft();
   }
   
 }
